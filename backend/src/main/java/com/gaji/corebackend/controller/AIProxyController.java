@@ -116,7 +116,7 @@ public class AIProxyController {
      */
     @GetMapping(value = "/stream/**", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> proxyStream() {
-        String path = extractPath().replace("/stream", "/stream");
+        String path = extractPath();
         log.info("Proxying stream request to FastAPI: {}", path);
         
         return fastApiClient.get()
