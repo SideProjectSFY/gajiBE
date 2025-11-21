@@ -1,0 +1,193 @@
+spring:
+  application:
+    name: gaji-backend
+
+  profiles:
+    active: dev
+
+  # Database Configuration (PostgreSQL only - 13 metadata tables)
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/gaji}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # Security
+  security:
+    jwt:
+      secret: ${JWT_SECRET:gaji-secret-key-change-in-production}
+      expiration: 86400000 # 24 hours in milliseconds
+
+# Server Configuration
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+  servlet:
+    context-path: /
+
+# FastAPI Proxy Configuration
+fastapi:
+  base-url: ${FASTAPI_BASE_URL:http://localhost:8000}
+  timeout: 60 # seconds (AI operations can be slow)
+  retry:
+    max-attempts: 3
+
+# CORS Configuration
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+
+# MyBatis Configuration
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.gaji.corebackend.domain
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+    lazy-loading-enabled: false
+    aggressive-lazy-loading: false
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.gaji.corebackend: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.mybatis: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Actuator Configuration (Health Check)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  health:
+    db:
+      enabled: true
+
+# OpenAPI/Swagger Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+  info:
+    title: Gaji API Gateway
+    description: |
+      Gaji Backend API - Pattern B Architecture
+
+      - Frontend communicates ONLY with this Spring Boot service (port 8080)
+      - Spring Boot proxies AI requests to FastAPI (internal, port 8000)
+      - PostgreSQL access via MyBatis (13 metadata tables)
+      - No direct VectorDB access (delegated to FastAPI)
+    version: 1.0.0
+    contact:
+      name: Gaji Team
+      email: support@gaji.app
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gaji_dev
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+fastapi:
+  base-url: http://localhost:8000
+
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173
+
+logging:
+  level:
+    root: INFO
+    com.gaji.corebackend: DEBUG
+    org.springframework.web.servlet.mvc.method.annotation: DEBUG
+
+---
+# Staging Profile
+spring:
+  config:
+    activate:
+      on-profile: staging
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+fastapi:
+  base-url: ${FASTAPI_BASE_URL:http://fastapi:8000}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://staging.gaji.app}
+
+logging:
+  level:
+    root: INFO
+    com.gaji.corebackend: INFO
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+
+fastapi:
+  base-url: ${FASTAPI_BASE_URL:http://fastapi:8000}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://gaji.app}
+
+logging:
+  level:
+    root: WARN
+    com.gaji.corebackend: INFO
+  file:
+    name: /var/log/gaji-backend/application.log
+    max-size: 10MB
+    max-history: 30
+
+management:
+  endpoint:
+    health:
+      show-details: never
