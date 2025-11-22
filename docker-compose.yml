@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: gaji-postgres
+    environment:
+      POSTGRES_DB: gaji_db
+      POSTGRES_USER: gaji_user
+      POSTGRES_PASSWORD: gaji_password
+      TZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gaji_user -d gaji_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    command:
+      - "postgres"
+      - "-c"
+      - "timezone=UTC"
+    networks:
+      - gaji-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  gaji-network:
+    driver: bridge
