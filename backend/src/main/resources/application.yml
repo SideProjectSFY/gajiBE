@@ -39,6 +39,12 @@ spring:
         jdbc:
           time_zone: UTC
 
+  # Redis Configuration (for health check - primarily used by FastAPI/Celery)
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
   # Security
   security:
     jwt:
@@ -85,24 +91,28 @@ logging:
     org.springframework.security: INFO
     org.mybatis: DEBUG
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{correlationId:-}] %-5level %logger{36} - %msg%n"
 
 # Actuator Configuration (Health Check)
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health,info,metrics,prometheus
       base-path: /actuator
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: always
+      show-components: always
       probes:
         enabled: true
   health:
     db:
       enabled: true
+    diskspace:
+      enabled: true
+      threshold: 104857600  # 100MB threshold
 
 # OpenAPI/Swagger Configuration
 springdoc:
