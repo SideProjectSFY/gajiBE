@@ -30,20 +30,42 @@ public class ScenarioService {
 
     private final RootUserScenarioRepository rootScenarioRepository;
     private final LeafUserScenarioRepository leafScenarioRepository;
+    private final ScenarioValidator scenarioValidator;
 
     /**
      * Create a new root scenario
      */
     @Transactional
     public ScenarioResponse createScenario(UUID userId, CreateScenarioRequest request) {
-        log.info("Creating scenario: userId={}, title={}", userId, request.getTitle());
+        log.info("Creating scenario: userId={}, title={}", userId, request.getScenarioTitle());
+
+        // Validate scenario
+        ScenarioValidator.ValidationResult validation = scenarioValidator.validateScenario(request);
+        if (!validation.isValid()) {
+            String errors = String.join(", ", validation.getErrors());
+            throw new BadRequestException("Scenario validation failed: " + errors);
+        }
+
+        // Generate what-if question from scenario types if not provided
+        String whatIfQuestion = request.getWhatIfQuestion();
+        if (whatIfQuestion == null || whatIfQuestion.trim().isEmpty()) {
+            whatIfQuestion = generateWhatIfQuestion(request);
+        }
+
+        // Generate content hash for duplicate detection
+        String contentHash = scenarioValidator.generateContentHash(request);
 
         RootUserScenario scenario = RootUserScenario.builder()
                 .userId(userId)
+                .novelId(request.getNovelId())
                 .baseScenarioId(request.getBaseScenarioId())
-                .title(request.getTitle())
+                .title(request.getScenarioTitle())
                 .description(request.getDescription())
-                .whatIfQuestion(request.getWhatIfQuestion())
+                .whatIfQuestion(whatIfQuestion)
+                .characterChanges(request.getCharacterChanges())
+                .eventAlterations(request.getEventAlterations())
+                .settingModifications(request.getSettingModifications())
+                .contentHash(contentHash)
                 .isPublic(request.getIsPublic() != null ? request.getIsPublic() : false)
                 .forkCount(0)
                 .build();
@@ -52,6 +74,27 @@ public class ScenarioService {
         log.info("Scenario created: id={}", saved.getId());
 
         return ScenarioResponse.from(saved);
+    }
+
+    /**
+     * Generate what-if question from scenario types
+     */
+    private String generateWhatIfQuestion(CreateScenarioRequest request) {
+        List<String> parts = new ArrayList<>();
+        
+        if (request.getCharacterChanges() != null && !request.getCharacterChanges().trim().isEmpty()) {
+            parts.add(request.getCharacterChanges().trim());
+        }
+        
+        if (request.getEventAlterations() != null && !request.getEventAlterations().trim().isEmpty()) {
+            parts.add(request.getEventAlterations().trim());
+        }
+        
+        if (request.getSettingModifications() != null && !request.getSettingModifications().trim().isEmpty()) {
+            parts.add(request.getSettingModifications().trim());
+        }
+        
+        return "What if " + String.join(", and ", parts) + "?";
     }
 
     /**
