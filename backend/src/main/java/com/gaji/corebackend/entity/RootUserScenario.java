@@ -31,6 +31,9 @@ public class RootUserScenario {
     @Column(name = "base_scenario_id")
     private UUID baseScenarioId;
 
+    @Column(name = "novel_id")
+    private UUID novelId;
+
     @Column(nullable = false, length = 200)
     private String title;
 
@@ -40,6 +43,15 @@ public class RootUserScenario {
     @Column(name = "what_if_question", nullable = false, columnDefinition = "TEXT")
     private String whatIfQuestion;
 
+    @Column(name = "character_changes", columnDefinition = "TEXT")
+    private String characterChanges;
+
+    @Column(name = "event_alterations", columnDefinition = "TEXT")
+    private String eventAlterations;
+
+    @Column(name = "setting_modifications", columnDefinition = "TEXT")
+    private String settingModifications;
+
     @Column(name = "is_public")
     @Builder.Default
     private Boolean isPublic = false;
@@ -47,6 +59,9 @@ public class RootUserScenario {
     @Column(name = "fork_count")
     @Builder.Default
     private Integer forkCount = 0;
+
+    @Column(name = "content_hash", length = 32)
+    private String contentHash;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

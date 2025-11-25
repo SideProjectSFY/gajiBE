@@ -55,4 +55,10 @@ public interface RootUserScenarioRepository extends JpaRepository<RootUserScenar
             "(LOWER(s.title) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "LOWER(s.description) LIKE LOWER(CONCAT('%', :query, '%')))")
     Page<RootUserScenario> searchPublicScenarios(@Param("query") String query, Pageable pageable);
+
+    /**
+     * Check if scenario with same content exists for a novel
+     * Used for duplicate detection
+     */
+    boolean existsByNovelIdAndContentHash(UUID novelId, String contentHash);
 }

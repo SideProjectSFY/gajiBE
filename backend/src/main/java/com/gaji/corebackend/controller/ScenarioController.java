@@ -58,7 +58,7 @@ public class ScenarioController {
             @RequestHeader("X-User-Id") UUID userId,
             @Valid @RequestBody CreateScenarioRequest request) {
 
-        log.info("Creating scenario: userId={}, title={}", userId, request.getTitle());
+        log.info("Creating scenario: userId={}, title={}", userId, request.getScenarioTitle());
 
         ScenarioResponse response = scenarioService.createScenario(userId, request);
 
