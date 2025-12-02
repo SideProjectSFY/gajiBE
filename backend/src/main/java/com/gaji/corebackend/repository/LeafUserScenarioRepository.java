@@ -40,7 +40,7 @@ public interface LeafUserScenarioRepository extends JpaRepository<LeafUserScenar
     /**
      * Find public leaf scenarios with pagination
      */
-    Page<LeafUserScenario> findByIsPublicTrue(Pageable pageable);
+    Page<LeafUserScenario> findByIsPrivateFalse(Pageable pageable);
 
     /**
      * Check if user has already forked a specific root scenario
@@ -61,7 +61,7 @@ public interface LeafUserScenarioRepository extends JpaRepository<LeafUserScenar
                     r.title,
                     r.description,
                     r.what_if_question,
-                    r.is_public,
+                    r.is_private,
                     r.fork_count,
                     r.created_at,
                     r.updated_at,
@@ -81,7 +81,7 @@ public interface LeafUserScenarioRepository extends JpaRepository<LeafUserScenar
                     l.title,
                     l.description,
                     l.what_if_question,
-                    l.is_public,
+                    l.is_private,
                     NULL as fork_count,
                     l.created_at,
                     l.updated_at,
