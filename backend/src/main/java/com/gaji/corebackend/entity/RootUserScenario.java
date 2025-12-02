@@ -1,5 +1,6 @@
 package com.gaji.corebackend.entity;
 
+import com.gaji.corebackend.enums.ScenarioType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -52,9 +53,17 @@ public class RootUserScenario {
     @Column(name = "setting_modifications", columnDefinition = "TEXT")
     private String settingModifications;
 
-    @Column(name = "is_public")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "scenario_type", nullable = false, length = 50)
+    private ScenarioType scenarioType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "scenario_category")
+    private ScenarioCategory scenarioCategory;
+
+    @Column(name = "is_private")
     @Builder.Default
-    private Boolean isPublic = false;
+    private Boolean isPrivate = false;
 
     @Column(name = "fork_count")
     @Builder.Default
