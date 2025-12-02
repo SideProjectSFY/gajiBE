@@ -157,7 +157,6 @@ public interface ScenarioMapper {
           AND (:creatorId IS NULL OR s.created_by = :creatorId)
           AND (:startDate IS NULL OR s.created_at >= :startDate)
           AND (:endDate IS NULL OR s.created_at <= :endDate)
-          AND s.quality_score >= :minQualityScore
         ORDER BY
           CASE WHEN :#{#pageable.sort} = 'relevance' THEN rank ELSE 0 END DESC,
           CASE WHEN :#{#pageable.sort} = 'newest' THEN s.created_at ELSE NULL END DESC,
@@ -171,7 +170,6 @@ public interface ScenarioMapper {
           AND (:creatorId IS NULL OR s.created_by = :creatorId)
           AND (:startDate IS NULL OR s.created_at >= :startDate)
           AND (:endDate IS NULL OR s.created_at <= :endDate)
-          AND s.quality_score >= :minQualityScore
         """,
         """)
     List<Scenario> searchWithFilters(
