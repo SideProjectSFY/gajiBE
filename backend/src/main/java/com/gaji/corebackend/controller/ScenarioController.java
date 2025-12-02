@@ -1,7 +1,9 @@
 package com.gaji.corebackend.controller;
 
 import com.gaji.corebackend.dto.*;
+import com.gaji.corebackend.service.OgImageService;
 import com.gaji.corebackend.service.ScenarioService;
+import com.gaji.corebackend.service.SearchAnalyticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -40,6 +44,8 @@ import java.util.UUID;
 public class ScenarioController {
 
     private final ScenarioService scenarioService;
+    private final SearchAnalyticsService searchAnalyticsService;
+    private final OgImageService ogImageService;
 
     /**
      * Create a new scenario
@@ -87,7 +93,7 @@ public class ScenarioController {
         } else {
             response = scenarioService.getScenario(id);
             // For unauthenticated requests, only return public scenarios
-            if (response != null && !response.getIsPublic()) {
+            if (response != null && response.getIsPrivate()) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
         }
@@ -208,7 +214,11 @@ public class ScenarioController {
      * Get scenario tree (root with all leaf children)
      */
     @GetMapping("/{id}/tree")
-    @Operation(summary = "Get scenario tree", description = "Retrieves the complete scenario tree including root and all forked leaf scenarios")
+    @Operation(
+            summary = "Get scenario tree",
+            description = "Retrieves the scenario tree including root and all forked leaf scenarios. " +
+                    "Note: Current system design limits fork depth to 1 (root can fork to leaves, leaves cannot fork further)."
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Scenario tree retrieved successfully"),
             @ApiResponse(responseCode = "404", description = "Root scenario not found")
@@ -239,5 +249,97 @@ public class ScenarioController {
         long count = scenarioService.countUserScenarios(userId);
 
         return ResponseEntity.ok(count);
+    }
+
+    /**
+     * Advanced search with filters
+     * Story 3.6: Scenario Search & Advanced Filtering
+     */
+    @GetMapping("/search")
+    @Operation(summary = "Advanced scenario search", description = "Search scenarios with full-text search and advanced filters")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Search results retrieved successfully")
+    })
+    public ResponseEntity<Page<ScenarioResponse>> advancedSearch(
+            @Parameter(description = "Search query (keywords)")
+            @RequestParam(required = false) String query,
+            @Parameter(description = "Scenario category filter")
+            @RequestParam(value = "category", required = false) String scenarioCategory,
+            @Parameter(description = "Creator user ID filter")
+            @RequestParam(required = false) UUID creatorId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+
+        log.debug("Advanced search: query={}, category={}, creator={}",
+                query, scenarioCategory, creatorId);
+
+        // Log search analytics
+        searchAnalyticsService.logSearch(query, scenarioCategory, creatorId);
+
+        // Perform search
+        Page<ScenarioResponse> results = scenarioService.searchWithAdvancedFilters(
+                query,
+                scenarioCategory,
+                creatorId,
+                pageable
+        );
+
+        // Log zero-result searches
+        if (results.isEmpty() && query != null && !query.trim().isEmpty()) {
+            searchAnalyticsService.logZeroResults(query);
+        }
+
+        return ResponseEntity.ok(results);
+    }
+
+    /**
+     * Get Open Graph metadata for a scenario (for social sharing)
+     */
+    @GetMapping("/{id}/og-metadata")
+    @Operation(summary = "Get OG metadata", description = "Retrieves Open Graph metadata for social sharing")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OG metadata retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Scenario not found")
+    })
+    public ResponseEntity<Map<String, String>> getOgMetadata(@PathVariable UUID id) {
+        log.debug("Getting OG metadata for scenario: id={}", id);
+
+        ScenarioResponse scenario = scenarioService.getScenario(id);
+        
+        if (scenario == null || scenario.getIsPrivate()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Generate OG image if not exists
+        String ogImageUrl = ogImageService.generateOgImage(
+            scenarioService.getRootScenarioEntity(id)
+        );
+
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("og:type", "article");
+        metadata.put("og:title", buildOgTitle(scenario));
+        metadata.put("og:description", buildOgDescription(scenario));
+        metadata.put("og:image", ogImageUrl);
+        metadata.put("og:url", buildScenarioUrl(id));
+        metadata.put("og:site_name", "Gaji - What If?");
+        metadata.put("twitter:card", "summary_large_image");
+
+        return ResponseEntity.ok(metadata);
+    }
+
+    private String buildOgTitle(ScenarioResponse scenario) {
+        return "What if... " + scenario.getTitle();
+    }
+
+    private String buildOgDescription(ScenarioResponse scenario) {
+        if (scenario.getWhatIfQuestion() != null && !scenario.getWhatIfQuestion().trim().isEmpty()) {
+            return scenario.getWhatIfQuestion();
+        }
+        return "Explore this alternative story scenario on Gaji";
+    }
+
+    private String buildScenarioUrl(UUID scenarioId) {
+        // In production, this should come from app.base-url config
+        return "https://gaji.app/scenarios/" + scenarioId.toString();
     }
 }
