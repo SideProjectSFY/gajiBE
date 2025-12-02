@@ -68,8 +68,8 @@ public class CreateScenarioRequest {
     private String whatIfQuestion;
 
     /**
-     * Whether this scenario is public (default: false)
+     * Whether this scenario is private (default: false, meaning public)
      */
     @Builder.Default
-    private Boolean isPublic = false;
+    private Boolean isPrivate = false;
 }
