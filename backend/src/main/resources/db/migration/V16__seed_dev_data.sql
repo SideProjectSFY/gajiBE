@@ -22,9 +22,10 @@ INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_
 
 -- Sample base scenarios (with VectorDB passage references)
 -- Note: In production, these would be created by the FastAPI service after novel ingestion
-INSERT INTO base_scenarios (novel_id, title, description, vectordb_passage_ids, character_vectordb_ids)
+INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
 SELECT 
   id,
+  'pride_and_prejudice',
   'Opening Scene',
   'The beginning of the story where main characters are introduced',
   ARRAY['11111111-1111-1111-1111-111111111111'::UUID, '22222222-2222-2222-2222-222222222222'::UUID],
@@ -33,14 +34,15 @@ FROM novels
 WHERE title = 'Pride and Prejudice';
 
 -- Sample root user scenario
-INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, is_public, fork_count)
+INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
 SELECT 
   u.id,
   bs.id,
   'What if Elizabeth was wealthy?',
   'Exploring how the story changes if Elizabeth Bennet comes from wealth',
   'What if Elizabeth Bennet inherited a fortune from a distant relative?',
-  true,
+  'CHARACTER_CHANGE',
+  false,
   2
 FROM users u
 CROSS JOIN base_scenarios bs
@@ -49,7 +51,7 @@ AND bs.title = 'Opening Scene'
 LIMIT 1;
 
 -- Sample character change for the scenario
-INSERT INTO scenario_character_changes (scenario_id, character_vectordb_id, attribute, original_value, new_value, reasoning)
+INSERT INTO scenario_character_changes (root_scenario_id, character_vectordb_id, attribute, original_value, new_value, reasoning)
 SELECT 
   rus.id,
   'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::UUID,
@@ -61,10 +63,11 @@ FROM root_user_scenarios rus
 WHERE rus.title = 'What if Elizabeth was wealthy?';
 
 -- Sample conversation
-INSERT INTO conversations (user_id, scenario_id, character_vectordb_id, title)
+INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title)
 SELECT 
   u.id,
   rus.id,
+  'root_user',
   'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'::UUID,
   'Chat with Elizabeth about her newfound wealth'
 FROM users u
@@ -73,21 +76,31 @@ WHERE u.username = 'charlie_chat'
 AND rus.title = 'What if Elizabeth was wealthy?'
 LIMIT 1;
 
--- Sample messages
-INSERT INTO messages (sender_type, content) VALUES
-  ('user', 'Hello Elizabeth! How does it feel to suddenly be wealthy?'),
-  ('ai', 'It is quite overwhelming, I must confess. The weight of such fortune brings both opportunity and responsibility.'),
-  ('user', 'Does this change how you view Mr. Darcy?'),
-  ('ai', 'Indeed, it does alter the dynamic between us. I find myself less concerned with his wealth and more focused on his character.');
-
--- Link messages to conversation
-INSERT INTO conversation_message_links (conversation_id, message_id, sequence_number)
+-- Sample messages (linked directly to conversation via conversation_id per V10 schema)
+WITH conv AS (
+  SELECT id FROM conversations WHERE title = 'Chat with Elizabeth about her newfound wealth' LIMIT 1
+)
+INSERT INTO messages (conversation_id, role, content)
 SELECT 
-  c.id,
+  conv.id,
+  msg.role,
+  msg.content
+FROM conv
+CROSS JOIN (VALUES
+  ('user', 'Hello Elizabeth! How does it feel to suddenly be wealthy?'),
+  ('assistant', 'It is quite overwhelming, I must confess. The weight of such fortune brings both opportunity and responsibility.'),
+  ('user', 'Does this change how you view Mr. Darcy?'),
+  ('assistant', 'Indeed, it does alter the dynamic between us. I find myself less concerned with his wealth and more focused on his character.')
+) AS msg(role, content);
+
+-- Link messages to conversation (for conversation_message_links table per ERD design)
+INSERT INTO conversation_message_links (conversation_id, message_id, sequence_order)
+SELECT 
+  m.conversation_id,
   m.id,
   ROW_NUMBER() OVER (ORDER BY m.created_at)
-FROM conversations c
-CROSS JOIN messages m
+FROM messages m
+JOIN conversations c ON m.conversation_id = c.id
 WHERE c.title = 'Chat with Elizabeth about her newfound wealth';
 
 -- Sample social features

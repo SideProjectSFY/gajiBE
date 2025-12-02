@@ -25,6 +25,25 @@ services:
     networks:
       - gaji-network
 
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: gaji-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/gaji_db
+      SPRING_DATASOURCE_USERNAME: gaji_user
+      SPRING_DATASOURCE_PASSWORD: gaji_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - gaji-network
+    restart: unless-stopped
+
 volumes:
   postgres_data:
     driver: local

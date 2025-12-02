@@ -110,14 +110,14 @@ private boolean isCircularReference(Scenario parent, User user) {
 @Query(value = """
     WITH RECURSIVE scenario_tree AS (
         SELECT id, base_story, parent_scenario_id, parameters,
-               creator_id, fork_count, quality_score, 0 AS depth
+               creator_id, fork_count, 0 AS depth
         FROM scenarios
         WHERE id = :rootId
 
         UNION ALL
 
         SELECT s.id, s.base_story, s.parent_scenario_id, s.parameters,
-               s.creator_id, s.fork_count, s.quality_score, st.depth + 1
+               s.creator_id, s.fork_count, st.depth + 1
         FROM scenarios s
         INNER JOIN scenario_tree st ON s.parent_scenario_id = st.id
         WHERE st.depth < 20

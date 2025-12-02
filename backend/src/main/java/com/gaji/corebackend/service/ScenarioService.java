@@ -11,6 +11,7 @@ import com.gaji.corebackend.repository.RootUserScenarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +67,7 @@ public class ScenarioService {
                 .eventAlterations(request.getEventAlterations())
                 .settingModifications(request.getSettingModifications())
                 .contentHash(contentHash)
-                .isPublic(request.getIsPublic() != null ? request.getIsPublic() : false)
+                .isPrivate(request.getIsPrivate() != null ? request.getIsPrivate() : false)
                 .forkCount(0)
                 .build();
 
@@ -114,6 +115,15 @@ public class ScenarioService {
     }
 
     /**
+     * Get root scenario entity (for internal use, e.g., OG image generation)
+     */
+    @Transactional(readOnly = true)
+    public RootUserScenario getRootScenarioEntity(UUID id) {
+        return rootScenarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Root scenario not found: " + id));
+    }
+
+    /**
      * Get scenario by ID, verifying access permissions
      */
     @Transactional(readOnly = true)
@@ -121,7 +131,7 @@ public class ScenarioService {
         ScenarioResponse scenario = getScenario(id);
 
         // Check if user can access this scenario
-        if (!scenario.getIsPublic() && !scenario.getUserId().equals(userId)) {
+        if (scenario.getIsPrivate() && !scenario.getUserId().equals(userId)) {
             throw new ForbiddenException("You don't have permission to access this scenario");
         }
 
@@ -156,7 +166,7 @@ public class ScenarioService {
     @Transactional(readOnly = true)
     public Page<ScenarioResponse> listPublicScenarios(Pageable pageable) {
         log.debug("Listing public scenarios");
-        return rootScenarioRepository.findByIsPublicTrue(pageable)
+        return rootScenarioRepository.findByIsPrivateFalse(pageable)
                 .map(ScenarioResponse::from);
     }
 
@@ -166,7 +176,22 @@ public class ScenarioService {
     @Transactional(readOnly = true)
     public Page<ScenarioResponse> searchScenarios(String query, Pageable pageable) {
         log.debug("Searching scenarios: query={}", query);
-        return rootScenarioRepository.searchPublicScenarios(query, pageable)
+        
+        // Sanitize query: remove all special characters and extra spaces
+        String sanitizedQuery = query;
+        if (query != null) {
+            sanitizedQuery = query.replaceAll("[^a-zA-Z0-9\\s]", "")
+                                  .replaceAll("\\s+", " ")
+                                  .trim();
+        }
+        
+        // If sanitized query is empty, return empty page
+        if (sanitizedQuery == null || sanitizedQuery.isEmpty()) {
+            log.debug("Query is empty after sanitization, returning empty page");
+            return Page.empty(pageable);
+        }
+        
+        return rootScenarioRepository.searchPublicScenarios(sanitizedQuery, pageable)
                 .map(ScenarioResponse::from);
     }
 
@@ -196,8 +221,8 @@ public class ScenarioService {
             if (request.getWhatIfQuestion() != null) {
                 rootScenario.setWhatIfQuestion(request.getWhatIfQuestion());
             }
-            if (request.getIsPublic() != null) {
-                rootScenario.setIsPublic(request.getIsPublic());
+            if (request.getIsPrivate() != null) {
+                rootScenario.setIsPrivate(request.getIsPrivate());
             }
 
             RootUserScenario saved = rootScenarioRepository.save(rootScenario);
@@ -224,8 +249,8 @@ public class ScenarioService {
         if (request.getWhatIfQuestion() != null) {
             leafScenario.setWhatIfQuestion(request.getWhatIfQuestion());
         }
-        if (request.getIsPublic() != null) {
-            leafScenario.setIsPublic(request.getIsPublic());
+        if (request.getIsPrivate() != null) {
+            leafScenario.setIsPrivate(request.getIsPrivate());
         }
 
         LeafUserScenario saved = leafScenarioRepository.save(leafScenario);
@@ -288,7 +313,7 @@ public class ScenarioService {
                 .orElseThrow(() -> new ResourceNotFoundException("Parent scenario not found: " + parentId));
 
         // Check if parent is public or owned by user
-        if (!parentScenario.getIsPublic() && !parentScenario.getUserId().equals(userId)) {
+        if (parentScenario.getIsPrivate() && !parentScenario.getUserId().equals(userId)) {
             throw new ForbiddenException("You don't have permission to fork this scenario");
         }
 
@@ -317,7 +342,7 @@ public class ScenarioService {
                 .title(title)
                 .description(request.getDescription())
                 .whatIfQuestion(whatIfQuestion)
-                .isPublic(request.getIsPublic() != null ? request.getIsPublic() : false)
+                .isPrivate(request.getIsPrivate() != null ? request.getIsPrivate() : false)
                 .build();
 
         LeafUserScenario saved = leafScenarioRepository.save(leafScenario);
@@ -406,7 +431,7 @@ public class ScenarioService {
                 .title((String) row[3])
                 .description((String) row[4])
                 .whatIfQuestion((String) row[5])
-                .isPublic((Boolean) row[6])
+                .isPrivate((Boolean) row[6])
                 .forkCount(row[7] != null ? ((Number) row[7]).intValue() : null)
                 .createdAt(row[8] != null ? ((java.sql.Timestamp) row[8]).toLocalDateTime() : null)
                 .updatedAt(row[9] != null ? ((java.sql.Timestamp) row[9]).toLocalDateTime() : null)
@@ -423,5 +448,77 @@ public class ScenarioService {
     @Transactional(readOnly = true)
     public long countUserScenarios(UUID userId) {
         return rootScenarioRepository.countByUserId(userId);
+    }
+
+    /**
+     * Advanced search with filters
+     * Story 3.6: Scenario Search & Advanced Filtering
+     *
+     * @param query Search query text
+     * @param scenarioCategory Optional scenario category filter
+     * @param creatorId Optional creator ID filter
+     * @param pageable Pagination parameters
+     * @return Page of matching scenarios
+     */
+    @Transactional(readOnly = true)
+    public Page<ScenarioResponse> searchWithAdvancedFilters(
+            String query,
+            String scenarioCategory,
+            UUID creatorId,
+            Pageable pageable) {
+
+        log.debug("Advanced search: query={}, category={}, creator={}",
+                query, scenarioCategory, creatorId);
+
+        // Sanitize query: remove all special characters and extra spaces
+        String sanitizedQuery = query;
+        if (query != null) {
+            sanitizedQuery = query.replaceAll("[^a-zA-Z0-9\\s]", "")
+                                  .replaceAll("\\s+", " ")
+                                  .trim();
+        }
+
+        Page<RootUserScenario> results;
+
+        if (sanitizedQuery != null && !sanitizedQuery.isEmpty()) {
+            // Full-text search with filters
+            String creatorIdStr = creatorId != null ? creatorId.toString() : null;
+            int limit = pageable.getPageSize();
+            int offset = (int) pageable.getOffset();
+            
+            List<RootUserScenario> content = rootScenarioRepository.searchWithFilters(
+                    sanitizedQuery,
+                    scenarioCategory,
+                    creatorIdStr,
+                    limit,
+                    offset
+            );
+            
+            long total = rootScenarioRepository.countSearchResults(
+                    sanitizedQuery,
+                    scenarioCategory,
+                    creatorIdStr
+            );
+            
+            results = new PageImpl<>(content, pageable, total);
+        } else {
+            // Filter-only search (no text query)
+            com.gaji.corebackend.entity.ScenarioCategory category = null;
+            if (scenarioCategory != null) {
+                try {
+                    category = com.gaji.corebackend.entity.ScenarioCategory.valueOf(scenarioCategory);
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid scenario category: {}", scenarioCategory);
+                }
+            }
+
+            results = rootScenarioRepository.filterScenarios(
+                    category,
+                    creatorId,
+                    pageable
+            );
+        }
+
+        return results.map(ScenarioResponse::from);
     }
 }

@@ -40,9 +40,13 @@ public class LeafUserScenario {
     @Column(name = "what_if_question", nullable = false, columnDefinition = "TEXT")
     private String whatIfQuestion;
 
-    @Column(name = "is_public")
+    @Column(name = "is_private")
     @Builder.Default
-    private Boolean isPublic = false;
+    private Boolean isPrivate = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "scenario_category")
+    private ScenarioCategory scenarioCategory;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

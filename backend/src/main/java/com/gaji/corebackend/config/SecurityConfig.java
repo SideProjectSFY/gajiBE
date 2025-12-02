@@ -1,5 +1,6 @@
 package com.gaji.corebackend.config;
 
+import com.gaji.corebackend.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,13 +12,15 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Security Configuration
  * 
- * Basic setup for JWT authentication (to be fully implemented in Epic 6)
- * For now, allows all requests to test infrastructure
+ * JWT-based authentication with stateless sessions
+ * Public endpoints: /api/auth/*, health checks, documentation
+ * Protected endpoints: All other API endpoints
  */
 @Configuration
 @EnableWebSecurity
@@ -26,6 +29,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
     private final CorsConfigurationSource corsConfigurationSource;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,22 +49,26 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers(
-                    "/api/v1/auth/**",      // Authentication endpoints
+                    "/api/auth/**",          // Authentication endpoints
                     "/actuator/health",      // Health check
                     "/swagger-ui/**",        // Swagger UI
                     "/v3/api-docs/**",       // OpenAPI docs
                     "/error"                 // Error handling
                 ).permitAll()
                 
-                // All other requests - permit all for now (will add JWT validation in Epic 6)
-                .anyRequest().permitAll()
-            );
+                // All other requests require authentication
+                .anyRequest().authenticated()
+            )
+            
+            // Add JWT filter before UsernamePasswordAuthenticationFilter
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // BCrypt with 12 rounds (as specified in story requirements)
+        return new BCryptPasswordEncoder(12);
     }
 }

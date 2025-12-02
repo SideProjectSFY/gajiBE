@@ -1,0 +1,177 @@
+package com.gaji.corebackend.controller;
+
+import com.gaji.corebackend.dto.*;
+import com.gaji.corebackend.service.ConversationService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * REST API Controller for Conversation CRUD operations
+ *
+ * Endpoints:
+ * - POST /api/conversations - Create new conversation
+ * - GET /api/conversations/{id} - Get conversation by ID with messages
+ * - GET /api/conversations - List conversations
+ * - PUT /api/conversations/{id} - Update conversation
+ * - DELETE /api/conversations/{id} - Delete conversation
+ * - POST /api/conversations/{id}/fork - Fork a ROOT conversation
+ */
+@RestController
+@RequestMapping("/api/conversations")
+@RequiredArgsConstructor
+@Slf4j
+@Tag(name = "Conversations", description = "Conversation Management API")
+public class ConversationController {
+
+    private final ConversationService conversationService;
+
+    /**
+     * Create a new conversation
+     */
+    @PostMapping
+    @Operation(summary = "Create a new conversation", description = "Creates a new conversation in a scenario with a character")
+    @ApiResponse(responseCode = "201", description = "Conversation created successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request data")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    public ResponseEntity<ConversationResponse> createConversation(
+            @RequestHeader("X-User-Id") UUID userId,
+            @Valid @RequestBody CreateConversationRequest request) {
+
+        log.info("Creating conversation: userId={}, scenarioId={}", userId, request.getScenarioId());
+
+        ConversationResponse response = conversationService.createConversation(userId, request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * Get conversation by ID with messages
+     */
+    @GetMapping("/{id}")
+    @Operation(summary = "Get conversation by ID", description = "Retrieves a conversation with all messages")
+    @ApiResponse(responseCode = "200", description = "Conversation retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Conversation not found")
+    @ApiResponse(responseCode = "403", description = "Access forbidden")
+    public ResponseEntity<ConversationResponse> getConversation(
+            @PathVariable UUID id,
+            @RequestHeader(value = "X-User-Id", required = false) UUID userId) {
+
+        log.debug("Getting conversation: id={}", id);
+
+        ConversationResponse response = conversationService.getConversationWithMessages(id);
+
+        // Access control: check if user can access this private conversation
+        if (Boolean.TRUE.equals(response.getIsPrivate()) && userId != null && !response.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * List conversations
+     */
+    @GetMapping
+    @Operation(summary = "List conversations", description = "Lists conversations with pagination")
+    @ApiResponse(responseCode = "200", description = "Conversations retrieved successfully")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    public ResponseEntity<List<ConversationResponse>> listConversations(
+            @RequestHeader(value = "X-User-Id", required = false) UUID userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        log.debug("Listing conversations: userId={}, page={}, size={}", userId, page, size);
+
+        List<ConversationResponse> responses;
+        if (userId != null) {
+            // List user's conversations
+            responses = conversationService.listUserConversations(userId, page, size);
+        } else {
+            // List all public conversations
+            responses = conversationService.listAllConversations(page, size);
+        }
+
+        return ResponseEntity.ok(responses);
+    }
+
+    /**
+     * Update conversation metadata
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "Update conversation", description = "Updates conversation title or privacy settings")
+    @ApiResponse(responseCode = "200", description = "Conversation updated successfully")
+    @ApiResponse(responseCode = "404", description = "Conversation not found")
+    @ApiResponse(responseCode = "403", description = "Access forbidden")
+    public ResponseEntity<ConversationResponse> updateConversation(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID userId,
+            @Valid @RequestBody UpdateConversationRequest request) {
+
+        log.info("Updating conversation: id={}, userId={}", id, userId);
+
+        // Access control: verify user owns the conversation
+        ConversationResponse existing = conversationService.getConversation(id);
+        if (!existing.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        ConversationResponse response = conversationService.updateConversation(id, request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Delete conversation
+     */
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete conversation", description = "Deletes a conversation and all its messages")
+    @ApiResponse(responseCode = "204", description = "Conversation deleted successfully")
+    @ApiResponse(responseCode = "404", description = "Conversation not found")
+    @ApiResponse(responseCode = "403", description = "Access forbidden")
+    public ResponseEntity<Void> deleteConversation(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID userId) {
+
+        log.info("Deleting conversation: id={}, userId={}", id, userId);
+
+        // Access control: verify user owns the conversation
+        ConversationResponse existing = conversationService.getConversation(id);
+        if (!existing.getUserId().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        conversationService.deleteConversation(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Fork a ROOT conversation (copy min(6, total) messages)
+     */
+    @PostMapping("/{id}/fork")
+    @Operation(summary = "Fork a conversation", description = "Creates a forked conversation with copied messages (ROOT only)")
+    @ApiResponse(responseCode = "201", description = "Conversation forked successfully")
+    @ApiResponse(responseCode = "400", description = "Cannot fork a forked conversation")
+    @ApiResponse(responseCode = "404", description = "Conversation not found")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    public ResponseEntity<ForkConversationResponse> forkConversation(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID userId) {
+
+        log.info("Forking conversation: id={}, userId={}", id, userId);
+
+        ForkConversationResponse response = conversationService.forkConversation(id, userId);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+}

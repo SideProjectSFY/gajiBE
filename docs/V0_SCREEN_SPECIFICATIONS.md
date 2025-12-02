@@ -673,13 +673,11 @@ const generateTitle = () => {
 interface BrowseFilters {
   baseStory?: string;
   scenarioTypes: string[];
-  minQuality: number;
   hasForks: boolean;
 }
 
 const sortOptions = [
   { label: "Most Recent", value: "created_at,desc" },
-  { label: "Highest Quality", value: "quality_score,desc" },
   { label: "Most Forked", value: "fork_count,desc" },
   { label: "Most Conversations", value: "conversation_count,desc" },
 ];

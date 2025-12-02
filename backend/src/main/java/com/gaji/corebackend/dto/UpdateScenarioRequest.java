@@ -36,5 +36,5 @@ public class UpdateScenarioRequest {
     /**
      * Updated visibility (optional)
      */
-    private Boolean isPublic;
+    private Boolean isPrivate;
 }

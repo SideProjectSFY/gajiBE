@@ -36,8 +36,8 @@ public class ForkScenarioRequest {
     private String whatIfQuestion;
 
     /**
-     * Whether the forked scenario is public (default: false)
+     * Whether the forked scenario is private (default: false, meaning public)
      */
     @Builder.Default
-    private Boolean isPublic = false;
+    private Boolean isPrivate = false;
 }

@@ -30,7 +30,7 @@ Create the PostgreSQL database schema and Spring Boot REST API for managing What
 - [ ] CRUD API endpoints: POST /api/scenarios, GET /api/scenarios/{id}, GET /api/scenarios, PUT /api/scenarios/{id}, DELETE /api/scenarios/{id}
 - [ ] Scenario forking endpoint: POST /api/scenarios/{id}/fork
 - [ ] Circular reference prevention trigger implemented
-- [ ] GIN index on JSONB column, B-tree indexes on base_story, creator_id, quality_score
+- [ ] GIN index on JSONB column, B-tree indexes on base_story, creator_id
 - [ ] Soft delete pattern with deleted_at timestamp
 - [ ] Java domain models with MyBatis JSONB mapping support
 - [ ] Response time < 100ms for single scenario retrieval
@@ -40,7 +40,7 @@ Create the PostgreSQL database schema and Spring Boot REST API for managing What
 
 - JSONB enables schema-free scenario parameters supporting future scenario type expansion
 - parent_scenario_id enables infinite meta-scenario branching ("Hermione in Slytherin AND Head Girl")
-- fork_count, conversation_count, quality_score support future recommendation algorithms
+- fork_count, conversation_count support future recommendation algorithms
 
 ## QA Checklist
 
