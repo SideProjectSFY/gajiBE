@@ -2,6 +2,7 @@ package com.gaji.corebackend.dto;
 
 import com.gaji.corebackend.entity.LeafUserScenario;
 import com.gaji.corebackend.entity.RootUserScenario;
+import com.gaji.corebackend.entity.ScenarioCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,9 +27,10 @@ public class ScenarioResponse {
     private String title;
     private String description;
     private String whatIfQuestion;
-    private Boolean isPublic;
+    private Boolean isPrivate;
     private Integer forkCount;
     private ScenarioType scenarioType;
+    private ScenarioCategory scenarioCategory;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -52,9 +54,10 @@ public class ScenarioResponse {
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .whatIfQuestion(entity.getWhatIfQuestion())
-                .isPublic(entity.getIsPublic())
+                .isPrivate(entity.getIsPrivate())
                 .forkCount(entity.getForkCount())
                 .scenarioType(ScenarioType.ROOT)
+                .scenarioCategory(entity.getScenarioCategory())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
@@ -72,9 +75,10 @@ public class ScenarioResponse {
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .whatIfQuestion(entity.getWhatIfQuestion())
-                .isPublic(entity.getIsPublic())
+                .isPrivate(entity.getIsPrivate())
                 .forkCount(null) // Leaf scenarios can't be forked
                 .scenarioType(ScenarioType.LEAF)
+                .scenarioCategory(entity.getScenarioCategory())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
