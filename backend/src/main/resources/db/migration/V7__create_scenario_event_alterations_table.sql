@@ -3,17 +3,23 @@
 
 CREATE TABLE scenario_event_alterations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    scenario_id UUID NOT NULL REFERENCES root_user_scenarios(id) ON DELETE CASCADE,
-    event_vectordb_id UUID NOT NULL,       -- Reference to VectorDB events collection
-    alteration_type VARCHAR(50) NOT NULL,  -- e.g., "prevented", "modified", "added"
-    original_description TEXT,
-    new_description TEXT NOT NULL,
+    root_scenario_id UUID REFERENCES root_user_scenarios(id) ON DELETE CASCADE,
+    leaf_scenario_id UUID REFERENCES leaf_user_scenarios(id) ON DELETE CASCADE,
+    event_vectordb_id VARCHAR(100) NOT NULL,
+    alteration_type VARCHAR(50) NOT NULL,
+    original_event TEXT,
+    new_event TEXT NOT NULL,
     reasoning TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CHECK (
+        (root_scenario_id IS NOT NULL AND leaf_scenario_id IS NULL) OR
+        (root_scenario_id IS NULL AND leaf_scenario_id IS NOT NULL)
+    )
 );
 
 -- Indexes for query performance
-CREATE INDEX idx_scenario_event_alt_scenario ON scenario_event_alterations(scenario_id);
+CREATE INDEX idx_scenario_event_alt_root ON scenario_event_alterations(root_scenario_id);
+CREATE INDEX idx_scenario_event_alt_leaf ON scenario_event_alterations(leaf_scenario_id);
 CREATE INDEX idx_scenario_event_alt_event ON scenario_event_alterations(event_vectordb_id);
 CREATE INDEX idx_scenario_event_alt_type ON scenario_event_alterations(alteration_type);
 

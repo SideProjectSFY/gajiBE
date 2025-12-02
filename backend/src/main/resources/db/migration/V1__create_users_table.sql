@@ -10,12 +10,13 @@ SET TIMEZONE='UTC';
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    username VARCHAR(50) UNIQUE NOT NULL CHECK (username ~* '^[a-zA-Z0-9_]{3,50}$'),
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password_hash VARCHAR(60) NOT NULL,
     bio TEXT CHECK (length(bio) <= 500),
     avatar_url VARCHAR(500),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CHECK (username ~* '^[a-zA-Z0-9_]{3,50}$')
 );
 
 -- Indexes for performance optimization

@@ -2,11 +2,10 @@
 -- Social feature: user following relationships
 
 CREATE TABLE user_follows (
-    follower_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    followee_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    follower_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    followee_id UUID REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (follower_id, followee_id),
-    CHECK (follower_id != followee_id)
+    PRIMARY KEY (follower_id, followee_id)
 );
 
 -- Indexes for query performance

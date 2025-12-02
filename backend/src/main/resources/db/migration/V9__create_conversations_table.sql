@@ -4,17 +4,21 @@
 CREATE TABLE conversations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    scenario_id UUID REFERENCES root_user_scenarios(id) ON DELETE SET NULL,
-    character_vectordb_id UUID NOT NULL,   -- Reference to VectorDB characters collection
+    scenario_id UUID NOT NULL,
+    scenario_type VARCHAR(20) NOT NULL CHECK (scenario_type IN ('root_user', 'leaf_user')),
+    character_vectordb_id VARCHAR(100) NOT NULL,
     parent_conversation_id UUID REFERENCES conversations(id) ON DELETE SET NULL,
-    title VARCHAR(200),
-    is_root BOOLEAN DEFAULT TRUE,          -- TRUE for root conversations, FALSE for forked ones
+    title VARCHAR(255),
+    is_root BOOLEAN DEFAULT true,
+    message_count INTEGER DEFAULT 0,
+    like_count INTEGER DEFAULT 0,
+    is_private BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    -- ROOT-only forking: if this has a parent, parent must be root (is_root = true)
-    -- This will be enforced at application level and via trigger
-    CHECK ((parent_conversation_id IS NULL AND is_root = TRUE) OR 
-           (parent_conversation_id IS NOT NULL AND is_root = FALSE))
+    CHECK (
+        (is_root = true AND parent_conversation_id IS NULL) OR
+        (is_root = false AND parent_conversation_id IS NOT NULL)
+    )
 );
 
 -- Indexes for query performance

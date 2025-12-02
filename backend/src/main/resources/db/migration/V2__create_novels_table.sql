@@ -4,14 +4,24 @@
 CREATE TABLE novels (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     title VARCHAR(500) NOT NULL,
-    author VARCHAR(200) NOT NULL,
-    publication_year INTEGER,
+    author VARCHAR(200),
+    original_language VARCHAR(10),
+    era VARCHAR(100),
     genre VARCHAR(100),
-    vectordb_collection_id VARCHAR(255) NOT NULL UNIQUE,  -- Reference to VectorDB collection
-    ingestion_status VARCHAR(50) DEFAULT 'pending',       -- pending, processing, completed, failed
-    total_passages_count INTEGER,
-    total_characters_count INTEGER,
-    gutenberg_file_path VARCHAR(500),                     -- For debugging/reference
+    publication_year INTEGER,
+    isbn VARCHAR(20),
+    series_title VARCHAR(300),
+    series_number INTEGER,
+    copyright_status VARCHAR(50) CHECK (copyright_status IN ('public_domain', 'copyrighted', 'creative_commons', 'unknown')),
+    cover_image_url VARCHAR(500),
+    description TEXT,
+    is_verified BOOLEAN DEFAULT false,
+    creator_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    vectordb_collection_id VARCHAR(100),
+    ingestion_status VARCHAR(20) DEFAULT 'pending',
+    total_passages_count INTEGER DEFAULT 0,
+    total_characters_count INTEGER DEFAULT 0,
+    gutenberg_file_path VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

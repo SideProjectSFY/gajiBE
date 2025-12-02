@@ -4,10 +4,20 @@
 CREATE TABLE base_scenarios (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     novel_id UUID NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
-    title VARCHAR(200) NOT NULL,
+    base_story VARCHAR(100) NOT NULL,
+    title VARCHAR(255) NOT NULL,
     description TEXT,
-    vectordb_passage_ids UUID[] NOT NULL,  -- Array of VectorDB passage document IDs
-    character_vectordb_ids UUID[],         -- Array of VectorDB character IDs involved
+    vectordb_passage_ids TEXT[],
+    chapter_number INTEGER,
+    page_range VARCHAR(50),
+    character_summary TEXT,
+    location_summary TEXT,
+    theme_summary TEXT,
+    content_summary TEXT,
+    tags TEXT[],
+    is_verified BOOLEAN DEFAULT false,
+    creator_id UUID REFERENCES users(id),
+    character_vectordb_ids TEXT[],
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
