@@ -34,6 +34,13 @@ public class ConversationResponse {
     private Boolean isPrivate;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    // Extended info
+    private String bookTitle;
+    private String bookAuthor;
+    private String bookCoverUrl;
+    private String scenarioDescription;
+    
     private List<MessageResponse> messages;
 
     /**
@@ -56,6 +63,10 @@ public class ConversationResponse {
                 .isPrivate(entity.getIsPrivate())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .bookTitle(entity.getBookTitle())
+                .bookAuthor(entity.getBookAuthor())
+                .bookCoverUrl(entity.getBookCoverUrl())
+                .scenarioDescription(entity.getScenarioDescription())
                 .build();
     }
 
