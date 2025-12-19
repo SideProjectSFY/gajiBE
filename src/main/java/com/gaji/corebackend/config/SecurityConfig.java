@@ -65,6 +65,12 @@ public class SecurityConfig {
                     "/error"                 // Error handling
                 ).permitAll()
                 
+                // Public GET endpoints
+                .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/scenarios/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/conversations/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/book-likes/**").permitAll()
+
                 // All other requests require authentication
                 .anyRequest().authenticated()
             )
