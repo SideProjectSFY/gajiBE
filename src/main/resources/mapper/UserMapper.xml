@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaji.corebackend.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.gaji.corebackend.entity.User">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="username" column="username"/>
+        <result property="passwordHash" column="password_hash"/>
+        <result property="bio" column="bio"/>
+        <result property="avatarUrl" column="avatar_url"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="role" column="role"/>
+        <result property="isActive" column="is_active"/>
+        <result property="lastLoginAt" column="last_login_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="UserResultMap">
+        SELECT * FROM users WHERE id = #{id}
+    </select>
+
+    <select id="findByEmail" resultMap="UserResultMap">
+        SELECT * FROM users WHERE email = #{email}
+    </select>
+
+    <select id="findByUsername" resultMap="UserResultMap">
+        SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <select id="existsById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM users WHERE id = #{id})
+    </select>
+
+    <select id="existsByEmail" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM users WHERE email = #{email})
+    </select>
+
+    <select id="existsByUsername" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM users WHERE username = #{username})
+    </select>
+
+    <insert id="insert" parameterType="com.gaji.corebackend.entity.User">
+        INSERT INTO users (
+            id, email, username, password_hash, bio, avatar_url, 
+            created_at, updated_at, role, is_active, last_login_at
+        ) VALUES (
+            #{id}, #{email}, #{username}, #{passwordHash}, #{bio}, #{avatarUrl}, 
+            NOW(), NOW(), #{role}, #{isActive}, #{lastLoginAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.gaji.corebackend.entity.User">
+        UPDATE users SET
+            email = #{email},
+            username = #{username},
+            password_hash = #{passwordHash},
+            bio = #{bio},
+            avatar_url = #{avatarUrl},
+            updated_at = NOW(),
+            role = #{role},
+            is_active = #{isActive},
+            last_login_at = #{lastLoginAt}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+</mapper>
