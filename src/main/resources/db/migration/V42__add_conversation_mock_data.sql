@@ -23,55 +23,55 @@ WHERE NOT EXISTS (SELECT 1 FROM novels WHERE title = '1984');
 
 -- Base Scenario: Pride and Prejudice (Elizabeth)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'pride_and_prejudice_liz', 'Elizabeth Bennet Character Study', 'Focus on Elizabeth Bennet', ARRAY['uuid1'::UUID], ARRAY['char_liz'::UUID]
+SELECT id, 'pride_and_prejudice_liz', 'Elizabeth Bennet Character Study', 'Focus on Elizabeth Bennet', ARRAY['uuid1'], ARRAY['char_liz']
 FROM novels WHERE title = 'Pride and Prejudice'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Elizabeth Bennet Character Study');
 
 -- Base Scenario: The Great Gatsby (Gatsby)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'gatsby_main', 'Jay Gatsby Character Study', 'Focus on Jay Gatsby', ARRAY['uuid2'::UUID], ARRAY['char_gatsby'::UUID]
+SELECT id, 'gatsby_main', 'Jay Gatsby Character Study', 'Focus on Jay Gatsby', ARRAY['uuid2'], ARRAY['char_gatsby']
 FROM novels WHERE title = 'The Great Gatsby'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Jay Gatsby Character Study');
 
 -- Base Scenario: Moby Dick (Ahab)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'moby_dick_ahab', 'Captain Ahab Character Study', 'Focus on Captain Ahab', ARRAY['uuid3'::UUID], ARRAY['char_ahab'::UUID]
+SELECT id, 'moby_dick_ahab', 'Captain Ahab Character Study', 'Focus on Captain Ahab', ARRAY['uuid3'], ARRAY['char_ahab']
 FROM novels WHERE title = 'Moby-Dick'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Captain Ahab Character Study');
 
 -- Base Scenario: Wuthering Heights (Heathcliff)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'wuthering_heathcliff', 'Heathcliff Character Study', 'Focus on Heathcliff', ARRAY['uuid4'::UUID], ARRAY['char_heathcliff'::UUID]
+SELECT id, 'wuthering_heathcliff', 'Heathcliff Character Study', 'Focus on Heathcliff', ARRAY['uuid4'], ARRAY['char_heathcliff']
 FROM novels WHERE title = 'Wuthering Heights'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Heathcliff Character Study');
 
 -- Base Scenario: 1984 (Winston)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, '1984_winston', 'Winston Smith Character Study', 'Focus on Winston Smith', ARRAY['uuid5'::UUID], ARRAY['char_winston'::UUID]
+SELECT id, '1984_winston', 'Winston Smith Character Study', 'Focus on Winston Smith', ARRAY['uuid5'], ARRAY['char_winston']
 FROM novels WHERE title = '1984'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Winston Smith Character Study');
 
 -- Base Scenario: Jane Eyre (Jane)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'jane_eyre_main', 'Jane Eyre Character Study', 'Focus on Jane Eyre', ARRAY['uuid6'::UUID], ARRAY['char_jane'::UUID]
+SELECT id, 'jane_eyre_main', 'Jane Eyre Character Study', 'Focus on Jane Eyre', ARRAY['uuid6'], ARRAY['char_jane']
 FROM novels WHERE title = 'Jane Eyre'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Jane Eyre Character Study');
 
 -- Base Scenario: Pride and Prejudice (Darcy)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'pride_and_prejudice_darcy', 'Mr. Darcy Character Study', 'Focus on Mr. Darcy', ARRAY['uuid7'::UUID], ARRAY['char_darcy'::UUID]
+SELECT id, 'pride_and_prejudice_darcy', 'Mr. Darcy Character Study', 'Focus on Mr. Darcy', ARRAY['uuid7'], ARRAY['char_darcy']
 FROM novels WHERE title = 'Pride and Prejudice'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Mr. Darcy Character Study');
 
 -- Base Scenario: The Great Gatsby (Nick)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'gatsby_nick', 'Nick Carraway Character Study', 'Focus on Nick Carraway', ARRAY['uuid8'::UUID], ARRAY['char_nick'::UUID]
+SELECT id, 'gatsby_nick', 'Nick Carraway Character Study', 'Focus on Nick Carraway', ARRAY['uuid8'], ARRAY['char_nick']
 FROM novels WHERE title = 'The Great Gatsby'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Nick Carraway Character Study');
 
 -- Base Scenario: Wuthering Heights (Catherine)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'wuthering_catherine', 'Catherine Earnshaw Character Study', 'Focus on Catherine Earnshaw', ARRAY['uuid9'::UUID], ARRAY['char_catherine'::UUID]
+SELECT id, 'wuthering_catherine', 'Catherine Earnshaw Character Study', 'Focus on Catherine Earnshaw', ARRAY['uuid9'], ARRAY['char_catherine']
 FROM novels WHERE title = 'Wuthering Heights'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Catherine Earnshaw Character Study');
 
