@@ -28,7 +28,8 @@ public interface BookMapper {
         @Param("offset") int offset,
         @Param("limit") int limit,
         @Param("genre") String genre,
-        @Param("sort") String sort
+        @Param("sort") String sort,
+        @Param("search") String search
     );
 
     /**
