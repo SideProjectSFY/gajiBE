@@ -74,5 +74,13 @@ INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_
   -- Classic Literature
   ('Moby-Dick', 'Herman Melville', 1851, 'Adventure', 'novel_moby_dick', 'completed', 689, 32,
    'Captain Ahab''s obsessive quest for revenge against the white whale that maimed him.',
-   'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400');
+   'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400'),
+  
+  -- Added in V42 originally, moved here for consistency
+  ('The Great Gatsby', 'F. Scott Fitzgerald', 1925, 'Classic', 'novel_gatsby', 'completed', 450, 20, 
+   'A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.',
+   'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400'),
+  ('1984', 'George Orwell', 1949, 'Dystopian', 'novel_1984', 'completed', 500, 15, 
+   'A dystopian social science fiction novel and cautionary tale about the dangers of totalitarianism.',
+   'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400');
 
