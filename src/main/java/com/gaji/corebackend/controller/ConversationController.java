@@ -90,10 +90,14 @@ public class ConversationController {
             @RequestHeader(value = "X-User-Id", required = false) UUID userId,
             @RequestParam(value = "userId", required = false) UUID targetUserId,
             @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "genre", required = false) String genre,
+            @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
 
-        log.debug("Listing conversations: userId={}, targetUserId={}, filter={}, page={}, size={}", userId, targetUserId, filter, page, size);
+        log.debug("Listing conversations: userId={}, targetUserId={}, filter={}, search={}, genre={}, sort={}, page={}, size={}", 
+                userId, targetUserId, filter, search, genre, sort, page, size);
 
         List<ConversationResponse> responses;
         if (targetUserId != null) {
@@ -109,14 +113,10 @@ public class ConversationController {
             // List user's conversations
             responses = conversationService.listUserConversations(userId, page, size);
         } else if ("public".equals(filter) || userId == null) {
-            // List all public conversations
-            responses = conversationService.listPublicConversations(page, size);
+            // List all public conversations with filters
+            responses = conversationService.listPublicConversations(search, genre, sort, page, size);
         } else {
-            // Default for authenticated user: list their own conversations (legacy behavior preserved but can be changed)
-            // User requested "Header Conversations = All Conversations", so if no filter is provided but user is logged in,
-            // we might want to show public feed?
-            // However, to be safe and consistent with ScenarioController, let's default to "my" if logged in, unless filter=public is passed.
-            // But the frontend will pass filter=public.
+            // Default for authenticated user: list their own conversations
             responses = conversationService.listUserConversations(userId, page, size);
         }
 
