@@ -17,6 +17,13 @@ public interface ConversationMapper {
     List<Conversation> findByUserId(@Param("userId") UUID userId, @Param("limit") int limit, @Param("offset") int offset);
     List<Conversation> findPublicByUserId(@Param("userId") UUID userId, @Param("limit") int limit, @Param("offset") int offset);
     List<Conversation> findPublicAll(@Param("limit") int limit, @Param("offset") int offset);
+    List<Conversation> findPublicAllWithFilters(
+            @Param("search") String search,
+            @Param("genre") String genre,
+            @Param("sort") String sort,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
     List<Conversation> findAll(@Param("limit") int limit, @Param("offset") int offset);
     int update(Conversation conversation);
     int delete(@Param("id") UUID id);
