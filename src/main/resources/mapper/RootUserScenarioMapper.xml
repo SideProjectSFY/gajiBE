@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaji.corebackend.mapper.RootUserScenarioMapper">
+
+    <resultMap id="RootUserScenarioResultMap" type="com.gaji.corebackend.entity.RootUserScenario">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="baseScenarioId" column="base_scenario_id"/>
+        <result property="novelId" column="novel_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="whatIfQuestion" column="what_if_question"/>
+        <result property="characterChanges" column="character_changes"/>
+        <result property="eventAlterations" column="event_alterations"/>
+        <result property="settingModifications" column="setting_modifications"/>
+        <result property="scenarioType" column="scenario_type"/>
+        <result property="scenarioCategory" column="scenario_category"/>
+        <result property="isPrivate" column="is_private"/>
+        <result property="forkCount" column="fork_count"/>
+        <result property="contentHash" column="content_hash"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios WHERE id = #{id}
+    </select>
+
+    <select id="findByUserId" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios WHERE user_id = #{userId}
+    </select>
+
+    <select id="findByUserIdWithPaging" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByUserId" resultType="long">
+        SELECT COUNT(*) FROM root_user_scenarios WHERE user_id = #{userId}
+    </select>
+
+    <select id="findPublicByUserIdWithPaging" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios 
+        WHERE user_id = #{userId} AND is_private = false
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countPublicByUserId" resultType="long">
+        SELECT COUNT(*) FROM root_user_scenarios WHERE user_id = #{userId} AND is_private = false
+    </select>
+
+    <select id="findByIsPrivateFalse" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios 
+        WHERE is_private = false
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByIsPrivateFalse" resultType="long">
+        SELECT COUNT(*) FROM root_user_scenarios WHERE is_private = false
+    </select>
+
+    <select id="existsByNovelIdAndContentHash" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM root_user_scenarios 
+            WHERE novel_id = #{novelId} AND content_hash = #{contentHash}
+        )
+    </select>
+
+    <select id="findByBaseScenarioId" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios WHERE base_scenario_id = #{baseScenarioId}
+    </select>
+
+    <select id="findAccessibleScenarios" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios 
+        WHERE is_private = false OR user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countAccessibleScenarios" resultType="long">
+        SELECT COUNT(*) FROM root_user_scenarios 
+        WHERE is_private = false OR user_id = #{userId}
+    </select>
+
+    <select id="searchPublicScenarios" resultMap="RootUserScenarioResultMap">
+        <bind name="pattern" value="'%' + query + '%'" />
+        SELECT * FROM root_user_scenarios 
+        WHERE is_private = false 
+        AND (title ILIKE #{pattern} OR description ILIKE #{pattern})
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countSearchPublicScenarios" resultType="long">
+        <bind name="pattern" value="'%' + query + '%'" />
+        SELECT COUNT(*) FROM root_user_scenarios 
+        WHERE is_private = false 
+        AND (title ILIKE #{pattern} OR description ILIKE #{pattern})
+    </select>
+
+    <select id="searchWithFilters" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios 
+        WHERE is_private = false 
+        AND search_vector @@ plainto_tsquery('english', #{query})
+        <if test="category != null">
+            AND scenario_category = #{category}
+        </if>
+        <if test="creatorId != null">
+            AND user_id = #{creatorId}::uuid
+        </if>
+        ORDER BY ts_rank(search_vector, plainto_tsquery('english', #{query})) DESC, created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countSearchResults" resultType="long">
+        SELECT COUNT(*) FROM root_user_scenarios 
+        WHERE is_private = false 
+        AND search_vector @@ plainto_tsquery('english', #{query})
+        <if test="category != null">
+            AND scenario_category = #{category}
+        </if>
+        <if test="creatorId != null">
+            AND user_id = #{creatorId}::uuid
+        </if>
+    </select>
+
+    <select id="filterScenarios" resultMap="RootUserScenarioResultMap">
+        SELECT * FROM root_user_scenarios 
+        WHERE is_private = false 
+        <if test="category != null">
+            AND scenario_category = #{category}
+        </if>
+        <if test="creatorId != null">
+            AND user_id = #{creatorId}
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countFilterScenarios" resultType="long">
+        SELECT COUNT(*) FROM root_user_scenarios 
+        WHERE is_private = false 
+        <if test="category != null">
+            AND scenario_category = #{category}
+        </if>
+        <if test="creatorId != null">
+            AND user_id = #{creatorId}
+        </if>
+    </select>
+
+    <insert id="insert" parameterType="com.gaji.corebackend.entity.RootUserScenario">
+        INSERT INTO root_user_scenarios (
+            id, user_id, base_scenario_id, novel_id, title, description,
+            what_if_question, character_changes, event_alterations, setting_modifications,
+            scenario_type, scenario_category, is_private, fork_count, content_hash,
+            created_at, updated_at
+        ) VALUES (
+            #{id}, #{userId}, #{baseScenarioId}, #{novelId}, #{title}, #{description},
+            #{whatIfQuestion}, #{characterChanges}, #{eventAlterations}, #{settingModifications},
+            #{scenarioType}, #{scenarioCategory}, #{isPrivate}, #{forkCount}, #{contentHash},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.gaji.corebackend.entity.RootUserScenario">
+        UPDATE root_user_scenarios SET
+            title = #{title},
+            description = #{description},
+            what_if_question = #{whatIfQuestion},
+            character_changes = #{characterChanges},
+            event_alterations = #{eventAlterations},
+            setting_modifications = #{settingModifications},
+            scenario_type = #{scenarioType},
+            scenario_category = #{scenarioCategory},
+            is_private = #{isPrivate},
+            fork_count = #{forkCount},
+            content_hash = #{contentHash},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM root_user_scenarios WHERE id = #{id}
+    </delete>
+
+    <select id="existsById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM root_user_scenarios WHERE id = #{id})
+    </select>
+
+</mapper>
