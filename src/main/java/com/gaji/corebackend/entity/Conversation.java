@@ -37,7 +37,10 @@ public class Conversation {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    
-    // Optional: Keep User object if needed for result mapping, but usually we fetch separately or use DTOs
-    // For now, I'll remove it to simplify.
+
+    // Joined fields (for display)
+    private String bookTitle;
+    private String bookAuthor;
+    private String bookCoverUrl;
+    private String scenarioDescription;
 }
