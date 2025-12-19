@@ -1,0 +1,92 @@
+# Production Environment Configuration
+spring:
+  # Database Configuration
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 10
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: false # Strict in production
+    locations: classpath:db/migration
+    sql-migration-prefix: V
+    sql-migration-separator: __
+    sql-migration-suffixes: .sql
+    validate-on-migrate: true
+    out-of-order: false
+    clean-disabled: true # Never allow clean in production!
+
+  # MyBatis Configuration
+  mybatis:
+    mapper-locations: classpath:mapper/*.xml
+    type-aliases-package: com.gaji.corebackend.entity
+    configuration:
+      map-underscore-to-camel-case: true
+
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      ssl: ${REDIS_SSL:false}
+      timeout: 3000ms
+
+  # Security
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+      expiration: 86400000 # 24 hours
+
+# FastAPI Proxy Configuration
+fastapi:
+  base-url: ${FASTAPI_BASE_URL:http://fastapi:8000}
+  timeout: 60
+  retry:
+    max-attempts: 3
+
+# CORS Configuration
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://gaji.app}
+
+# Logging Configuration
+logging:
+  level:
+    root: WARN
+    com.gaji.corebackend: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.mybatis: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{correlationId:-}] %-5level %logger{36} - %msg%n"
+  file:
+    name: /var/log/gaji-backend/application.log
+    max-size: 10MB
+    max-history: 90
+    total-size-cap: 1GB
+
+# Actuator Configuration
+management:
+  endpoint:
+    health:
+      show-details: never # Hide details in production
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+# Swagger Configuration
+springdoc:
+  swagger-ui:
+    enabled: false # Disable Swagger in production

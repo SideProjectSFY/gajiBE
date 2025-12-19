@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaji.corebackend.mapper.LeafUserScenarioMapper">
+
+    <resultMap id="LeafUserScenarioResultMap" type="com.gaji.corebackend.entity.LeafUserScenario">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentScenarioId" column="parent_scenario_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="whatIfQuestion" column="what_if_question"/>
+        <result property="isPrivate" column="is_private"/>
+        <result property="scenarioType" column="scenario_type"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="LeafUserScenarioResultMap">
+        SELECT * FROM leaf_user_scenarios WHERE id = #{id}
+    </select>
+
+    <select id="findByParentScenarioId" resultMap="LeafUserScenarioResultMap">
+        SELECT * FROM leaf_user_scenarios WHERE parent_scenario_id = #{parentScenarioId}
+    </select>
+
+    <select id="findByUserId" resultMap="LeafUserScenarioResultMap">
+        SELECT * FROM leaf_user_scenarios WHERE user_id = #{userId}
+    </select>
+
+    <select id="findByUserIdWithPaging" resultMap="LeafUserScenarioResultMap">
+        SELECT * FROM leaf_user_scenarios 
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByParentScenarioId" resultType="long">
+        SELECT COUNT(*) FROM leaf_user_scenarios WHERE parent_scenario_id = #{parentScenarioId}
+    </select>
+
+    <select id="findByIsPrivateFalse" resultMap="LeafUserScenarioResultMap">
+        SELECT * FROM leaf_user_scenarios 
+        WHERE is_private = false
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByIsPrivateFalse" resultType="long">
+        SELECT COUNT(*) FROM leaf_user_scenarios WHERE is_private = false
+    </select>
+
+    <select id="existsByParentScenarioIdAndUserId" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM leaf_user_scenarios WHERE parent_scenario_id = #{parentScenarioId} AND user_id = #{userId})
+    </select>
+
+    <select id="findAccessibleScenarios" resultMap="LeafUserScenarioResultMap">
+        SELECT * FROM leaf_user_scenarios 
+        WHERE is_private = false OR user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countAccessibleScenarios" resultType="long">
+        SELECT COUNT(*) FROM leaf_user_scenarios 
+        WHERE is_private = false OR user_id = #{userId}
+    </select>
+
+    <select id="findScenarioTree" resultType="map">
+        WITH RECURSIVE scenario_tree AS (
+            SELECT 
+                id, user_id, base_scenario_id, title, description, what_if_question, 
+                is_private, fork_count, created_at, updated_at, 
+                NULL::uuid as parent_scenario_id, 
+                0 as depth,
+                'root' as scenario_type
+            FROM root_user_scenarios
+            WHERE id = #{rootId}
+            
+            UNION ALL
+            
+            SELECT 
+                l.id, l.user_id, NULL::uuid as base_scenario_id, l.title, l.description, l.what_if_question, 
+                l.is_private, 0 as fork_count, l.created_at, l.updated_at, 
+                l.parent_scenario_id, 
+                st.depth + 1,
+                'leaf' as scenario_type
+            FROM leaf_user_scenarios l
+            INNER JOIN scenario_tree st ON l.parent_scenario_id = st.id
+        )
+        SELECT * FROM scenario_tree
+    </select>
+
+        <insert id="insert" parameterType="com.gaji.corebackend.entity.LeafUserScenario">
+        INSERT INTO leaf_user_scenarios (
+            id, user_id, parent_scenario_id, title, description,
+            what_if_question, is_private, scenario_type,
+            created_at, updated_at
+        ) VALUES (
+            #{id}, #{userId}, #{parentScenarioId}, #{title}, #{description},
+            #{whatIfQuestion}, #{isPrivate}, #{scenarioType},
+            #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.gaji.corebackend.entity.LeafUserScenario">
+        UPDATE leaf_user_scenarios SET
+            title = #{title},
+            description = #{description},
+            what_if_question = #{whatIfQuestion},
+            is_private = #{isPrivate},
+            scenario_category = #{scenarioCategory},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM leaf_user_scenarios WHERE id = #{id}
+    </delete>
+
+    <select id="existsById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM leaf_user_scenarios WHERE id = #{id})
+    </select>
+
+</mapper>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaji.corebackend.mapper.NovelMapper">
+
+    <resultMap id="NovelResultMap" type="com.gaji.corebackend.entity.Novel">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="author" column="author"/>
+        <result property="publicationYear" column="publication_year"/>
+        <result property="genre" column="genre"/>
+        <result property="vectordbCollectionId" column="vectordb_collection_id"/>
+        <result property="ingestionStatus" column="ingestion_status"/>
+        <result property="totalPassagesCount" column="total_passages_count"/>
+        <result property="totalCharactersCount" column="total_characters_count"/>
+        <result property="gutenbergFilePath" column="gutenberg_file_path"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="NovelResultMap">
+        SELECT * FROM novels WHERE id = #{id}
+    </select>
+
+    <select id="findByVectordbCollectionId" resultMap="NovelResultMap">
+        SELECT * FROM novels WHERE vectordb_collection_id = #{vectordbCollectionId}
+    </select>
+
+    <select id="existsByVectordbCollectionId" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM novels WHERE vectordb_collection_id = #{vectordbCollectionId})
+    </select>
+
+    <select id="existsById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM novels WHERE id = #{id})
+    </select>
+
+    <select id="findByIngestionStatus" resultMap="NovelResultMap">
+        SELECT * FROM novels WHERE ingestion_status = #{ingestionStatus}
+    </select>
+
+    <select id="findAll" resultMap="NovelResultMap">
+        SELECT * FROM novels
+    </select>
+
+    <insert id="insert" parameterType="com.gaji.corebackend.entity.Novel">
+        INSERT INTO novels (
+            id, title, author, publication_year, genre, vectordb_collection_id,
+            ingestion_status, total_passages_count, total_characters_count, gutenberg_file_path,
+            created_at, updated_at
+        ) VALUES (
+            #{id}, #{title}, #{author}, #{publicationYear}, #{genre}, #{vectordbCollectionId},
+            #{ingestionStatus}, #{totalPassagesCount}, #{totalCharactersCount}, #{gutenbergFilePath},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.gaji.corebackend.entity.Novel">
+        UPDATE novels SET
+            title = #{title},
+            author = #{author},
+            publication_year = #{publicationYear},
+            genre = #{genre},
+            vectordb_collection_id = #{vectordbCollectionId},
+            ingestion_status = #{ingestionStatus},
+            total_passages_count = #{totalPassagesCount},
+            total_characters_count = #{totalCharactersCount},
+            gutenberg_file_path = #{gutenbergFilePath},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM novels WHERE id = #{id}
+    </delete>
+
+</mapper>

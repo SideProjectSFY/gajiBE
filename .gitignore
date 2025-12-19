@@ -162,6 +162,55 @@ yarn-error.log
 # End of https://www.toptal.com/developers/gitignore/api/vue,vuejs,node
 
 
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+.vscode/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# macOS
+.DS_Store
+
+# Logs
+logs/
+*.log
+log/
+
+# Application
+application-local.yml
+application-secret.yml
+
+# Environment
+.env
+.env.local
+
+# Test
+test-output/
+
+
+
 ####### Custom ignores
 .vscode/
 .idea/

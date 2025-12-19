@@ -1,15 +1,15 @@
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
-# Copy Gradle wrapper and configuration files from backend directory
-COPY backend/build.gradle backend/settings.gradle backend/gradlew ./
-COPY backend/gradle ./gradle
+# Copy Gradle wrapper and configuration files
+COPY build.gradle settings.gradle gradle.properties gradlew ./
+COPY gradle ./gradle
 
-# Download dependencies (cached layer)
-RUN ./gradlew dependencies --no-daemon
+# Make gradlew executable
+RUN chmod +x gradlew
 
-# Copy source code from backend directory
-COPY backend/src ./src
+# Copy source code
+COPY src ./src
 
-# Run Spring Boot with DevTools
+# Run Spring Boot with DevTools (dependencies will be downloaded on first run)
 CMD ["./gradlew", "bootRun", "--no-daemon"]

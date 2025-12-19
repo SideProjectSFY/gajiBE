@@ -1,4 +1,4 @@
-# CLAUDE.md
+d# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -24,7 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Core Backend (Spring Boot - Java with Gradle)
-cd core-backend
+# From gajiBE directory:
 ./gradlew bootRun               # Run core backend (port 8080)
 ./gradlew build                 # Build and run tests
 ./gradlew test                  # Run unit tests only
@@ -66,7 +66,7 @@ docker-compose up -d chromadb   # Start ChromaDB
 # Redis (for Celery)
 docker-compose up -d redis      # Start Redis
 
-# Run migrations (from core-backend)
+# Run migrations (from gajiBE directory)
 ./gradlew flywayMigrate         # Apply database migrations
 ./gradlew flywayInfo            # Check migration status
 ```
@@ -1056,7 +1056,7 @@ According to the PRD and epic structure, **all 35 stories are fully documented**
 - Check PostgreSQL is running: `docker ps | grep postgres`
 - Verify database connection in `application.yml`
 - Check port 8080 is not already in use: `lsof -i :8080`
-- Review logs in `core-backend/logs/` directory
+- Review logs in `gajiBE/logs/` directory (or check console output)
 
 **FastAPI service errors**
 

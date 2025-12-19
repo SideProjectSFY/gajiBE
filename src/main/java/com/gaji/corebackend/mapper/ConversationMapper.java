@@ -1,0 +1,32 @@
+package com.gaji.corebackend.mapper;
+
+import com.gaji.corebackend.entity.Conversation;
+import com.gaji.corebackend.entity.Message;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Mapper
+public interface ConversationMapper {
+    void insert(Conversation conversation);
+    Optional<Conversation> findById(@Param("id") UUID id);
+    Optional<Conversation> findByIdWithMessages(@Param("id") UUID id);
+    List<Conversation> findByUserId(@Param("userId") UUID userId, @Param("limit") int limit, @Param("offset") int offset);
+    List<Conversation> findPublicByUserId(@Param("userId") UUID userId, @Param("limit") int limit, @Param("offset") int offset);
+    List<Conversation> findPublicAll(@Param("limit") int limit, @Param("offset") int offset);
+    List<Conversation> findAll(@Param("limit") int limit, @Param("offset") int offset);
+    int update(Conversation conversation);
+    int delete(@Param("id") UUID id);
+    List<Message> findMessagesByConversationId(@Param("conversationId") UUID conversationId);
+    void insertMessage(Message message);
+    void updateMessageCount(@Param("conversationId") UUID conversationId);
+    int countByUserId(@Param("userId") UUID userId);
+    void updateHasBeenForked(@Param("conversationId") UUID conversationId, @Param("hasBeenForked") boolean hasBeenForked);
+    
+    // Added methods
+    default int deleteById(UUID id) { return delete(id); }
+    boolean existsById(UUID id);
+}
