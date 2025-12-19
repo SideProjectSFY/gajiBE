@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaji.corebackend.mapper.ConversationLikeMapper">
+
+    <resultMap id="ConversationResultMap" type="com.gaji.corebackend.entity.Conversation">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="scenarioId" column="scenario_id"/>
+        <result property="scenarioType" column="scenario_type"/>
+        <result property="characterVectordbId" column="character_vectordb_id"/>
+        <result property="parentConversationId" column="parent_conversation_id"/>
+        <result property="title" column="title"/>
+        <result property="isRoot" column="is_root"/>
+        <result property="hasBeenForked" column="has_been_forked"/>
+        <result property="messageCount" column="message_count"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="isPrivate" column="is_private"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="existsByUserIdAndConversationId" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM conversation_likes WHERE user_id = #{userId} AND conversation_id = #{conversationId})
+    </select>
+
+    <select id="findLikedConversationsByUserId" resultMap="ConversationResultMap">
+        SELECT c.* 
+        FROM conversations c
+        JOIN conversation_likes cl ON c.id = cl.conversation_id
+        WHERE cl.user_id = #{userId}
+        ORDER BY cl.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countLikedConversationsByUserId" resultType="long">
+        SELECT COUNT(*) FROM conversation_likes WHERE user_id = #{userId}
+    </select>
+
+    <select id="countByConversationId" resultType="long">
+        SELECT COUNT(*) FROM conversation_likes WHERE conversation_id = #{conversationId}
+    </select>
+
+    <insert id="insert" parameterType="com.gaji.corebackend.entity.ConversationLike">
+        INSERT INTO conversation_likes (
+            user_id, conversation_id, created_at
+        ) VALUES (
+            #{userId}, #{conversationId}, NOW()
+        )
+    </insert>
+
+    <delete id="deleteByUserIdAndConversationId">
+        DELETE FROM conversation_likes WHERE user_id = #{userId} AND conversation_id = #{conversationId}
+    </delete>
+
+</mapper>
