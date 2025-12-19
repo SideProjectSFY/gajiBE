@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaji.corebackend.mapper.BookCommentMapper">
+
+    <resultMap id="BookCommentResultMap" type="com.gaji.corebackend.entity.BookComment">
+        <id property="id" column="id"/>
+        <result property="bookId" column="book_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <association property="user" javaType="com.gaji.corebackend.entity.User">
+            <id property="id" column="u_id"/>
+            <result property="username" column="u_username"/>
+            <result property="email" column="u_email"/>
+            <result property="avatarUrl" column="u_avatar_url"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectBookCommentWithUser">
+        SELECT 
+            c.id, c.book_id, c.user_id, c.content, c.created_at, c.updated_at,
+            u.id as u_id, u.username as u_username, u.email as u_email, u.avatar_url as u_avatar_url
+        FROM book_comments c
+        LEFT JOIN users u ON c.user_id = u.id
+    </sql>
+
+    <select id="findById" resultMap="BookCommentResultMap">
+        SELECT * FROM book_comments WHERE id = #{id}
+    </select>
+
+    <select id="findByIdWithUser" resultMap="BookCommentResultMap">
+        <include refid="selectBookCommentWithUser"/>
+        WHERE c.id = #{id}
+    </select>
+
+    <select id="findByIdAndUserId" resultMap="BookCommentResultMap">
+        SELECT * FROM book_comments WHERE id = #{id} AND user_id = #{userId}
+    </select>
+
+    <select id="findByBookIdOrderByCreatedAtDesc" resultMap="BookCommentResultMap">
+        <include refid="selectBookCommentWithUser"/>
+        WHERE c.book_id = #{bookId}
+        ORDER BY c.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countByBookId" resultType="long">
+        SELECT COUNT(*) FROM book_comments WHERE book_id = #{bookId}
+    </select>
+
+    <insert id="insert" parameterType="com.gaji.corebackend.entity.BookComment">
+        INSERT INTO book_comments (
+            id, book_id, user_id, content, created_at, updated_at
+        ) VALUES (
+            #{id}, #{bookId}, #{userId}, #{content}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="com.gaji.corebackend.entity.BookComment">
+        UPDATE book_comments SET
+            content = #{content},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM book_comments WHERE id = #{id}
+    </delete>
+
+    <select id="existsById" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM book_comments WHERE id = #{id})
+    </select>
+
+</mapper>
