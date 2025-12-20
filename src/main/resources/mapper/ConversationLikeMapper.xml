@@ -24,9 +24,18 @@
     </select>
 
     <select id="findLikedConversationsByUserId" resultMap="ConversationResultMap">
-        SELECT c.* 
+        SELECT 
+            c.*,
+            n.title as book_title,
+            n.author as book_author,
+            n.cover_image_url as book_cover_url,
+            n.id as book_id,
+            rus.description as scenario_description
         FROM conversations c
         JOIN conversation_likes cl ON c.id = cl.conversation_id
+        LEFT JOIN root_user_scenarios rus ON c.scenario_id = rus.id
+        LEFT JOIN base_scenarios bs ON rus.base_scenario_id = bs.id
+        LEFT JOIN novels n ON bs.novel_id = n.id
         WHERE cl.user_id = #{userId}
         ORDER BY cl.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
