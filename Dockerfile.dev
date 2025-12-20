@@ -5,11 +5,22 @@ WORKDIR /app
 COPY build.gradle settings.gradle gradle.properties gradlew ./
 COPY gradle ./gradle
 
-# Make gradlew executable
-RUN chmod +x gradlew
+# Fix line endings (CRLF to LF) and make gradlew executable
+RUN tr -d '\r' < ./gradlew > ./gradlew.tmp && mv ./gradlew.tmp ./gradlew && chmod +x ./gradlew
+
+# Download dependencies (cached layer)
+RUN bash ./gradlew dependencies --no-daemon
 
 # Copy source code
 COPY src ./src
 
-# Run Spring Boot with DevTools (dependencies will be downloaded on first run)
-CMD ["./gradlew", "bootRun", "--no-daemon"]
+# Copy and setup entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh && \
+    sed -i 's/\r$//' /entrypoint.sh || true
+
+# Use entrypoint to fix gradlew line endings at runtime
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Run Spring Boot with DevTools
+CMD ["bash", "./gradlew", "bootRun", "--no-daemon"]

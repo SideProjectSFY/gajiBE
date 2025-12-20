@@ -29,11 +29,11 @@ public class MyBatisConfig {
             new PathMatchingResourcePatternResolver().getResources("classpath:mapper/**/*.xml")
         );
         
-        // Set type aliases package
-        sessionFactory.setTypeAliasesPackage("com.gaji.corebackend.entity");
-        
         // Create MyBatis Configuration
         org.apache.ibatis.session.Configuration configuration = new org.apache.ibatis.session.Configuration();
+        
+        // Set type aliases package
+        sessionFactory.setTypeAliasesPackage("com.gaji.corebackend.entity");
         configuration.setMapUnderscoreToCamelCase(true);
         configuration.setCacheEnabled(true);
         configuration.setLazyLoadingEnabled(false);
