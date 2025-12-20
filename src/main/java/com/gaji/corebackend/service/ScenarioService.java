@@ -136,7 +136,7 @@ public class ScenarioService {
             
             // Call FastAPI's internal analysis endpoint (does not save, only analyzes)
             Map<String, Object> response = fastApiClient.post()
-                    .uri("/api/internal/scenarios/analyze")
+                    .uri("/api/v1/internal/scenarios/analyze")
                     .bodyValue(analysisRequest)
                     .retrieve()
                     .bodyToMono(Map.class)

@@ -25,7 +25,7 @@ import java.util.UUID;
  * These endpoints are for internal service-to-service communication only.
  */
 @RestController
-@RequestMapping("/api/internal/novels")
+@RequestMapping("/api/v1/internal/novels")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Internal - Novels", description = "Internal API for novel metadata (FastAPI → Spring Boot)")

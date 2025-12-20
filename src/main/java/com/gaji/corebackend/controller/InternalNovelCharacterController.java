@@ -22,7 +22,7 @@ import java.util.UUID;
  * These endpoints are for internal service-to-service communication only.
  */
 @RestController
-@RequestMapping("/api/internal/novels/{novelId}/characters")
+@RequestMapping("/api/v1/internal/novels/{novelId}/characters")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Internal Novel Character API", description = "Internal API for character operations (FastAPI only)")
