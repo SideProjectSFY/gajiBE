@@ -97,4 +97,10 @@ public class CreateScenarioRequest {
      */
     @Builder.Default
     private Boolean isPrivate = false;
+
+    /**
+     * Scenario type (required): CHARACTER_CHANGE, EVENT_ALTERATION, or SETTING_MODIFICATION
+     * Auto-determined from provided change types if not explicitly set
+     */
+    private String scenarioType;
 }

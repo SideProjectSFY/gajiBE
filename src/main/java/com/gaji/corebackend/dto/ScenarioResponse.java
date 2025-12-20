@@ -24,6 +24,7 @@ public class ScenarioResponse {
     private UUID userId;
     private UUID baseScenarioId;
     private UUID parentScenarioId;
+    private UUID novelId;
     private String title;
     private String description;
     private String whatIfQuestion;
@@ -33,6 +34,11 @@ public class ScenarioResponse {
     private ScenarioCategory scenarioCategory;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    
+    // Gemini 분석 결과 (JSON 문자열)
+    private String characterChanges;
+    private String eventAlterations;
+    private String settingModifications;
 
     /**
      * Enum to distinguish between root and leaf scenarios
@@ -51,6 +57,7 @@ public class ScenarioResponse {
                 .userId(entity.getUserId())
                 .baseScenarioId(entity.getBaseScenarioId())
                 .parentScenarioId(null) // Root scenarios have no parent
+                .novelId(entity.getNovelId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
                 .whatIfQuestion(entity.getWhatIfQuestion())
@@ -60,6 +67,9 @@ public class ScenarioResponse {
                 .scenarioCategory(entity.getScenarioCategory())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .characterChanges(entity.getCharacterChanges())
+                .eventAlterations(entity.getEventAlterations())
+                .settingModifications(entity.getSettingModifications())
                 .build();
     }
 
@@ -81,6 +91,9 @@ public class ScenarioResponse {
                 .scenarioCategory(entity.getScenarioCategory())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
+                .characterChanges(null) // Leaf scenarios don't have these fields
+                .eventAlterations(null)
+                .settingModifications(null)
                 .build();
     }
 }

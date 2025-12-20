@@ -16,14 +16,20 @@ import com.gaji.corebackend.mapper.LeafUserScenarioMapper;
 import com.gaji.corebackend.mapper.RootUserScenarioMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -39,6 +45,9 @@ public class ScenarioService {
     private final LeafUserScenarioMapper leafScenarioMapper;
     private final ScenarioValidator scenarioValidator;
     private final ObjectMapper objectMapper;
+    
+    @Qualifier("fastApiClient")
+    private final WebClient fastApiClient;
 
     /**
      * Create a new root scenario
@@ -66,15 +75,22 @@ public class ScenarioService {
         // Determine scenario type based on which fields are filled
         ScenarioType scenarioType = determineScenarioType(request);
 
-        // Serialize structured data to JSON strings
+        // Serialize structured data to JSON strings (fallback if FastAPI analysis failed)
         String characterChangesJson = serializeToJson(request.getCharacterPropertyChanges());
         String eventAlterationsJson = serializeToJson(request.getEventAlterationsList());
         String settingModificationsJson = serializeToJson(request.getSettingModificationsList());
 
-        // Use legacy fields if structured data not provided
-        String finalCharacterChanges = characterChangesJson != null ? characterChangesJson : request.getCharacterChanges();
-        String finalEventAlterations = eventAlterationsJson != null ? eventAlterationsJson : request.getEventAlterations();
-        String finalSettingModifications = settingModificationsJson != null ? settingModificationsJson : request.getSettingModifications();
+        // Call FastAPI to analyze scenario changes (Gemini analysis)
+        // This converts natural language descriptions to structured JSON
+        Map<String, String> analyzedFields = analyzeScenarioWithFastAPI(request);
+        
+        // Use analyzed JSON strings if available, otherwise use structured data from request, otherwise use legacy fields
+        String finalCharacterChanges = analyzedFields.getOrDefault("characterChanges", 
+                characterChangesJson != null ? characterChangesJson : request.getCharacterChanges());
+        String finalEventAlterations = analyzedFields.getOrDefault("eventAlterations", 
+                eventAlterationsJson != null ? eventAlterationsJson : request.getEventAlterations());
+        String finalSettingModifications = analyzedFields.getOrDefault("settingModifications", 
+                settingModificationsJson != null ? settingModificationsJson : request.getSettingModifications());
 
         RootUserScenario scenario = RootUserScenario.builder()
                 .id(UUID.randomUUID())
@@ -97,6 +113,57 @@ public class ScenarioService {
         log.info("Scenario created: id={}", scenario.getId());
 
         return ScenarioResponse.from(scenario);
+    }
+
+    /**
+     * Call FastAPI to analyze scenario changes using Gemini
+     * Returns a map with analyzed JSON strings for characterChanges, eventAlterations, settingModifications
+     */
+    @SuppressWarnings("unchecked")
+    private Map<String, String> analyzeScenarioWithFastAPI(CreateScenarioRequest request) {
+        Map<String, String> analyzedFields = new HashMap<>();
+        
+        try {
+            // Build request body for FastAPI analysis endpoint
+            Map<String, Object> analysisRequest = new HashMap<>();
+            analysisRequest.put("novelId", request.getNovelId().toString());
+            analysisRequest.put("scenarioTitle", request.getScenarioTitle());
+            analysisRequest.put("characterChanges", request.getCharacterChanges());
+            analysisRequest.put("eventAlterations", request.getEventAlterations());
+            analysisRequest.put("settingModifications", request.getSettingModifications());
+            analysisRequest.put("whatIfQuestion", request.getWhatIfQuestion());
+            analysisRequest.put("isPrivate", request.getIsPrivate() != null ? request.getIsPrivate() : false);
+            
+            // Call FastAPI's internal analysis endpoint (does not save, only analyzes)
+            Map<String, Object> response = fastApiClient.post()
+                    .uri("/api/internal/scenarios/analyze")
+                    .bodyValue(analysisRequest)
+                    .retrieve()
+                    .bodyToMono(Map.class)
+                    .timeout(Duration.ofSeconds(30))  // Gemini API can be slow
+                    .retryWhen(Retry.backoff(2, Duration.ofSeconds(1)))  // 2 retries: 1s, 2s
+                    .block();
+            
+            if (response != null && response.containsKey("data")) {
+                Map<String, Object> data = (Map<String, Object>) response.get("data");
+                if (data.containsKey("characterChanges")) {
+                    analyzedFields.put("characterChanges", data.get("characterChanges").toString());
+                }
+                if (data.containsKey("eventAlterations")) {
+                    analyzedFields.put("eventAlterations", data.get("eventAlterations").toString());
+                }
+                if (data.containsKey("settingModifications")) {
+                    analyzedFields.put("settingModifications", data.get("settingModifications").toString());
+                }
+                log.info("FastAPI analysis completed: analyzed {} fields", analyzedFields.size());
+            }
+            
+        } catch (Exception e) {
+            log.warn("Failed to analyze scenario with FastAPI: {}. Using structured data from request or legacy fields.", e.getMessage());
+            // Return empty map to use fallback (structured data or legacy fields)
+        }
+        
+        return analyzedFields;
     }
 
     /**
@@ -587,6 +654,7 @@ public class ScenarioService {
                 .id((UUID) row.get("id"))
                 .userId((UUID) row.get("user_id"))
                 .baseScenarioId((UUID) row.get("base_scenario_id"))
+                .novelId((UUID) row.get("novel_id"))
                 .title((String) row.get("title"))
                 .description((String) row.get("description"))
                 .whatIfQuestion((String) row.get("what_if_question"))
