@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaji.corebackend.mapper.NovelCharacterMapper">
+
+    <resultMap id="NovelCharacterResultMap" type="NovelCharacter">
+        <id property="id" column="id"/>
+        <result property="novelId" column="novel_id"/>
+        <result property="commonName" column="common_name"/>
+        <result property="isMainCharacter" column="is_main_character"/>
+        <result property="alternativeNames" column="alternative_names" typeHandler="org.apache.ibatis.type.ArrayTypeHandler"/>
+        <result property="description" column="description"/>
+        <result property="portraitPrompt" column="portrait_prompt"/>
+        <result property="persona" column="persona"/>
+        <result property="personaEn" column="persona_en"/>
+        <result property="personaKo" column="persona_ko"/>
+        <result property="speakingStyle" column="speaking_style"/>
+        <result property="speakingStyleEn" column="speaking_style_en"/>
+        <result property="speakingStyleKo" column="speaking_style_ko"/>
+        <result property="vectordbCharacterId" column="vectordb_character_id"/>
+        <result property="charGraphId" column="char_graph_id"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="findById" resultMap="NovelCharacterResultMap">
+        SELECT * FROM characters WHERE id = #{id}
+    </select>
+
+    <select id="findByNovelId" resultMap="NovelCharacterResultMap">
+        SELECT * FROM characters WHERE novel_id = #{novelId} ORDER BY is_main_character DESC, common_name ASC
+    </select>
+
+    <select id="findMainCharactersByNovelId" resultMap="NovelCharacterResultMap">
+        SELECT * FROM characters WHERE novel_id = #{novelId} AND is_main_character = true ORDER BY common_name ASC
+    </select>
+
+    <insert id="insert" parameterType="NovelCharacter">
+        INSERT INTO characters (
+            id, novel_id, common_name, is_main_character, alternative_names,
+            description, portrait_prompt,
+            persona, persona_en, persona_ko,
+            speaking_style, speaking_style_en, speaking_style_ko,
+            vectordb_character_id, char_graph_id,
+            created_at, updated_at
+        ) VALUES (
+            #{id}, #{novelId}, #{commonName}, #{isMainCharacter}, #{alternativeNames, typeHandler=org.apache.ibatis.type.ArrayTypeHandler},
+            #{description}, #{portraitPrompt},
+            #{persona}, #{personaEn}, #{personaKo},
+            #{speakingStyle}, #{speakingStyleEn}, #{speakingStyleKo},
+            #{vectordbCharacterId}, #{charGraphId},
+            NOW(), NOW()
+        )
+    </insert>
+
+    <update id="update" parameterType="NovelCharacter">
+        UPDATE characters SET
+            common_name = #{commonName},
+            is_main_character = #{isMainCharacter},
+            alternative_names = #{alternativeNames, typeHandler=org.apache.ibatis.type.ArrayTypeHandler},
+            description = #{description},
+            portrait_prompt = #{portraitPrompt},
+            persona = #{persona},
+            persona_en = #{personaEn},
+            persona_ko = #{personaKo},
+            speaking_style = #{speakingStyle},
+            speaking_style_en = #{speakingStyleEn},
+            speaking_style_ko = #{speakingStyleKo},
+            vectordb_character_id = #{vectordbCharacterId},
+            char_graph_id = #{charGraphId},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM characters WHERE id = #{id}
+    </delete>
+
+</mapper>
+
