@@ -32,6 +32,12 @@ public interface ConversationMapper {
     void updateMessageCount(@Param("conversationId") UUID conversationId);
     int countByUserId(@Param("userId") UUID userId);
     void updateHasBeenForked(@Param("conversationId") UUID conversationId, @Param("hasBeenForked") boolean hasBeenForked);
+    List<Conversation> findLikedByUserId(
+        @Param("userId") UUID userId, 
+        @Param("includePrivate") boolean includePrivate,
+        @Param("limit") int limit, 
+        @Param("offset") int offset
+    );
     
     // Added methods
     default int deleteById(UUID id) { return delete(id); }
