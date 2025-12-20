@@ -146,6 +146,21 @@ public class ConversationService {
     }
 
     /**
+     * List conversations liked by user
+     */
+    @Transactional(readOnly = true)
+    public List<ConversationResponse> listLikedConversations(UUID userId, boolean includePrivate, int page, int size) {
+        log.debug("Listing liked conversations for user: {}, includePrivate: {}, page: {}, size: {}", userId, includePrivate, page, size);
+
+        int offset = page * size;
+        List<Conversation> conversations = conversationMapper.findLikedByUserId(userId, includePrivate, size, offset);
+
+        return conversations.stream()
+                .map(ConversationResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * List all public conversations with filters
      */
     @Transactional(readOnly = true)
