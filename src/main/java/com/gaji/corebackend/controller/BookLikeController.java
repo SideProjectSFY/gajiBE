@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,10 +94,14 @@ public class BookLikeController {
     @GetMapping("/liked")
     @Operation(summary = "Get liked books", description = "Get paginated list of books liked by user. If userId is not provided, returns current user's liked books.")
     public ResponseEntity<Page<BookResponse>> getLikedBooks(
-        @CurrentUser UserPrincipal currentUser,
+        @CurrentUser(required = false) UserPrincipal currentUser,
         @Parameter(description = "Target User ID") @RequestParam(required = false) UUID userId,
         @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
+        if (userId == null && currentUser == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
         UUID targetUserId = (userId != null) ? userId : currentUser.getUserId();
         Page<BookResponse> books = bookLikeService.getLikedBooks(targetUserId, pageable);
         return ResponseEntity.ok(books);
