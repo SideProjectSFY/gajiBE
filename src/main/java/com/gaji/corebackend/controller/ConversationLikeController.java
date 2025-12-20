@@ -39,6 +39,26 @@ public class ConversationLikeController {
     }
 
     /**
+     * Check if user liked a conversation.
+     * GET /api/conversations/{id}/like
+     * Returns 200 with isLiked: true/false
+     */
+    @GetMapping("/{id}/like")
+    public ResponseEntity<LikeResponse> checkLikeStatus(
+        @PathVariable UUID id,
+        @CurrentUser UserPrincipal currentUser
+    ) {
+        if (currentUser == null) {
+            return ResponseEntity.ok(LikeResponse.builder()
+                .isLiked(false)
+                .likeCount(0)
+                .build());
+        }
+        LikeResponse response = conversationLikeService.isLiked(id, currentUser.getUserId());
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Unlike a conversation.
      * DELETE /api/conversations/{id}/unlike
      */
@@ -52,9 +72,11 @@ public class ConversationLikeController {
     }
 
     /**
-     * Check if user liked a conversation.
+     * Check if user liked a conversation (legacy endpoint).
      * GET /api/conversations/{id}/liked
+     * @deprecated Use GET /api/conversations/{id}/like instead
      */
+    @Deprecated
     @GetMapping("/{id}/liked")
     public ResponseEntity<LikeResponse> isLiked(
         @PathVariable UUID id,
@@ -63,7 +85,7 @@ public class ConversationLikeController {
         if (currentUser == null) {
             return ResponseEntity.ok(LikeResponse.builder()
                 .isLiked(false)
-                .likeCount(0) // Or fetch actual count if needed, but service.isLiked does it better
+                .likeCount(0)
                 .build());
         }
         LikeResponse response = conversationLikeService.isLiked(id, currentUser.getUserId());
