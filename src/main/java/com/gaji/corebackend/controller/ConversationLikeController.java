@@ -60,6 +60,12 @@ public class ConversationLikeController {
         @PathVariable UUID id,
         @CurrentUser UserPrincipal currentUser
     ) {
+        if (currentUser == null) {
+            return ResponseEntity.ok(LikeResponse.builder()
+                .isLiked(false)
+                .likeCount(0) // Or fetch actual count if needed, but service.isLiked does it better
+                .build());
+        }
         LikeResponse response = conversationLikeService.isLiked(id, currentUser.getUserId());
         return ResponseEntity.ok(response);
     }
