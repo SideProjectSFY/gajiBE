@@ -102,7 +102,12 @@ public class ConversationController {
         List<ConversationResponse> responses;
         if (targetUserId != null) {
             // Fetch conversations for a specific user
-            if (userId != null && userId.equals(targetUserId)) {
+            if ("liked".equals(filter)) {
+                // Liked conversations
+                // If viewing own profile (userId == targetUserId), include private liked conversations
+                boolean includePrivate = userId != null && userId.equals(targetUserId);
+                responses = conversationService.listLikedConversations(targetUserId, includePrivate, page, size);
+            } else if (userId != null && userId.equals(targetUserId)) {
                 // Own conversations (all)
                 responses = conversationService.listUserConversations(targetUserId, page, size);
             } else {
