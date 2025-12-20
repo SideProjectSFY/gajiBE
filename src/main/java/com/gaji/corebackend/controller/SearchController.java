@@ -35,7 +35,9 @@ public class SearchController {
     @GetMapping
     @Operation(summary = "Global search", description = "Search for books, conversations, and users")
     public ResponseEntity<SearchResponse> search(
-            @RequestParam String query
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
     ) {
         if (query == null || query.trim().isEmpty()) {
             return ResponseEntity.ok(SearchResponse.builder()
@@ -45,17 +47,18 @@ public class SearchController {
                     .build());
         }
 
-        // Search Books (limit 6)
-        Page<BookResponse> booksPage = bookService.findAll(0, 6, null, "scenarios", query);
+        // Search Books with pagination
+        Page<BookResponse> booksPage = bookService.findAll(page, size, null, "scenarios", query);
         List<BookResponse> books = booksPage.getContent();
 
-        // Search Conversations (limit 6)
-        List<ConversationResponse> conversations = conversationService.listPublicConversations(query, null, null, 0, 6);
+        // Search Conversations with pagination
+        List<ConversationResponse> conversations = conversationService.listPublicConversations(query, null, null, page, size);
 
-        // Search Users (limit 6)
+        // Search Users with pagination
         List<User> users = userMapper.searchUsers(query);
         List<UserDTO> userDTOs = users.stream()
-                .limit(6)
+                .skip((long) page * size)
+                .limit(size)
                 .map(user -> UserDTO.builder()
                         .id(user.getId())
                         .username(user.getUsername())
