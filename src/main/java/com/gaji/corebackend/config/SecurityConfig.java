@@ -55,7 +55,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers(
-                    "/api/auth/**",          // Authentication endpoints (legacy)
                     "/api/v1/auth/**",       // Authentication endpoints (v1)
                     "/api/v1/system/**",     // System health endpoints
                     "/actuator/health",      // Health check
@@ -65,12 +64,12 @@ public class SecurityConfig {
                 ).permitAll()
                 
                 // Protected Book endpoints (must come before public book endpoints)
-                .requestMatchers("/api/v1/books/liked").authenticated()
                 .requestMatchers("/api/v1/books/*/liked").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/v1/books/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/books/**").authenticated()
 
                 // Public GET endpoints
+                .requestMatchers(HttpMethod.GET, "/api/v1/books/liked").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/books/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/scenarios/**").permitAll()
