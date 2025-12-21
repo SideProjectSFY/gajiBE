@@ -2,9 +2,9 @@
 spring:
   # Database Configuration
   datasource:
-    url: jdbc:postgresql://postgres:5432/gaji_db
-    username: gaji_user
-    password: gaji_password
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/gaji_db}
+    username: ${DB_USERNAME:gaji_user}
+    password: ${DB_PASSWORD:gaji_secure_password_2024}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -35,18 +35,18 @@ spring:
   # Redis Configuration
   data:
     redis:
-      host: redis
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
   # Security
   security:
     jwt:
-      secret: ${JWT_SECRET:dev-secret-key-minimum-32-chars-required-for-hs256-algorithm}
+      secret: ${JWT_SECRET:gaji-secret-key-change-in-production}
       expiration: ${JWT_EXPIRATION:86400000} # 24 hours
 
 # FastAPI Proxy Configuration
 fastapi:
-  base-url: http://ai-service:8000
+  base-url: ${FASTAPI_BASE_URL:http://localhost:8200}
   timeout: 60
   retry:
     max-attempts: 3
