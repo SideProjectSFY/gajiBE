@@ -1,4 +1,4 @@
--- V33: Create characters table
+-- V43: Create characters table
 -- Stores character information extracted from novels
 
 CREATE TABLE characters (

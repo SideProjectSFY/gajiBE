@@ -1,4 +1,4 @@
--- V34: Create character_relationships table
+-- V44: Create character_relationships table
 -- Stores character relationship graph data
 
 CREATE TABLE character_relationships (
