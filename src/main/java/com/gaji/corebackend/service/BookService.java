@@ -35,9 +35,10 @@ public class BookService {
      * @param size Page size
      * @param genre Optional genre filter (null = all genres)
      * @param sort Sort order: "scenarios", "conversations", "newest", "alphabetical"
+     * @param search Search query for title or author
      * @return Page of BookResponse DTOs
      */
-    public Page<BookResponse> findAll(int page, int size, String genre, String sort) {
+    public Page<BookResponse> findAll(int page, int size, String genre, String sort, String search) {
         // Validate and set defaults
         int validatedPage = Math.max(0, page);
         int validatedSize = Math.max(1, Math.min(100, size)); // Max 100 per page
@@ -47,7 +48,7 @@ public class BookService {
         int offset = validatedPage * validatedSize;
         
         // Fetch books from database
-        List<Book> books = bookMapper.findBooks(offset, validatedSize, genre, validatedSort);
+        List<Book> books = bookMapper.findBooks(offset, validatedSize, genre, validatedSort, search);
         
         // Convert to DTOs
         List<BookResponse> bookResponses = books.stream()

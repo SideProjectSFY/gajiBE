@@ -146,18 +146,41 @@ public class ConversationService {
     }
 
     /**
-     * List all public conversations
+     * List conversations liked by user
      */
     @Transactional(readOnly = true)
-    public List<ConversationResponse> listPublicConversations(int page, int size) {
-        log.debug("Listing all public conversations, page: {}, size: {}", page, size);
+    public List<ConversationResponse> listLikedConversations(UUID userId, boolean includePrivate, int page, int size) {
+        log.debug("Listing liked conversations for user: {}, includePrivate: {}, page: {}, size: {}", userId, includePrivate, page, size);
 
         int offset = page * size;
-        List<Conversation> conversations = conversationMapper.findPublicAll(size, offset);
+        List<Conversation> conversations = conversationMapper.findLikedByUserId(userId, includePrivate, size, offset);
 
         return conversations.stream()
                 .map(ConversationResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * List all public conversations with filters
+     */
+    @Transactional(readOnly = true)
+    public List<ConversationResponse> listPublicConversations(String search, String genre, String sort, int page, int size) {
+        log.debug("Listing all public conversations, search: {}, genre: {}, sort: {}, page: {}, size: {}", search, genre, sort, page, size);
+
+        int offset = page * size;
+        List<Conversation> conversations = conversationMapper.findPublicAllWithFilters(search, genre, sort, size, offset);
+
+        return conversations.stream()
+                .map(ConversationResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * List all public conversations (legacy)
+     */
+    @Transactional(readOnly = true)
+    public List<ConversationResponse> listPublicConversations(int page, int size) {
+        return listPublicConversations(null, null, null, page, size);
     }
 
     /**

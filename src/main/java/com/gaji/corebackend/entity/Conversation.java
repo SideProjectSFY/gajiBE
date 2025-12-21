@@ -42,5 +42,6 @@ public class Conversation {
     private String bookTitle;
     private String bookAuthor;
     private String bookCoverUrl;
+    private UUID bookId;
     private String scenarioDescription;
 }

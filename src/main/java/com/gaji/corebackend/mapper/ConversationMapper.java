@@ -17,6 +17,13 @@ public interface ConversationMapper {
     List<Conversation> findByUserId(@Param("userId") UUID userId, @Param("limit") int limit, @Param("offset") int offset);
     List<Conversation> findPublicByUserId(@Param("userId") UUID userId, @Param("limit") int limit, @Param("offset") int offset);
     List<Conversation> findPublicAll(@Param("limit") int limit, @Param("offset") int offset);
+    List<Conversation> findPublicAllWithFilters(
+            @Param("search") String search,
+            @Param("genre") String genre,
+            @Param("sort") String sort,
+            @Param("limit") int limit,
+            @Param("offset") int offset
+    );
     List<Conversation> findAll(@Param("limit") int limit, @Param("offset") int offset);
     int update(Conversation conversation);
     int delete(@Param("id") UUID id);
@@ -25,6 +32,12 @@ public interface ConversationMapper {
     void updateMessageCount(@Param("conversationId") UUID conversationId);
     int countByUserId(@Param("userId") UUID userId);
     void updateHasBeenForked(@Param("conversationId") UUID conversationId, @Param("hasBeenForked") boolean hasBeenForked);
+    List<Conversation> findLikedByUserId(
+        @Param("userId") UUID userId, 
+        @Param("includePrivate") boolean includePrivate,
+        @Param("limit") int limit, 
+        @Param("offset") int offset
+    );
     
     // Added methods
     default int deleteById(UUID id) { return delete(id); }

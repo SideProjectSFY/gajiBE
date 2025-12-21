@@ -60,9 +60,11 @@ public class BookCommentController {
             @PathVariable UUID bookId,
             @Parameter(description = "Page number (0-indexed)", example = "0")
             @RequestParam(defaultValue = "0") int page,
+            @Parameter(description = "Page size", example = "10")
+            @RequestParam(defaultValue = "10") int size,
             @CurrentUser(required = false) User currentUser) {
 
-        Page<BookCommentResponse> comments = bookCommentService.getCommentsByBookId(bookId, page, currentUser);
+        Page<BookCommentResponse> comments = bookCommentService.getCommentsByBookId(bookId, page, size, currentUser);
         return ResponseEntity.ok(comments);
     }
 

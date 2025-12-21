@@ -52,9 +52,12 @@ public class BookController {
             @RequestParam(required = false) String genre,
             
             @Parameter(description = "Sort order: scenarios, conversations, newest, alphabetical")
-            @RequestParam(defaultValue = "scenarios") String sort
+            @RequestParam(defaultValue = "scenarios") String sort,
+
+            @Parameter(description = "Search query for title or author")
+            @RequestParam(required = false) String search
     ) {
-        Page<BookResponse> books = bookService.findAll(page, size, genre, sort);
+        Page<BookResponse> books = bookService.findAll(page, size, genre, sort, search);
         return ResponseEntity.ok(books);
     }
 

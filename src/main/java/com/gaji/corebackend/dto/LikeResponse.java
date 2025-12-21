@@ -1,5 +1,6 @@
 package com.gaji.corebackend.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 /**
@@ -11,6 +12,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class LikeResponse {
+    @JsonProperty("isLiked")
     private boolean isLiked;
     private int likeCount;
 }

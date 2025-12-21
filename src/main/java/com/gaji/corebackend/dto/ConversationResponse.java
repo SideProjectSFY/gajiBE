@@ -39,6 +39,7 @@ public class ConversationResponse {
     private String bookTitle;
     private String bookAuthor;
     private String bookCoverUrl;
+    private UUID bookId;
     private String scenarioDescription;
     
     private List<MessageResponse> messages;
@@ -66,6 +67,7 @@ public class ConversationResponse {
                 .bookTitle(entity.getBookTitle())
                 .bookAuthor(entity.getBookAuthor())
                 .bookCoverUrl(entity.getBookCoverUrl())
+                .bookId(entity.getBookId())
                 .scenarioDescription(entity.getScenarioDescription())
                 .build();
     }
