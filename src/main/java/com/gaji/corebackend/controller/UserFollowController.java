@@ -6,6 +6,7 @@ import com.gaji.corebackend.dto.UserDTO;
 import com.gaji.corebackend.entity.User;
 import com.gaji.corebackend.exception.ResourceNotFoundException;
 import com.gaji.corebackend.mapper.UserMapper;
+import com.gaji.corebackend.security.UserPrincipal;
 import com.gaji.corebackend.service.UserFollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,14 +43,15 @@ public class UserFollowController {
      * Follow a user
      * 
      * @param id User ID to follow
-     * @param userId Authenticated user ID from header
+     * @param principal Authenticated user principal
      * @return FollowResponse with updated status
      */
     @PostMapping("/{id}/follow")
     public ResponseEntity<FollowResponse> followUser(
         @PathVariable UUID id,
-        @RequestHeader("X-User-Id") UUID userId
+        @AuthenticationPrincipal UserPrincipal principal
     ) {
+        UUID userId = principal.getUserId();
         userFollowService.followUser(userId, id);
 
         // Build response with current status
@@ -66,14 +68,15 @@ public class UserFollowController {
      * Unfollow a user
      * 
      * @param id User ID to unfollow
-     * @param userId Authenticated user ID from header
+     * @param principal Authenticated user principal
      * @return FollowResponse with updated status
      */
     @DeleteMapping("/{id}/unfollow")
     public ResponseEntity<FollowResponse> unfollowUser(
         @PathVariable UUID id,
-        @RequestHeader("X-User-Id") UUID userId
+        @AuthenticationPrincipal UserPrincipal principal
     ) {
+        UUID userId = principal.getUserId();
         userFollowService.unfollowUser(userId, id);
 
         // Build response with current status
@@ -90,14 +93,19 @@ public class UserFollowController {
      * Check if current user is following a target user
      * 
      * @param id User ID to check
-     * @param userId Authenticated user ID from header
+     * @param principal Authenticated user principal
      * @return IsFollowingResponse with follow status
      */
     @GetMapping("/{id}/is-following")
     public ResponseEntity<IsFollowingResponse> isFollowing(
         @PathVariable UUID id,
-        @RequestHeader("X-User-Id") UUID userId
+        @AuthenticationPrincipal UserPrincipal principal
     ) {
+        if (principal == null) {
+            return ResponseEntity.ok(new IsFollowingResponse(false, false));
+        }
+        
+        UUID userId = principal.getUserId();
         boolean isFollowing = userFollowService.isFollowing(userId, id);
         boolean isMutual = userFollowService.isMutualFollow(userId, id);
 

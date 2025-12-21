@@ -40,6 +40,19 @@
         SELECT EXISTS(SELECT 1 FROM users WHERE username = #{username})
     </select>
 
+    <select id="searchUsers" resultMap="UserResultMap">
+        SELECT * FROM users
+        <where>
+            <if test="query != null and query != ''">
+                AND (LOWER(username) LIKE LOWER(CONCAT('%', #{query}, '%'))
+                     OR LOWER(email) LIKE LOWER(CONCAT('%', #{query}, '%'))
+                     OR LOWER(bio) LIKE LOWER(CONCAT('%', #{query}, '%')))
+            </if>
+        </where>
+        ORDER BY username ASC
+        LIMIT 20
+    </select>
+
     <insert id="insert" parameterType="com.gaji.corebackend.entity.User">
         INSERT INTO users (
             id, email, username, password_hash, bio, avatar_url, 

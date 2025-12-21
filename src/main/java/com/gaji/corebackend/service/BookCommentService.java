@@ -73,20 +73,21 @@ public class BookCommentService {
      *
      * @param bookId Book UUID
      * @param page Page number (0-indexed)
+     * @param size Page size
      * @param currentUser Current user (nullable for anonymous access)
      * @return Page of comment responses
      */
     @Transactional(readOnly = true)
-    public Page<BookCommentResponse> getCommentsByBookId(UUID bookId, int page, User currentUser) {
-        int offset = page * PAGE_SIZE;
-        List<BookComment> comments = bookCommentMapper.findByBookIdOrderByCreatedAtDesc(bookId, PAGE_SIZE, offset);
+    public Page<BookCommentResponse> getCommentsByBookId(UUID bookId, int page, int size, User currentUser) {
+        int offset = page * size;
+        List<BookComment> comments = bookCommentMapper.findByBookIdOrderByCreatedAtDesc(bookId, size, offset);
         long total = bookCommentMapper.countByBookId(bookId);
 
         List<BookCommentResponse> responses = comments.stream()
                 .map(comment -> toResponse(comment, currentUser))
                 .collect(Collectors.toList());
 
-        Pageable pageable = PageRequest.of(page, PAGE_SIZE);
+        Pageable pageable = PageRequest.of(page, size);
         return new PageImpl<>(responses, pageable, total);
     }
 

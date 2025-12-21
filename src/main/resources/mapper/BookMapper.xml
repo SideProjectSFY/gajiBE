@@ -39,6 +39,10 @@
             <if test="genre != null and genre != ''">
                 AND n.genre = #{genre}
             </if>
+            <if test="search != null and search != ''">
+                AND (LOWER(n.title) LIKE LOWER(CONCAT('%', #{search}, '%')) 
+                     OR LOWER(n.author) LIKE LOWER(CONCAT('%', #{search}, '%')))
+            </if>
         </where>
         GROUP BY n.id, n.title, n.author, n.genre, n.cover_image_url, n.created_at, n.updated_at, n.like_count
         <choose>
