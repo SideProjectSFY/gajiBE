@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface NovelMapper {
     Optional<Novel> findById(UUID id);
     Optional<Novel> findByVectordbCollectionId(String vectordbCollectionId);
+    Optional<Novel> findByGutenbergId(Integer gutenbergId);
     boolean existsByVectordbCollectionId(String vectordbCollectionId);
     boolean existsById(UUID id);
     List<Novel> findByIngestionStatus(String ingestionStatus);

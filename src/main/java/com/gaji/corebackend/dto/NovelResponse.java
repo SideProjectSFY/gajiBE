@@ -24,6 +24,7 @@ public class NovelResponse {
     private Integer publicationYear;
     private String genre;
     private String vectordbCollectionId;
+    private Integer gutenbergId;
     private String ingestionStatus;
     private Integer totalPassagesCount;
     private Integer totalCharactersCount;
@@ -41,6 +42,7 @@ public class NovelResponse {
                 .publicationYear(novel.getPublicationYear())
                 .genre(novel.getGenre())
                 .vectordbCollectionId(novel.getVectordbCollectionId())
+                .gutenbergId(novel.getGutenbergId())
                 .ingestionStatus(novel.getIngestionStatus())
                 .totalPassagesCount(novel.getTotalPassagesCount())
                 .totalCharactersCount(novel.getTotalCharactersCount())

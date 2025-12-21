@@ -96,6 +96,17 @@ public class NovelService {
     }
 
     /**
+     * Get novel by Gutenberg ID
+     */
+    @Transactional(readOnly = true)
+    public NovelResponse getNovelByGutenbergId(Integer gutenbergId) {
+        Novel novel = novelMapper.findByGutenbergId(gutenbergId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Novel not found with gutenberg_id: " + gutenbergId));
+        return NovelResponse.from(novel);
+    }
+
+    /**
      * Get all novels
      */
     @Transactional(readOnly = true)

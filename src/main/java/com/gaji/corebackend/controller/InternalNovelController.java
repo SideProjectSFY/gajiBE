@@ -129,6 +129,28 @@ public class InternalNovelController {
     }
 
     /**
+     * Get novel by Gutenberg ID
+     */
+    @GetMapping("/by-gutenberg/{gutenbergId}")
+    @Operation(summary = "Get novel by Gutenberg ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Novel found"),
+            @ApiResponse(responseCode = "404", description = "Novel not found")
+    })
+    public ResponseEntity<NovelResponse> getNovelByGutenbergId(
+            @Parameter(description = "Project Gutenberg ID") @PathVariable Integer gutenbergId
+    ) {
+        log.info("[Internal] Getting novel by Gutenberg ID: {}", gutenbergId);
+        try {
+            NovelResponse response = novelService.getNovelByGutenbergId(gutenbergId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            log.warn("[Internal] Novel not found with Gutenberg ID: {}", gutenbergId);
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
      * Delete novel by ID (for cleanup/rollback)
      */
     @DeleteMapping("/{id}")

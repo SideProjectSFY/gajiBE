@@ -84,7 +84,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'alice_wonder' LIMIT 
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_liz', 'Elizabeth Bennet', 1546, 342, false
+    u.id, s.id, 'root_user', 'char_liz', 'Elizabeth Bennet', 1546, 342, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.2 Jay Gatsby
@@ -101,7 +101,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'bob_reader' LIMIT 1)
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_gatsby', 'Jay Gatsby', 1734, 892, false
+    u.id, s.id, 'root_user', 'char_gatsby', 'Jay Gatsby', 1734, 892, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.3 Captain Ahab
@@ -118,7 +118,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'charlie_chat' LIMIT 
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_ahab', 'Captain Ahab', 893, 120, false
+    u.id, s.id, 'root_user', 'char_ahab', 'Captain Ahab', 893, 120, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.4 Heathcliff
@@ -135,7 +135,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'diana_creator' LIMIT
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_heathcliff', 'Heathcliff', 1287, 543, false
+    u.id, s.id, 'root_user', 'char_heathcliff', 'Heathcliff', 1287, 543, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.5 Winston Smith
@@ -152,7 +152,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'eve_explorer' LIMIT 
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_winston', 'Winston Smith', 1315, 678, false
+    u.id, s.id, 'root_user', 'char_winston', 'Winston Smith', 1315, 678, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.6 Jane Eyre
@@ -169,7 +169,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'frank_social' LIMIT 
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_jane', 'Jane Eyre', 1159, 432, false
+    u.id, s.id, 'root_user', 'char_jane', 'Jane Eyre', 1159, 432, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.7 Mr. Fitzwilliam Darcy
@@ -186,7 +186,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'grace_novelist' LIMI
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_darcy', 'Mr. Fitzwilliam Darcy', 1523, 765, false
+    u.id, s.id, 'root_user', 'char_darcy', 'Mr. Fitzwilliam Darcy', 1523, 765, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.8 Nick Carraway
@@ -203,7 +203,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'henry_fork' LIMIT 1)
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_nick', 'Nick Carraway', 763, 234, false
+    u.id, s.id, 'root_user', 'char_nick', 'Nick Carraway', 763, 234, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.9 Catherine Earnshaw
@@ -220,6 +220,6 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'alice_wonder' LIMIT 
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_catherine', 'Catherine Earnshaw', 345, 112, false
+    u.id, s.id, 'root_user', 'char_catherine', 'Catherine Earnshaw', 345, 112, false
 FROM target_user u, inserted_scenario s;
 

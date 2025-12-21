@@ -9,6 +9,7 @@
         <result property="publicationYear" column="publication_year"/>
         <result property="genre" column="genre"/>
         <result property="vectordbCollectionId" column="vectordb_collection_id"/>
+        <result property="gutenbergId" column="gutenberg_id"/>
         <result property="ingestionStatus" column="ingestion_status"/>
         <result property="totalPassagesCount" column="total_passages_count"/>
         <result property="totalCharactersCount" column="total_characters_count"/>
@@ -23,6 +24,10 @@
 
     <select id="findByVectordbCollectionId" resultMap="NovelResultMap">
         SELECT * FROM novels WHERE vectordb_collection_id = #{vectordbCollectionId}
+    </select>
+
+    <select id="findByGutenbergId" resultMap="NovelResultMap">
+        SELECT * FROM novels WHERE gutenberg_id = #{gutenbergId}
     </select>
 
     <select id="existsByVectordbCollectionId" resultType="boolean">
