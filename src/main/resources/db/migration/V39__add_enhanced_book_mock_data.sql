@@ -82,5 +82,10 @@ INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_
    'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400'),
   ('1984', 'George Orwell', 1949, 'Dystopian', 'novel_1984', 'completed', 500, 15, 
    'A dystopian social science fiction novel and cautionary tale about the dangers of totalitarianism.',
-   'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400');
+   'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400'),
+  
+  -- Shakespeare
+  ('Romeo and Juliet', 'William Shakespeare', 1597, 'Tragedy', 'novel_romeo_juliet', 'completed', 350, 20,
+   'The tragic love story of two young star-crossed lovers whose deaths ultimately reconcile their feuding families.',
+   'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400');
 

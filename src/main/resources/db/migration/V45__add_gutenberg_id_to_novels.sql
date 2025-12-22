@@ -34,6 +34,7 @@ UPDATE novels SET gutenberg_id = 1184 WHERE id = (SELECT id FROM novels WHERE ti
 UPDATE novels SET gutenberg_id = 164 WHERE id = (SELECT id FROM novels WHERE title = 'Twenty Thousand Leagues Under the Sea' AND gutenberg_id IS NULL LIMIT 1);
 UPDATE novels SET gutenberg_id = 521 WHERE id = (SELECT id FROM novels WHERE title = 'Robinson Crusoe' AND gutenberg_id IS NULL LIMIT 1);
 UPDATE novels SET gutenberg_id = 155 WHERE id = (SELECT id FROM novels WHERE title = 'The Moonstone' AND gutenberg_id IS NULL LIMIT 1);
+UPDATE novels SET gutenberg_id = 1513 WHERE id = (SELECT id FROM novels WHERE title = 'Romeo and Juliet' AND gutenberg_id IS NULL LIMIT 1);
 
 -- 4. 중복 데이터 제거
 -- 같은 제목의 책이 여러 개 있을 경우, gutenberg_id가 있는 것만 남기고 삭제

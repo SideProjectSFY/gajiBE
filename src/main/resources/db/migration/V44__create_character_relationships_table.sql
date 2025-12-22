@@ -10,7 +10,7 @@ CREATE TABLE character_relationships (
     target_character_id UUID NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
     
     -- Relationship metadata
-    relationship_type VARCHAR(100), -- e.g., 'friend', 'family', 'enemy', 'colleague'
+    relationship_type TEXT, -- e.g., 'friend', 'family', 'enemy', 'colleague'
     weight FLOAT, -- Relationship strength/frequency
     interaction_count INTEGER DEFAULT 0,
     
