@@ -32,6 +32,9 @@ public class MessageService {
     private final MessageMapper messageMapper;
     private final WebClient.Builder webClientBuilder;
     private final RedisTemplate<String, String> redisTemplate;
+    private final ScenarioService scenarioService;
+    private final NovelCharacterService novelCharacterService;
+    private final NovelService novelService;
 
     @Value("${fastapi.base-url:http://localhost:8000}")
     private String fastApiUrl;
@@ -78,13 +81,71 @@ public class MessageService {
         // Build scenario context (system prompt)
         String scenarioContext = buildScenarioContext(conversation);
 
+        // Fetch scenario, character, and book data to send to FastAPI
+        UUID scenarioId = conversation.getScenarioId();
+        String characterVectordbId = conversation.getCharacterVectordbId();
+        
+        ScenarioResponse scenario = null;
+        NovelCharacterResponse character = null;
+        NovelResponse novel = null;
+        
+        try {
+            // Get scenario data
+            scenario = scenarioService.getScenario(scenarioId);
+            
+            // Get character data from vectordbId (직접 DB 조회)
+            if (characterVectordbId != null) {
+                character = novelCharacterService.getCharacterByVectordbId(characterVectordbId);
+                
+                if (character == null) {
+                    log.warn("Character not found for vectordbId: {}", characterVectordbId);
+                }
+            }
+            
+            // Get book data if available
+            if (scenario.getNovelId() != null) {
+                novel = novelService.getNovel(scenario.getNovelId());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to fetch scenario/character/novel data: {}", e.getMessage());
+            // Continue with null values - FastAPI will use fallback
+        }
+
         // Call FastAPI to trigger AI generation
-        FastAPIGenerationRequest fastApiRequest = FastAPIGenerationRequest.builder()
+        FastAPIGenerationRequest.FastAPIGenerationRequestBuilder requestBuilder = FastAPIGenerationRequest.builder()
                 .conversationId(conversationId.toString())
+                .scenarioId(scenarioId.toString())
                 .scenarioContext(scenarioContext)
                 .userMessage(request.getContent())
-                .history(history)
-                .build();
+                .history(history);
+        
+        // Add scenario details if available
+        if (scenario != null) {
+            requestBuilder
+                    .whatIfQuestion(scenario.getWhatIfQuestion())
+                    .characterChanges(scenario.getCharacterChanges())
+                    .eventAlterations(scenario.getEventAlterations())
+                    .settingModifications(scenario.getSettingModifications());
+        }
+        
+        // Add character details if available
+        if (character != null) {
+            requestBuilder
+                    .characterName(character.getCommonName())
+                    .characterPersona(character.getPersona())
+                    .characterSpeakingStyle(character.getSpeakingStyle());
+        }
+        
+        // Add book details if available
+        if (novel != null) {
+            requestBuilder
+                    .bookTitle(novel.getTitle())
+                    .bookAuthor(novel.getAuthor());
+        }
+        
+        FastAPIGenerationRequest fastApiRequest = requestBuilder.build();
+
+        log.info("Triggering AI generation: conversationId={}, scenarioId={}", conversationId, scenarioId);
 
         try {
             webClientBuilder.build()
@@ -94,8 +155,8 @@ public class MessageService {
                     .retrieve()
                     .toBodilessEntity()
                     .block();
-
-            log.info("AI generation triggered: conversationId={}", conversationId);
+            
+            log.info("AI generation triggered successfully: conversationId={}", conversationId);
 
         } catch (Exception e) {
             log.error("Failed to trigger AI generation: conversationId={}", conversationId, e);

@@ -12,57 +12,21 @@
 
 -- Base Scenario: Pride and Prejudice (Elizabeth)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'pride_and_prejudice_liz', 'Elizabeth Bennet Character Study', 'Focus on Elizabeth Bennet', ARRAY['uuid1'], ARRAY['char_liz']
+SELECT id, 'pride_and_prejudice_liz', 'Elizabeth Bennet Character Study', 'Focus on Elizabeth Bennet', ARRAY['uuid1'], ARRAY['elizabeth_bennet_1342']
 FROM novels WHERE title = 'Pride and Prejudice'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Elizabeth Bennet Character Study');
 
 -- Base Scenario: The Great Gatsby (Gatsby)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'gatsby_main', 'Jay Gatsby Character Study', 'Focus on Jay Gatsby', ARRAY['uuid2'], ARRAY['char_gatsby']
+SELECT id, 'gatsby_main', 'Jay Gatsby Character Study', 'Focus on Jay Gatsby', ARRAY['uuid2'], ARRAY['gatsby_64317']
 FROM novels WHERE title = 'The Great Gatsby'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Jay Gatsby Character Study');
 
--- Base Scenario: Moby Dick (Ahab)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'moby_dick_ahab', 'Captain Ahab Character Study', 'Focus on Captain Ahab', ARRAY['uuid3'], ARRAY['char_ahab']
-FROM novels WHERE title = 'Moby-Dick'
-AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Captain Ahab Character Study');
-
--- Base Scenario: Wuthering Heights (Heathcliff)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'wuthering_heathcliff', 'Heathcliff Character Study', 'Focus on Heathcliff', ARRAY['uuid4'], ARRAY['char_heathcliff']
-FROM novels WHERE title = 'Wuthering Heights'
-AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Heathcliff Character Study');
-
--- Base Scenario: 1984 (Winston)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, '1984_winston', 'Winston Smith Character Study', 'Focus on Winston Smith', ARRAY['uuid5'], ARRAY['char_winston']
-FROM novels WHERE title = '1984'
-AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Winston Smith Character Study');
-
--- Base Scenario: Jane Eyre (Jane)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'jane_eyre_main', 'Jane Eyre Character Study', 'Focus on Jane Eyre', ARRAY['uuid6'], ARRAY['char_jane']
-FROM novels WHERE title = 'Jane Eyre'
-AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Jane Eyre Character Study');
-
 -- Base Scenario: Pride and Prejudice (Darcy)
 INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'pride_and_prejudice_darcy', 'Mr. Darcy Character Study', 'Focus on Mr. Darcy', ARRAY['uuid7'], ARRAY['char_darcy']
+SELECT id, 'pride_and_prejudice_darcy', 'Mr. Darcy Character Study', 'Focus on Mr. Darcy', ARRAY['uuid3'], ARRAY['darcy_1342']
 FROM novels WHERE title = 'Pride and Prejudice'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Mr. Darcy Character Study');
-
--- Base Scenario: The Great Gatsby (Nick)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'gatsby_nick', 'Nick Carraway Character Study', 'Focus on Nick Carraway', ARRAY['uuid8'], ARRAY['char_nick']
-FROM novels WHERE title = 'The Great Gatsby'
-AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Nick Carraway Character Study');
-
--- Base Scenario: Wuthering Heights (Catherine)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'wuthering_catherine', 'Catherine Earnshaw Character Study', 'Focus on Catherine Earnshaw', ARRAY['uuid9'], ARRAY['char_catherine']
-FROM novels WHERE title = 'Wuthering Heights'
-AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Catherine Earnshaw Character Study');
 
 
 -- 3. Create Root User Scenarios & Conversations
@@ -84,142 +48,39 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'alice_wonder' LIMIT 
      )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_liz', 'Elizabeth Bennet', 1546, 342, false
+    u.id, s.id, 'root_user', 'elizabeth_bennet_1342', 'Elizabeth Bennet', 1546, 342, false
 FROM target_user u, inserted_scenario s;
 
 -- 3.2 Jay Gatsby
 WITH target_user AS (SELECT id FROM users WHERE username = 'bob_reader' LIMIT 1),
      target_base AS (SELECT id FROM base_scenarios WHERE title = 'Jay Gatsby Character Study' LIMIT 1),
      inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Jay Gatsby', 
-             'A mysterious millionaire with a past and an obsession.',
-             'What if Gatsby moved on?', 'CHARACTER_CHANGE', false, 1734
-         FROM target_user u, target_base b
-         RETURNING id
-     )
+        INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
+        SELECT 
+            u.id, b.id, 'Jay Gatsby', 
+            'A mysterious millionaire with a past and an obsession.',
+            'What if Gatsby moved on?', 'CHARACTER_CHANGE', false, 1734
+        FROM target_user u, target_base b
+        RETURNING id
+    )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_gatsby', 'Jay Gatsby', 1734, 892, false
+    u.id, s.id, 'root_user', 'gatsby_64317', 'Jay Gatsby', 1734, 892, false
 FROM target_user u, inserted_scenario s;
 
--- 3.3 Captain Ahab
-WITH target_user AS (SELECT id FROM users WHERE username = 'charlie_chat' LIMIT 1),
-     target_base AS (SELECT id FROM base_scenarios WHERE title = 'Captain Ahab Character Study' LIMIT 1),
-     inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Captain Ahab', 
-             'The monomaniacal captain of the whaling ship Pequod.',
-             'What if Ahab forgave the whale?', 'CHARACTER_CHANGE', false, 893
-         FROM target_user u, target_base b
-         RETURNING id
-     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
-SELECT 
-    u.id, s.id, 'ROOT', 'char_ahab', 'Captain Ahab', 893, 120, false
-FROM target_user u, inserted_scenario s;
-
--- 3.4 Heathcliff
-WITH target_user AS (SELECT id FROM users WHERE username = 'diana_creator' LIMIT 1),
-     target_base AS (SELECT id FROM base_scenarios WHERE title = 'Heathcliff Character Study' LIMIT 1),
-     inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Heathcliff', 
-             'A dark, intense figure consumed by love and revenge.',
-             'What if Heathcliff stayed?', 'CHARACTER_CHANGE', false, 1287
-         FROM target_user u, target_base b
-         RETURNING id
-     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
-SELECT 
-    u.id, s.id, 'ROOT', 'char_heathcliff', 'Heathcliff', 1287, 543, false
-FROM target_user u, inserted_scenario s;
-
--- 3.5 Winston Smith
-WITH target_user AS (SELECT id FROM users WHERE username = 'eve_explorer' LIMIT 1),
-     target_base AS (SELECT id FROM base_scenarios WHERE title = 'Winston Smith Character Study' LIMIT 1),
-     inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Winston Smith', 
-             'A low-ranking member of the Party who begins to question the system.',
-             'What if Winston escaped?', 'EVENT_ALTERATION', false, 1315
-         FROM target_user u, target_base b
-         RETURNING id
-     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
-SELECT 
-    u.id, s.id, 'ROOT', 'char_winston', 'Winston Smith', 1315, 678, false
-FROM target_user u, inserted_scenario s;
-
--- 3.6 Jane Eyre
-WITH target_user AS (SELECT id FROM users WHERE username = 'frank_social' LIMIT 1),
-     target_base AS (SELECT id FROM base_scenarios WHERE title = 'Jane Eyre Character Study' LIMIT 1),
-     inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Jane Eyre', 
-             'An orphaned governess with strong moral convictions.',
-             'What if Jane never left?', 'EVENT_ALTERATION', false, 1159
-         FROM target_user u, target_base b
-         RETURNING id
-     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
-SELECT 
-    u.id, s.id, 'ROOT', 'char_jane', 'Jane Eyre', 1159, 432, false
-FROM target_user u, inserted_scenario s;
-
--- 3.7 Mr. Fitzwilliam Darcy
+-- 3.3 Mr. Fitzwilliam Darcy
 WITH target_user AS (SELECT id FROM users WHERE username = 'grace_novelist' LIMIT 1),
      target_base AS (SELECT id FROM base_scenarios WHERE title = 'Mr. Darcy Character Study' LIMIT 1),
      inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Mr. Fitzwilliam Darcy', 
-             'A wealthy gentleman with impeccable manners but poor social skills.',
-             'What if Darcy was poor?', 'CHARACTER_CHANGE', false, 1523
-         FROM target_user u, target_base b
-         RETURNING id
-     )
+        INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
+        SELECT 
+            u.id, b.id, 'Mr. Fitzwilliam Darcy', 
+            'A wealthy gentleman with impeccable manners but poor social skills.',
+            'What if Darcy was poor?', 'CHARACTER_CHANGE', false, 1523
+        FROM target_user u, target_base b
+        RETURNING id
+    )
 INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
 SELECT 
-    u.id, s.id, 'ROOT', 'char_darcy', 'Mr. Fitzwilliam Darcy', 1523, 765, false
+    u.id, s.id, 'root_user', 'darcy_1342', 'Mr. Fitzwilliam Darcy', 1523, 765, false
 FROM target_user u, inserted_scenario s;
-
--- 3.8 Nick Carraway
-WITH target_user AS (SELECT id FROM users WHERE username = 'henry_fork' LIMIT 1),
-     target_base AS (SELECT id FROM base_scenarios WHERE title = 'Nick Carraway Character Study' LIMIT 1),
-     inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Nick Carraway', 
-             'The narrator who finds himself drawn into Gatsby''s world.',
-             'What if Nick intervened?', 'EVENT_ALTERATION', false, 763
-         FROM target_user u, target_base b
-         RETURNING id
-     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
-SELECT 
-    u.id, s.id, 'ROOT', 'char_nick', 'Nick Carraway', 763, 234, false
-FROM target_user u, inserted_scenario s;
-
--- 3.9 Catherine Earnshaw
-WITH target_user AS (SELECT id FROM users WHERE username = 'alice_wonder' LIMIT 1),
-     target_base AS (SELECT id FROM base_scenarios WHERE title = 'Catherine Earnshaw Character Study' LIMIT 1),
-     inserted_scenario AS (
-         INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-         SELECT 
-             u.id, b.id, 'Catherine Earnshaw', 
-             'A free-spirited woman torn between passion and social status.',
-             'What if Catherine chose Heathcliff?', 'EVENT_ALTERATION', false, 345
-         FROM target_user u, target_base b
-         RETURNING id
-     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
-SELECT 
-    u.id, s.id, 'ROOT', 'char_catherine', 'Catherine Earnshaw', 345, 112, false
-FROM target_user u, inserted_scenario s;
-

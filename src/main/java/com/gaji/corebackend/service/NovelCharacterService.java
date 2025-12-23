@@ -52,5 +52,16 @@ public class NovelCharacterService {
                 .map(NovelCharacterResponse::from)
                 .orElseThrow(() -> new IllegalArgumentException("Character not found: " + id));
     }
+
+    /**
+     * Get character by vectordb character ID
+     */
+    @Transactional(readOnly = true)
+    public NovelCharacterResponse getCharacterByVectordbId(String vectordbCharacterId) {
+        log.debug("Fetching character by vectordb ID: {}", vectordbCharacterId);
+        return characterMapper.findByVectordbCharacterId(vectordbCharacterId)
+                .map(NovelCharacterResponse::from)
+                .orElse(null); // Return null if not found (for optional data)
+    }
 }
 

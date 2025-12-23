@@ -21,6 +21,7 @@ public class Novel {
     private Integer publicationYear;
     private String genre;
     private String vectordbCollectionId;
+    private Integer gutenbergId;
 
     @Builder.Default
     private String ingestionStatus = "pending";

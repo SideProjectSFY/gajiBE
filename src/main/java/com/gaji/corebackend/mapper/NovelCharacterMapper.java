@@ -10,6 +10,7 @@ import java.util.UUID;
 @Mapper
 public interface NovelCharacterMapper {
     Optional<NovelCharacter> findById(UUID id);
+    Optional<NovelCharacter> findByVectordbCharacterId(String vectordbCharacterId);
     List<NovelCharacter> findByNovelId(UUID novelId);
     List<NovelCharacter> findMainCharactersByNovelId(UUID novelId);
     int insert(NovelCharacter character);
