@@ -17,15 +17,6 @@ INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_
    'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400'),
   
   -- Classic Fantasy
-  ('The Hobbit', 'J.R.R. Tolkien', 1937, 'Fantasy', 'novel_hobbit', 'completed', 445, 38,
-   'Bilbo Baggins embarks on an unexpected journey with thirteen dwarves and the wizard Gandalf to reclaim the Lonely Mountain.',
-   'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400'),
-  ('Harry Potter and the Philosopher''s Stone', 'J.K. Rowling', 1997, 'Fantasy', 'novel_hp1', 'completed', 523, 42,
-   'An orphaned boy discovers he''s a wizard and attends Hogwarts School of Witchcraft and Wizardry.',
-   'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400'),
-  ('The Chronicles of Narnia', 'C.S. Lewis', 1950, 'Fantasy', 'novel_narnia', 'completed', 398, 35,
-   'Four siblings discover a magical land through a wardrobe and help defeat the White Witch.',
-   'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400'),
   ('Alice''s Adventures in Wonderland', 'Lewis Carroll', 1865, 'Fantasy', 'novel_alice', 'completed', 287, 28,
    'Alice tumbles down a rabbit hole into a whimsical world of peculiar creatures and mad tea parties.',
    'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400'),
@@ -80,9 +71,6 @@ INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_
   ('The Great Gatsby', 'F. Scott Fitzgerald', 1925, 'Classic', 'novel_gatsby', 'completed', 450, 20, 
    'A story of the fabulously wealthy Jay Gatsby and his love for the beautiful Daisy Buchanan.',
    'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400'),
-  ('1984', 'George Orwell', 1949, 'Dystopian', 'novel_1984', 'completed', 500, 15, 
-   'A dystopian social science fiction novel and cautionary tale about the dangers of totalitarianism.',
-   'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400'),
   
   -- Shakespeare
   ('Romeo and Juliet', 'William Shakespeare', 1597, 'Tragedy', 'novel_romeo_juliet', 'completed', 350, 20,
