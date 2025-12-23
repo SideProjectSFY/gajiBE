@@ -1,12 +1,10 @@
--- V18: Add more sample books for Book Browse Page testing
--- Adding 20+ books with scenarios and conversations for realistic pagination/filtering testing
+-- V22: Add more sample books for Book Browse Page testing
+-- Adding 17 books with scenarios and conversations for realistic pagination/filtering testing
+-- Only books with origin_txt files in gajiAI/rag-chatbot_test/data/origin_txt
 
 -- Add more sample novels (metadata only)
 INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_id, ingestion_status, total_passages_count, total_characters_count) VALUES
   -- Fantasy books
-  ('The Hobbit', 'J.R.R. Tolkien', 1937, 'Fantasy', 'novel_hobbit_uuid', 'completed', 445, 38),
-  ('Harry Potter and the Philosopher''s Stone', 'J.K. Rowling', 1997, 'Fantasy', 'novel_hp1_uuid', 'completed', 523, 42),
-  ('The Chronicles of Narnia: The Lion, the Witch and the Wardrobe', 'C.S. Lewis', 1950, 'Fantasy', 'novel_narnia_uuid', 'completed', 398, 35),
   ('Alice''s Adventures in Wonderland', 'Lewis Carroll', 1865, 'Fantasy', 'novel_alice_uuid', 'completed', 287, 28),
   
   -- Sci-Fi books
@@ -38,96 +36,7 @@ INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_
   ('A Tale of Two Cities', 'Charles Dickens', 1859, 'Historical', 'novel_two_cities_uuid', 'completed', 598, 45),
   ('The Count of Monte Cristo', 'Alexandre Dumas', 1844, 'Historical', 'novel_monte_cristo_uuid', 'completed', 789, 52);
 
--- Add base scenarios for each book (2-5 scenarios per book)
--- Fantasy scenarios
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'the_hobbit', 'The Journey Begins', 'The start of an epic adventure', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid(), gen_random_uuid()]
-FROM novels WHERE title = 'The Hobbit'
-UNION ALL
-SELECT id, 'the_hobbit', 'Dragon Encounter', 'Meeting Smaug the dragon', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid()]
-FROM novels WHERE title = 'The Hobbit'
-UNION ALL
-SELECT id, 'harry_potter_1', 'The Sorting Hat', 'Harry''s first day at Hogwarts', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid(), gen_random_uuid(), gen_random_uuid()]
-FROM novels WHERE title LIKE 'Harry Potter%'
-UNION ALL
-SELECT id, 'harry_potter_1', 'Quidditch Match', 'First Quidditch game', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid(), gen_random_uuid()]
-FROM novels WHERE title LIKE 'Harry Potter%'
-UNION ALL
-SELECT id, 'narnia', 'Through the Wardrobe', 'Entering Narnia', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid(), gen_random_uuid(), gen_random_uuid(), gen_random_uuid()]
-FROM novels WHERE title LIKE '%Narnia%'
-UNION ALL
-SELECT id, 'alice_wonderland', 'Tea Party', 'The Mad Hatter''s tea party', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid(), gen_random_uuid(), gen_random_uuid()]
-FROM novels WHERE title LIKE 'Alice%';
+-- Base scenarios and conversations are added in V41 and V42 with proper character data
+-- V22 only provides the book metadata
 
--- Mystery scenarios
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
-SELECT id, 'sherlock_holmes', 'A Study in Scarlet', 'Holmes'' first case', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid(), gen_random_uuid()]
-FROM novels WHERE title LIKE '%Sherlock%'
-UNION ALL
-SELECT id, 'sherlock_holmes', 'The Sign of Four', 'Mystery of the treasure', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid(), gen_random_uuid()]
-FROM novels WHERE title LIKE '%Sherlock%'
-UNION ALL
-SELECT id, 'baskerville_hound', 'The Curse Revealed', 'The legend of the Baskerville hound', 
-       ARRAY[gen_random_uuid(), gen_random_uuid()], 
-       ARRAY[gen_random_uuid()]
-FROM novels WHERE title LIKE '%Baskerville%';
-
--- Create root user scenarios from base scenarios (for conversation counts)
--- This will give each book multiple scenarios with varying conversation counts
-INSERT INTO root_user_scenarios (user_id, base_scenario_id, title, description, what_if_question, scenario_type, is_private, fork_count)
-SELECT 
-  u.id,
-  bs.id,
-  'What if ' || bs.title || ' went differently?',
-  'Alternative take on ' || bs.description,
-  'What if the protagonist made a different choice?',
-  'CHARACTER_CHANGE',
-  false,
-  FLOOR(RANDOM() * 10)::INTEGER
-FROM users u
-CROSS JOIN base_scenarios bs
-WHERE u.username IN ('alice_wonder', 'diana_creator', 'grace_novelist')
-AND bs.id IN (SELECT id FROM base_scenarios ORDER BY created_at DESC LIMIT 30);
-
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title)
-SELECT 
-  u.id,
-  rus.id,
-  'root_user',
-  gen_random_uuid(),
-       'Discussion about ' || rus.title
-FROM users u
-CROSS JOIN root_user_scenarios rus
-WHERE u.username IN ('bob_reader', 'charlie_chat', 'eve_explorer', 'frank_social', 'henry_fork')
-AND rus.id IN (SELECT id FROM root_user_scenarios ORDER BY created_at DESC LIMIT 40);
-
--- Add more conversations to increase variety
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title)
-SELECT 
-  u.id,
-  rus.id,
-  'root_user',
-  gen_random_uuid(),
-       'Another take on ' || rus.title
-FROM users u
-CROSS JOIN root_user_scenarios rus
-WHERE u.username IN ('alice_wonder', 'diana_creator')
-AND rus.id IN (SELECT id FROM root_user_scenarios ORDER BY RANDOM() LIMIT 30);
-
-COMMENT ON TABLE novels IS 'V18: Added 20+ books across multiple genres for Book Browse testing';
+COMMENT ON TABLE novels IS 'V22: Added 17 books across multiple genres for Book Browse testing (only books with origin_txt files)';

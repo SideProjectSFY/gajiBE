@@ -1,4 +1,4 @@
--- V46: Add gutenberg_id column and populate mock data
+-- V45: Add gutenberg_id column and populate mock data
 -- Project Gutenberg ID를 추가하여 로컬 origin_txt 파일과 연결
 
 -- 1. 컬럼 추가
@@ -51,6 +51,6 @@ WHERE a.id NOT IN (
 -- 5. 코멘트
 COMMENT ON COLUMN novels.gutenberg_id IS 'Project Gutenberg book ID for tracking source';
 
--- 참고: gutenberg_id가 NULL인 책들도 유지 (프론트엔드 사용 가능)
--- - 1984, The Hobbit, Harry Potter, The Chronicles of Narnia
--- 최종 결과: 29개 책 (24개 gutenberg_id 보유, 5개 NULL)
+-- 참고: gutenberg_id가 있는 책들만 유지 (origin_txt 폴더에 있는 책들)
+-- The Return of Sherlock Holmes는 The Adventures of Sherlock Holmes와 겹쳐서 제외
+-- 최종 결과: 25개 책 (모두 gutenberg_id 보유)

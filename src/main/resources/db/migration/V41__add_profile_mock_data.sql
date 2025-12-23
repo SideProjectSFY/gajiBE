@@ -50,31 +50,6 @@ SELECT
     NOW() - INTERVAL '3 days'
 FROM novels WHERE title = 'The Adventures of Sherlock Holmes' LIMIT 1;
 
--- Fantasy Lover (User 3) creates a scenario for The Hobbit
-INSERT INTO root_user_scenarios (
-    id, user_id, novel_id, title, description, 
-    what_if_question, scenario_type, is_private, fork_count,
-    character_changes, event_alterations, setting_modifications,
-    created_at, updated_at
-)
-SELECT 
-    '660e8400-e29b-41d4-a716-446655440003', -- Specific ID
-    '550e8400-e29b-41d4-a716-446655440003', -- Fantasy Lover
-    id,
-    'Bilbo stays home',
-    'Bilbo refuses the adventure completely and stays in the Shire.',
-    'What if Bilbo never left Bag End?',
-    'CHARACTER_CHANGE',
-    false,
-    0,
-    'Bilbo is more stubborn and less adventurous.',
-    null,
-    null,
-    NOW() - INTERVAL '1 day',
-    NOW() - INTERVAL '1 day'
-FROM novels WHERE title = 'The Hobbit' LIMIT 1;
-
-
 -- 2. Create User Follows
 -- Sherlock follows Jane
 INSERT INTO user_follows (follower_id, followee_id, created_at)
@@ -157,7 +132,7 @@ VALUES (
     '550e8400-e29b-41d4-a716-446655440001', -- Jane
     '660e8400-e29b-41d4-a716-446655440001', -- Jane's Scenario
     'root_user',
-    'elizabeth_bennet_uuid',
+    'elizabeth_bennet_1342',
     'Chatting with Elizabeth',
     true,
     2,
