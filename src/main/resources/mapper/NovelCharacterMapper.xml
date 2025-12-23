@@ -26,6 +26,10 @@
         SELECT * FROM characters WHERE id = #{id}
     </select>
 
+    <select id="findByVectordbCharacterId" resultMap="NovelCharacterResultMap">
+        SELECT * FROM characters WHERE vectordb_character_id = #{vectordbCharacterId}
+    </select>
+
     <select id="findByNovelId" resultMap="NovelCharacterResultMap">
         SELECT * FROM characters WHERE novel_id = #{novelId} ORDER BY is_main_character DESC, common_name ASC
     </select>

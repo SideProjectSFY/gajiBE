@@ -251,8 +251,8 @@ public class ConversationService {
                 .orElseThrow(() -> new ResourceNotFoundException(CONVERSATION_NOT_FOUND + conversationId));
 
         // Validate: User must own the conversation
-        if (!original.getUserId().equals(userId)) {
-            throw new BadRequestException("User does not own this conversation");
+        if (original.getUserId().equals(userId)) {
+            throw new BadRequestException("You cannot fork your own conversation.");
         }
 
         // Validate: Only ROOT conversations can be forked (is_root=TRUE, parent_conversation_id IS NULL)
