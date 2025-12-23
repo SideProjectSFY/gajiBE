@@ -1418,7 +1418,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Queen of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1437,7 +1437,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'White Rabbit'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1456,7 +1456,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Duchess'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1475,7 +1475,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Cheshire Cat'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1494,7 +1494,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Gryphon'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1513,7 +1513,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Mouse'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1532,7 +1532,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Mock Turtle'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1551,7 +1551,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Caterpillar'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1570,7 +1570,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'King of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1589,7 +1589,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Sister'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1608,7 +1608,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'March Hare'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1627,7 +1627,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Hatter'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1646,7 +1646,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Dormouse'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1665,7 +1665,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Dinah'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1684,7 +1684,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Knave of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1703,7 +1703,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Alice'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Bill the Lizard'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1722,7 +1722,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Queen of Hearts'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Duchess'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1741,7 +1741,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Queen of Hearts'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'White Rabbit'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1760,7 +1760,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Queen of Hearts'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'King of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1779,7 +1779,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Queen of Hearts'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Knave of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1798,7 +1798,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Queen of Hearts'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Hatter'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1817,7 +1817,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Queen of Hearts'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Gryphon'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1836,7 +1836,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'White Rabbit'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Bill the Lizard'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1855,7 +1855,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Duchess'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Cheshire Cat'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1874,7 +1874,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Duchess'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Dinah'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1893,7 +1893,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Cheshire Cat'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'King of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1912,7 +1912,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Gryphon'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Mock Turtle'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1931,7 +1931,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Mouse'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Dinah'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1950,7 +1950,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'March Hare'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Hatter'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1969,7 +1969,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'March Hare'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Dormouse'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -1988,7 +1988,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Hatter'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Dormouse'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -2007,7 +2007,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'March Hare'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Knave of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -2026,7 +2026,7 @@ SELECT
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Hatter'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Knave of Hearts'
-WHERE n.title = 'Alice's Adventures in Wonderland'
+WHERE n.title = 'Alice''s Adventures in Wonderland'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
     description = EXCLUDED.description,
@@ -2625,7 +2625,7 @@ SELECT
     10.0,
     $desc$friends, comrades, mentor$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Athos'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2644,7 +2644,7 @@ SELECT
     8.5,
     $desc$friends, comrades$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Porthos'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2663,7 +2663,7 @@ SELECT
     8.0,
     $desc$friends, comrades$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Aramis'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2682,7 +2682,7 @@ SELECT
     6.0,
     $desc$patron, compatriots$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'M. de Tréville'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2701,7 +2701,7 @@ SELECT
     9.5,
     $desc$lovers, romantic relationship$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Mme. Bonacieux'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2720,7 +2720,7 @@ SELECT
     9.0,
     $desc$antagonists, enemies, rivals$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Milady de Winter'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2739,7 +2739,7 @@ SELECT
     5.5,
     $desc$allies, duel opponents$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Lord de Winter'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2758,7 +2758,7 @@ SELECT
     4.5,
     $desc$subordinate, adversary, patron$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Cardinal Richelieu'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2777,7 +2777,7 @@ SELECT
     4.0,
     $desc$antagonists, rivals$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Comte de Rochefort'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2796,7 +2796,7 @@ SELECT
     3.5,
     $desc$master, servant$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'King Louis XIII'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2815,7 +2815,7 @@ SELECT
     3.0,
     $desc$lovers, informant$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Kitty'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2834,7 +2834,7 @@ SELECT
     7.0,
     $desc$master, lackey, confidant$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Planchet'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2853,7 +2853,7 @@ SELECT
     3.0,
     $desc$comrades, allies$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Grimaud'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2872,7 +2872,7 @@ SELECT
     3.0,
     $desc$comrades, allies$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Mousqueton'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2891,7 +2891,7 @@ SELECT
     3.0,
     $desc$comrades, allies$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Bazin'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2910,7 +2910,7 @@ SELECT
     3.0,
     $desc$indirect involvement, plot connection$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Duke of Buckingham'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2929,7 +2929,7 @@ SELECT
     3.0,
     $desc$allies, judges$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Executioner of Lille'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2948,7 +2948,7 @@ SELECT
     3.5,
     $desc$rivals, duel opponents$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Comte de Wardes'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -2967,7 +2967,7 @@ SELECT
     3.0,
     $desc$duel opponents, antagonists$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D'Artagnan'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'D''Artagnan'
 JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Jussac'
 WHERE n.title = 'The Three Musketeers'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
@@ -15440,7 +15440,7 @@ SELECT
     $desc$Spouse, Deep Affection$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'The Narrator'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator's Wife'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator''s Wife'
 WHERE n.title = 'The War of the Worlds'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -15497,7 +15497,7 @@ SELECT
     $desc$Family, Brother$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'The Narrator'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator's Brother'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator''s Brother'
 WHERE n.title = 'The War of the Worlds'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -15535,7 +15535,7 @@ SELECT
     $desc$Family, Trusted Guardian$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'The Narrator'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator's Cousin'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator''s Cousin'
 WHERE n.title = 'The War of the Worlds'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -15553,8 +15553,8 @@ SELECT
     3.0,
     $desc$Family, Host/Guest, Survival Companion$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'The Narrator's Wife'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator's Cousin'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'The Narrator''s Wife'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'The Narrator''s Cousin'
 WHERE n.title = 'The War of the Worlds'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -16003,7 +16003,7 @@ SELECT
     $desc$Son/Father, Conflict, Guilt$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Robinson Crusoe'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'RC's Father'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'RC''s Father'
 WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -16022,7 +16022,7 @@ SELECT
     $desc$Ally, Rescuer/Rescued, Friend$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Robinson Crusoe'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Friday's Father'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Friday''s Father'
 WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -16060,7 +16060,7 @@ SELECT
     $desc$Son/Mother, Conflict$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Robinson Crusoe'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'RC's Mother'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'RC''s Mother'
 WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -16231,7 +16231,7 @@ SELECT
     $desc$Son/Father, Rescued/Rescuer$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Friday'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Friday's Father'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Friday''s Father'
 WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -16326,7 +16326,7 @@ SELECT
     $desc$Allies, Co-workers, Mission Partners$desc$
 FROM novels n
 JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'Spaniard'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Friday's Father'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'Friday''s Father'
 WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
@@ -16458,8 +16458,8 @@ SELECT
     5.0,
     $desc$Spouses, Parents$desc$
 FROM novels n
-JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'RC's Father'
-JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'RC's Mother'
+JOIN characters c1 ON c1.novel_id = n.id AND c1.common_name = 'RC''s Father'
+JOIN characters c2 ON c2.novel_id = n.id AND c2.common_name = 'RC''s Mother'
 WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
 ON CONFLICT (source_character_id, target_character_id) DO UPDATE SET
     weight = EXCLUDED.weight,
