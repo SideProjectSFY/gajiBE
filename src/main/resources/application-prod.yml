@@ -1,18 +1,19 @@
 # Production Environment Configuration
 spring:
-  # Database Configuration
+  # Database Configuration (CPU 2 / RAM 4GB 최적화)
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 20
-      minimum-idle: 10
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-      leak-detection-threshold: 60000
+      maximum-pool-size: 10 # 리소스 제한 환경에서 축소
+      minimum-idle: 5 # 최소 유휴 연결 축소
+      connection-timeout: 20000 # 20초
+      idle-timeout: 300000 # 5분
+      max-lifetime: 900000 # 15분
+      leak-detection-threshold: 60000 # 1분
+      connection-test-query: SELECT 1 # 연결 유효성 검사
 
   # Flyway Configuration
   flyway:
@@ -57,7 +58,7 @@ fastapi:
 
 # CORS Configuration
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://gaji.me}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://gaji.me,https://gaji.app,http://localhost:5173,http://localhost:3000}
 
 # Logging Configuration
 logging:
