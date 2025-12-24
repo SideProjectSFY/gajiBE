@@ -351,6 +351,6 @@ public class ScenarioController {
 
     private String buildScenarioUrl(UUID scenarioId) {
         // In production, this should come from app.base-url config
-        return "https://gaji.app/scenarios/" + scenarioId.toString();
+        return "https://gaji.me/scenarios/" + scenarioId.toString();
     }
 }

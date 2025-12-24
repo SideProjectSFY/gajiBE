@@ -20,7 +20,7 @@ import java.util.List;
  * 
  * Allowed Origins:
  * - Dev: http://localhost:3000, http://localhost:5173 (Vite)
- * - Prod: https://gaji.app
+ * - Prod: https://gaji.me
  */
 @Configuration
 public class CorsConfig {
