@@ -43,13 +43,13 @@ public class OpenApiConfig {
                         .version("1.0.0")
                         .contact(new Contact()
                                 .name("Gaji Team")
-                                .email("support@gaji.app")))
+                                .email("support@gaji.me")))
                 .servers(List.of(
                         new Server()
                                 .url("http://localhost:8080")
                                 .description("Development Server"),
                         new Server()
-                                .url("https://api.gaji.app")
+                                .url("https://api.gaji.me")
                                 .description("Production Server")))
                 .addSecurityItem(new SecurityRequirement()
                         .addList(securitySchemeName))

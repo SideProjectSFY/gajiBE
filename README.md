@@ -206,4 +206,4 @@ Database configuration will be implemented in Story 0.3. For now, the health che
 
 ## Support
 
-For issues or questions, contact the Gaji team at support@gaji.app
+For issues or questions, contact the Gaji team at support@gaji.me

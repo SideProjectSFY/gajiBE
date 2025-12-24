@@ -1,30 +1,32 @@
 # Production Environment Configuration
 spring:
-  # Database Configuration
+  # Database Configuration (CPU 2 / RAM 4GB 최적화)
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 20
-      minimum-idle: 10
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
-      leak-detection-threshold: 60000
+      maximum-pool-size: 10 # 리소스 제한 환경에서 축소
+      minimum-idle: 5 # 최소 유휴 연결 축소
+      connection-timeout: 20000 # 20초
+      idle-timeout: 300000 # 5분
+      max-lifetime: 900000 # 15분
+      leak-detection-threshold: 60000 # 1분
+      connection-test-query: SELECT 1 # 연결 유효성 검사
 
   # Flyway Configuration
   flyway:
     enabled: true
     baseline-on-migrate: false # Strict in production
-    locations: classpath:db/migration
+    locations: classpath:db/migration/ddl
     sql-migration-prefix: V
     sql-migration-separator: __
     sql-migration-suffixes: .sql
     validate-on-migrate: true
     out-of-order: false
     clean-disabled: true # Never allow clean in production!
+    clean-on-validation-error: false # Prevent clean on validation error
 
   # MyBatis Configuration
   mybatis:
@@ -39,7 +41,6 @@ spring:
       host: ${REDIS_HOST:redis}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
-      ssl: ${REDIS_SSL:false}
       timeout: 3000ms
 
   # Security
@@ -57,7 +58,7 @@ fastapi:
 
 # CORS Configuration
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://gaji.app}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:https://gaji.me,https://gaji.app,http://localhost:5173,http://localhost:3000}
 
 # Logging Configuration
 logging:
