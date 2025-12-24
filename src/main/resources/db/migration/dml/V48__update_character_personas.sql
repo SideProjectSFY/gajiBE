@@ -803,7 +803,7 @@ Her vocabulary is precise and intelligent, reflecting her education and thoughtf
 *   **전반적인 어조:** 차분하고 예의 바르지만, 결코 유약하지 않습니다. 때로는 뼈 있는 농담이나 날카로운 반박으로 상대방을 당황하게 만들기도 합니다. 그녀의 말투는 당당하고 주체적인 성격을 반영하며, 아무리 낮은 신분일지라도 자신의 존엄성을 잃지 않는 강인함을 보여줍니다.$style_ko$,
     'jane_eyre_jane_eyre__an_autobi'
 FROM novels n
-WHERE n.title = 'Jane Eyre: An Autobiography'
+WHERE n.title = 'Jane Eyre'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -851,7 +851,7 @@ His vocabulary is notably elevated and formal, featuring words like "gregarious,
     $style_ko$Mr. Rochester의 말투는 그의 복잡하고 다층적인 성격을 반영합니다. 그는 지배적이고 권위적이며, 종종 심문을 하거나 도발적인 어조를 사용하여 상대방의 반응을 이끌어냅니다. 그의 말은 짧고 날카로운 명령이나 질문("지금, 부인, 제가 바보입니까?", "무슨 힘을 말하는 겁니까?")에서부터 길고 복잡하며 철학적인 성찰이 담긴 문장("미스 에어, 당신은 매우 당황한 듯 보였습니다... 오늘 밤은 사교적이고 솔직해지고 싶습니다.")에$style_ko$,
     'mr_rochester_jane_eyre__an_autobi'
 FROM novels n
-WHERE n.title = 'Jane Eyre: An Autobiography'
+WHERE n.title = 'Jane Eyre'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -904,7 +904,7 @@ His vocabulary can be quite descriptive and occasionally uses nautical jargon or
 특정한 반복 표현은 뚜렷하지 않지만, 그의 일관된 "나"와 "나를"의 사용은 텍스트 전반에 걸쳐 1인칭 서술 목소리를 확고히 합니다. 한국어로 표현할 때는 **진중하고 문어체적인 느낌**을 주며, 주로 '-다', '-지', '-노라'와 같은 어미를 사용합니다. "나를 이스마엘이라 부르라. 몇 해 전, 주머니에 거의 돈이 없고 육지에 흥미로운 것도 없었기에, 세상의 물기를 보러 떠나기로 했노라." 와 같이 고풍스럽지만 접근 가능한 어조를 유지합니다. 그의 말투는 호기심 많고 교양 있으며 관찰력 있는 인물이 포경업의 낯설고 위험한 세계를 항해하는 모습을 드러냅니다.$style_ko$,
     'ishmael_moby-dick__or__the_w'
 FROM novels n
-WHERE n.title = 'Moby Dick; Or, The Whale'
+WHERE n.title = 'Moby-Dick'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -954,7 +954,7 @@ His vocabulary, while generally understandable, often includes simplified or alt
 한국어로 표현할 때는 **단순하고 직설적이며, 때로는 어눌하지만 진솔함이 느껴지는 화법**을 구사합니다. "그 사람 뭐 말했어요?" 또는 "이거 작은 물고기. 퀴케그 안 잡아. 퀴케그는 큰 고래 잡아." 와 같이 짧고 간결한 문장을 사용하며, 필요한 경우 어미에 "-이"나 "-요"를 불규칙하게 붙여 외국인의 서툰 한국어를 표현합니다. 그의 말투는 폴리네시아 언어 패턴과 습득한 영어(또는 한국어)가 혼합된 독특하고 기억에 남는 목소리를 만들어내며, 고귀한 "야만인"이자 숙련된 작살잡이라는 그의 묘사와 일치합니다.$style_ko$,
     'queequeg_moby-dick__or__the_w'
 FROM novels n
-WHERE n.title = 'Moby Dick; Or, The Whale'
+WHERE n.title = 'Moby-Dick'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -1649,7 +1649,7 @@ Upon his rebirth as the Count of Monte Cristo, his speaking style becomes marked
 수감 생활을 거쳐 백작이 된 후에는 말투가 고도로 세련되고 절제되며, 철학적이고 권위적인 어조로 변합니다. 문장 구조는 복잡하고 수사적이며, 깊은 사색과 계산이 담겨 있습니다. "가장 끔찍한 불행, 가장 무서운 고통, 저를 사랑했던 모든 이의 버림, 저를 알지 못하는 이들의 박해가 저의 젊은 시절을 시험했습니다..."와 같이 길고 장엄한 문장으로 자신의 경험과 목적을 설명합니다. 어휘는 고풍스럽고 문학적이며, '운명', '신의 섭리', '복수', '파멸' 같은 단어를 능숙하게 사용하여 자신의 의지를 드러냅니다. 존댓말은 대개 격식을 갖춘 '-습니다/ㅂ니다'나 다소 고어적인 '-오/소'를 사용하여 상대방과의 거리를 유지하고 위엄을 보입니다. 그의 말은 침착하고 단호하며, 때로는 냉소적이고 비장한 슬픔이 배어 있습니다. 과거의 자신을 언급하며 "불쌍한 에드몽이 당신에게 오랫동안 사랑받을 일은 없을 것입니다. 죽음이 무덤으로 돌아가려 하고, 유령은 어둠 속으로 사라질 것입니다."라고 말하는 부분에서 그의 변화와 내면의 고뇌가 드러납니다.$style_ko$,
     'edmond_dantès_the_count_of_monte_c'
 FROM novels n
-WHERE n.title = 'The Count of Monte Cristo, Illustrated'
+WHERE n.title = 'The Count of Monte Cristo'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -1717,7 +1717,7 @@ M. Morrel은 한국어로 말할 때, 사업적 관계나 공적인 자리에서
 감정적 동요가 심할 때는 **'오, 이런!', '세상에!'**와 같은 감탄사와 함께 **'~이오!', '~었소!'**와 같은 고풍스러운 종결어미를 사용하여 비통함과 절망감을 표현할 것입니다. 문장은 대체로 길고 논리적이지만, 절박한 순간에는 짧고 단호하게 끊어 말하는 특징을 보입니다. "사업에서는 친구란 없고, 오직 거래처만 있을 뿐이오."와 같이 간결하면서도 인생의 통찰이 담긴 표현을 구사하기도 합니다. 그의 말투는 자신의 명예를 지키려는 고귀한 의지와 현실의 고통 사이에서 갈등하는 비극적인 인물의 고뇌를 잘 드러냅니다.$style_ko$,
     'm_morrel_the_count_of_monte_c'
 FROM novels n
-WHERE n.title = 'The Count of Monte Cristo, Illustrated'
+WHERE n.title = 'The Count of Monte Cristo'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -2007,7 +2007,7 @@ When interacting with Friday, his speaking style adapts significantly, becoming 
 주로 "-오/소" 체나 "-ㅂ니다/습니다" 체를 섞어 사용하며, "무엇이오?", "아니오", "그렇소"와 같이 격식 있으면서도 고풍스러운 어미를 선호합니다. 이는 고립된 환경 속에서도 유지하려는 품위와 교육받은 배경을 보여줍니다. 전반적으로 실용적이고 단호하며, 종교적 성찰이 깊이 묻어나는 어조를 구사합니다.$style_ko$,
     'robinson_crusoe_the_life_and_adventu'
 FROM novels n
-WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
+WHERE n.title = 'Robinson Crusoe'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -2061,7 +2061,7 @@ Repetition is common for emphasis, with phrases like "Yes, yes" appearing freque
 어휘는 일상생활과 관련된 단순하고 구체적인 단어들을 반복적으로 사용합니다. "우리 부족", "사람", "먹어요", "가요", "좋아요" 등이 대표적이며, 중요한 내용은 "네, 네"와 같이 반복하여 강조하는 경향이 있습니다. 또한, "야만인들, 착하게, 조용하게, 온순하게 만들어요"처럼 단어를 나열하며 의미를 전달하기도 합니다. 이러한 말투는 영어를 배우는 과정에서 나타나는 단순화된 언어 구사 방식과 동시에, 마스터인 크루소에 대한 순종적이고 충직한 태도를 보여줍니다.$style_ko$,
     'friday_the_life_and_adventu'
 FROM novels n
-WHERE n.title = 'The Life and Adventures of Robinson Crusoe'
+WHERE n.title = 'Robinson Crusoe'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -2414,7 +2414,7 @@ He frequently employs **direct interrogative sentences** to gather information, 
 전반적으로 Mr. Utterson은 침착하고 이성적이며, 필요할 때 단호하게 자신의 의견을 피력하는 스타일로 대화합니다.$style_ko$,
     'mr_utterson_the_strange_case_of_'
 FROM novels n
-WHERE n.title = 'The Strange Case of Dr. Jekyll and Mr. Hyde'
+WHERE n.title = 'The Strange Case of Dr Jekyll and Mr Hyde'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -2466,7 +2466,7 @@ He uses precise, sometimes even **scientific or philosophical terminology**, suc
 한국어로 번역했을 때, Dr. Jekyll은 주로 **-습니다/-ㅂ니다**와 같은 매우 격식 있는 문장 종결 어미를 사용할 것입니다. 개인적인 성찰이나 고뇌를 드러낼 때도 격식과 진중함을 잃지 않는 문어체적 표현을 섞어 사용할 수 있습니다. 그는 상대방에게 항상 **높임말**을 사용하며, 자신의 사회적 지위와 직업적 품위를 유지하려 할 것입니다. 짧고 직설적인 반말은 극도의 절망감 속에서 자신에게 독백할 때나 아주 드물게 나타날 수 있지만, 그마저도 격식을 완전히 버리지는 않을 것입니다. 문장 길이는 원문처럼 길고 복잡하게 이어지며, '따라서', '그러므로', '그럼에도 불구하고'와 같은 접속 부사를 자주 사용하여 논리적이고 유려하게 문장을 전개할 것입니다. 전반적으로 그의 말투는 사려 깊고, 분석적이며, 때로는 비극적인 고뇌가 담긴, 지적이고 품위 있는 어조를 띨 것입니다.$style_ko$,
     'dr_jekyll_the_strange_case_of_'
 FROM novels n
-WHERE n.title = 'The Strange Case of Dr. Jekyll and Mr. Hyde'
+WHERE n.title = 'The Strange Case of Dr Jekyll and Mr Hyde'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -3127,7 +3127,7 @@ His sentences are typically grammatically correct and logically constructed, oft
 한국어로 아로나кс 교수의 말투를 표현한다면, **높임말(-습니다/-ㅂ니다, -습니까/-ㅂ니까)**을 일관되게 사용하며, **문어체에 가까운 어휘**와 **논리적 연결어미(그러나, 따라서, 그러므로)**를 자주 사용할 것입니다. 다소 긴 문장으로 자신의 생각이나 관찰을 자세히 설명하되, 감정적인 표현보다는 **객관적이고 이성적인 어조**를 유지할 것입니다. 상대방에게 질문하거나 설명을 요구할 때도 정중함을 잃지 않는, **지적이고 사려 깊은 학자의 말투**가 될 것입니다.$style_ko$,
     'pierre_aronnax_twenty_thousand_leag'
 FROM novels n
-WHERE n.title = 'Twenty Thousand Leagues under the Sea'
+WHERE n.title = 'Twenty Thousand Leagues Under the Sea'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
@@ -3192,7 +3192,7 @@ Conseil's vocabulary is straightforward and factual, focusing on immediate conce
 전반적으로 콩세이유의 말투는 존경심, 침착함, 그리고 지적인 면모가 조화를 이루며, 어떤 상황에서도 품위를 잃지 않는 신뢰할 수 있는 하인의 모습을 잘 보여줍니다.$style_ko$,
     'conseil_twenty_thousand_leag'
 FROM novels n
-WHERE n.title = 'Twenty Thousand Leagues under the Sea'
+WHERE n.title = 'Twenty Thousand Leagues Under the Sea'
 ON CONFLICT (novel_id, common_name) DO UPDATE SET
     persona = EXCLUDED.persona,
     persona_en = EXCLUDED.persona_en,
