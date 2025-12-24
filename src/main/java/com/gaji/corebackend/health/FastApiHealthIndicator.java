@@ -19,7 +19,7 @@ import java.util.Map;
  * This indicator is included in Spring Boot's /actuator/health endpoint
  */
 @Slf4j
-@Component("fastapi")
+// @Component("fastapi") // Disabled: 30초마다 AI 서비스 ping 방지
 @RequiredArgsConstructor
 public class FastApiHealthIndicator implements HealthIndicator {
 
