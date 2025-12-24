@@ -53,11 +53,15 @@ public class SecurityConfig {
             
             // Authorization rules
             .authorizeHttpRequests(auth -> auth
+                // Public GET endpoints (명시적으로 제일 먼저)
+                .requestMatchers(HttpMethod.GET, "/api/v1/books").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/books/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/v1/books/{id}/scenarios").permitAll()
+                
                 // Public endpoints
                 .requestMatchers(
                     "/api/v1/auth/**",       // Authentication endpoints (v1)
                     "/api/v1/system/**",     // System health endpoints
-                    "/api/v1/books/**",      // Books endpoints (list, detail, like)
                     "/api/v1/novels/**",     // Novel endpoints (public browsing)
                     "/api/v1/internal/**",   // Internal API (FastAPI → Spring Boot, no auth required)
                     "/api/v1/ai/**",         // AI Proxy endpoints (FastAPI proxy, public access)
@@ -68,12 +72,12 @@ public class SecurityConfig {
                     "/error"                 // Error handling
                 ).permitAll()
                 
-                // Protected Book endpoints (must come before public book endpoints)
+                // Protected Book endpoints
                 .requestMatchers("/api/v1/books/*/liked").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/v1/books/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/books/**").authenticated()
 
-                // Public GET endpoints
+                // Other Public GET endpoints
                 .requestMatchers(HttpMethod.GET, "/api/v1/books/liked").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/books/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").permitAll()
