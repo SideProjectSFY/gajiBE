@@ -76,6 +76,7 @@
     </select>
 
     <!-- Find Public by User ID -->
+    <!-- Leaf 시나리오 대화 제외: 포크 불가능하므로 공개 목록에서 숨김 -->
     <select id="findPublicByUserId" resultMap="ConversationResultMap">
         SELECT 
             c.*,
@@ -85,7 +86,7 @@
             n.id as book_id,
             rus.description as scenario_description
         FROM conversations c
-        LEFT JOIN root_user_scenarios rus ON c.scenario_id = rus.id
+        INNER JOIN root_user_scenarios rus ON c.scenario_id = rus.id
         LEFT JOIN base_scenarios bs ON rus.base_scenario_id = bs.id
         LEFT JOIN novels n ON bs.novel_id = n.id
         WHERE c.user_id = #{userId} AND c.is_private = false
@@ -116,6 +117,7 @@
     </select>
 
     <!-- Find All Public -->
+    <!-- Leaf 시나리오 대화 제외: 포크 불가능하므로 공개 목록에서 숨김 -->
     <select id="findPublicAll" resultMap="ConversationResultMap">
         SELECT 
             c.*,
@@ -125,7 +127,7 @@
             n.id as book_id,
             rus.description as scenario_description
         FROM conversations c
-        LEFT JOIN root_user_scenarios rus ON c.scenario_id = rus.id
+        INNER JOIN root_user_scenarios rus ON c.scenario_id = rus.id
         LEFT JOIN base_scenarios bs ON rus.base_scenario_id = bs.id
         LEFT JOIN novels n ON bs.novel_id = n.id
         WHERE c.is_private = false
@@ -134,6 +136,7 @@
     </select>
 
     <!-- Find All Public With Filters -->
+    <!-- Leaf 시나리오 대화 제외: 포크 불가능하므로 공개 목록에서 숨김 -->
     <select id="findPublicAllWithFilters" resultMap="ConversationResultMap">
         SELECT 
             c.*,
@@ -143,7 +146,7 @@
             n.id as book_id,
             rus.description as scenario_description
         FROM conversations c
-        LEFT JOIN root_user_scenarios rus ON c.scenario_id = rus.id
+        INNER JOIN root_user_scenarios rus ON c.scenario_id = rus.id
         LEFT JOIN base_scenarios bs ON rus.base_scenario_id = bs.id
         LEFT JOIN novels n ON bs.novel_id = n.id
         WHERE c.is_private = false
@@ -205,7 +208,11 @@
         INSERT INTO messages (
             id, conversation_id, sender_id, role, content, created_at
         ) VALUES (
-            #{id}, #{conversationId}, #{senderId}, #{role}, #{content}, NOW()
+            #{id}, #{conversationId}, #{senderId}, #{role}, #{content}, 
+            <choose>
+                <when test="createdAt != null">#{createdAt}</when>
+                <otherwise>NOW()</otherwise>
+            </choose>
         )
     </insert>
 
@@ -235,6 +242,14 @@
     
     <select id="existsById" resultType="boolean">
         SELECT EXISTS(SELECT 1 FROM conversations WHERE id = #{id})
+    </select>
+    
+    <!-- Find First Conversation by Scenario ID (oldest conversation) -->
+    <select id="findFirstByScenarioId" resultMap="ConversationResultMap">
+        SELECT * FROM conversations 
+        WHERE scenario_id = #{scenarioId}
+        ORDER BY created_at ASC
+        LIMIT 1
     </select>
 
 </mapper>

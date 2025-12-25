@@ -39,6 +39,12 @@ public class ScenarioResponse {
     private String characterChanges;
     private String eventAlterations;
     private String settingModifications;
+    
+    // 시나리오 포크 시 원본 대화의 캐릭터 정보 전달용
+    private String characterVectordbId;
+    
+    // 기준 대화 ID - 시나리오 생성자가 저장한 대화, 포크 시 이 대화의 메시지를 복사
+    private UUID referenceConversationId;
 
     /**
      * Enum to distinguish between root and leaf scenarios
@@ -70,6 +76,7 @@ public class ScenarioResponse {
                 .characterChanges(entity.getCharacterChanges())
                 .eventAlterations(entity.getEventAlterations())
                 .settingModifications(entity.getSettingModifications())
+                .referenceConversationId(entity.getReferenceConversationId())
                 .build();
     }
 

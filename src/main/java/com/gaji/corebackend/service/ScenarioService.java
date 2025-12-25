@@ -12,6 +12,7 @@ import com.gaji.corebackend.enums.ScenarioType;
 import com.gaji.corebackend.exception.ResourceNotFoundException;
 import com.gaji.corebackend.exception.ForbiddenException;
 import com.gaji.corebackend.exception.BadRequestException;
+import com.gaji.corebackend.mapper.ConversationMapper;
 import com.gaji.corebackend.mapper.LeafUserScenarioMapper;
 import com.gaji.corebackend.mapper.RootUserScenarioMapper;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class ScenarioService {
 
     private final RootUserScenarioMapper rootScenarioMapper;
     private final LeafUserScenarioMapper leafScenarioMapper;
+    private final ConversationMapper conversationMapper;
     private final ScenarioValidator scenarioValidator;
     private final ObjectMapper objectMapper;
     
@@ -267,18 +269,61 @@ public class ScenarioService {
 
     /**
      * Get scenario by ID (either root or leaf)
+     * Leaf 시나리오인 경우 부모 시나리오의 시나리오 변경 정보도 포함
      */
     @Transactional(readOnly = true)
     public ScenarioResponse getScenario(UUID id) {
         // Try to find as root scenario first
         return rootScenarioMapper.findById(id)
-                .map(ScenarioResponse::from)
-                .orElseGet(() ->
+                .map(root -> {
+                    ScenarioResponse response = ScenarioResponse.from(root);
+                    // Root 시나리오의 첫 대화에서 캐릭터 정보 가져오기
+                    conversationMapper.findFirstByScenarioId(root.getId())
+                            .ifPresent(conv -> {
+                                response.setCharacterVectordbId(conv.getCharacterVectordbId());
+                            });
+                    return response;
+                })
+                .orElseGet(() -> {
                     // Try as leaf scenario
-                    leafScenarioMapper.findById(id)
-                        .map(ScenarioResponse::from)
-                        .orElseThrow(() -> new ResourceNotFoundException("Scenario not found: " + id))
-                );
+                    LeafUserScenario leafScenario = leafScenarioMapper.findById(id)
+                            .orElseThrow(() -> new ResourceNotFoundException("Scenario not found: " + id));
+                    
+                    ScenarioResponse response = ScenarioResponse.from(leafScenario);
+                    
+                    // Leaf 시나리오인 경우 부모 시나리오의 시나리오 변경 정보 포함
+                    // 포크된 시나리오에서도 원본 시나리오의 컨텍스트를 유지할 수 있도록
+                    rootScenarioMapper.findById(leafScenario.getParentScenarioId())
+                            .ifPresent(parent -> {
+                                response.setCharacterChanges(parent.getCharacterChanges());
+                                response.setEventAlterations(parent.getEventAlterations());
+                                response.setSettingModifications(parent.getSettingModifications());
+                                response.setNovelId(parent.getNovelId()); // 책 ID도 포함
+                                // 부모 시나리오의 기준 대화 ID 포함 (포크 시 메시지 복사용)
+                                response.setReferenceConversationId(parent.getReferenceConversationId());
+                            });
+                    
+                    // 부모 시나리오의 기준 대화 또는 첫 대화에서 캐릭터 정보 가져오기
+                    rootScenarioMapper.findById(leafScenario.getParentScenarioId())
+                            .ifPresent(parent -> {
+                                UUID refConvId = parent.getReferenceConversationId();
+                                if (refConvId != null) {
+                                    // 기준 대화가 있으면 그 대화의 캐릭터 정보 사용
+                                    conversationMapper.findById(refConvId)
+                                            .ifPresent(conv -> {
+                                                response.setCharacterVectordbId(conv.getCharacterVectordbId());
+                                            });
+                                } else {
+                                    // 없으면 첫 대화의 캐릭터 정보 사용
+                                    conversationMapper.findFirstByScenarioId(parent.getId())
+                                            .ifPresent(conv -> {
+                                                response.setCharacterVectordbId(conv.getCharacterVectordbId());
+                                            });
+                                }
+                            });
+                    
+                    return response;
+                });
     }
 
     /**
@@ -578,7 +623,74 @@ public class ScenarioService {
         rootScenarioMapper.update(parentScenario);
 
         log.info("Scenario forked: parentId={}, newId={}", parentId, leafScenario.getId());
-        return ScenarioResponse.from(leafScenario);
+        
+        // 응답 생성
+        ScenarioResponse response = ScenarioResponse.from(leafScenario);
+        
+        // 기준 대화가 설정되어 있으면 해당 대화의 캐릭터 정보 사용
+        // 없으면 원본 시나리오의 첫 번째 대화에서 캐릭터 정보 가져오기
+        UUID referenceConvId = parentScenario.getReferenceConversationId();
+        if (referenceConvId != null) {
+            conversationMapper.findById(referenceConvId)
+                    .ifPresent(refConversation -> {
+                        response.setCharacterVectordbId(refConversation.getCharacterVectordbId());
+                        log.info("Using reference conversation character: {}", refConversation.getCharacterVectordbId());
+                    });
+            response.setReferenceConversationId(referenceConvId);
+        } else {
+            conversationMapper.findFirstByScenarioId(parentId)
+                    .ifPresent(originalConversation -> {
+                        response.setCharacterVectordbId(originalConversation.getCharacterVectordbId());
+                        log.info("Found original conversation character: {}", originalConversation.getCharacterVectordbId());
+                    });
+        }
+        
+        // 부모 시나리오의 시나리오 변경 내용도 포함 (포크 모달에서 표시용)
+        response.setCharacterChanges(parentScenario.getCharacterChanges());
+        response.setEventAlterations(parentScenario.getEventAlterations());
+        response.setSettingModifications(parentScenario.getSettingModifications());
+        
+        return response;
+    }
+    
+    /**
+     * 기준 대화 설정
+     * 시나리오 생성자가 대화를 기준 대화로 저장하면, 다른 사용자가 포크할 때 이 대화의 메시지를 복사
+     */
+    @Transactional
+    public ScenarioResponse setReferenceConversation(UUID scenarioId, UUID userId, UUID conversationId) {
+        log.info("Setting reference conversation: scenarioId={}, conversationId={}, userId={}", 
+                scenarioId, conversationId, userId);
+        
+        // 시나리오 조회
+        RootUserScenario scenario = rootScenarioMapper.findById(scenarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Scenario not found: " + scenarioId));
+        
+        // 소유자 확인
+        if (!scenario.getUserId().equals(userId)) {
+            throw new ForbiddenException("Only the scenario owner can set the reference conversation");
+        }
+        
+        // 대화 조회 및 검증
+        com.gaji.corebackend.entity.Conversation conversation = conversationMapper.findById(conversationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Conversation not found: " + conversationId));
+        
+        // 대화가 이 시나리오에 속하는지 확인
+        if (!conversation.getScenarioId().equals(scenarioId)) {
+            throw new BadRequestException("Conversation does not belong to this scenario");
+        }
+        
+        // 대화 소유자 확인 (시나리오 소유자의 대화만 기준 대화로 설정 가능)
+        if (!conversation.getUserId().equals(userId)) {
+            throw new ForbiddenException("Only conversations owned by the scenario creator can be set as reference");
+        }
+        
+        // 기준 대화 설정
+        rootScenarioMapper.updateReferenceConversation(scenarioId, conversationId);
+        
+        // 업데이트된 시나리오 반환
+        scenario.setReferenceConversationId(conversationId);
+        return ScenarioResponse.from(scenario);
     }
 
     /**

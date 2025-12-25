@@ -24,6 +24,10 @@ public class MessageResponse {
     private String role;
     private String content;
     private LocalDateTime createdAt;
+    
+    // 턴 정보 (AI 응답에서 추출)
+    private Integer turnCount;  // 현재 턴 수
+    private Integer maxTurns;   // 최대 턴 수
 
     /**
      * Create response from message entity

@@ -42,4 +42,10 @@ public interface ConversationMapper {
     // Added methods
     default int deleteById(UUID id) { return delete(id); }
     boolean existsById(UUID id);
+    
+    /**
+     * 시나리오 ID로 첫 번째 대화 조회 (가장 오래된 대화)
+     * 시나리오 포크 시 원본 캐릭터 정보를 가져오기 위해 사용
+     */
+    Optional<Conversation> findFirstByScenarioId(@Param("scenarioId") UUID scenarioId);
 }
