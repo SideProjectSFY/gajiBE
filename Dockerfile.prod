@@ -1,0 +1,75 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Multi-stage build for production (CPU 2 / RAM 4GB 최적화)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Stage 1: Build (빌드 전용 - 빌드 후 삭제됨)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FROM eclipse-temurin:17-jdk AS builder
+
+WORKDIR /build
+
+# Gradle 래퍼 및 설정 파일 복사
+COPY build.gradle settings.gradle gradle.properties gradlew ./
+COPY gradle ./gradle
+
+# gradlew 실행 권한 부여
+RUN chmod +x ./gradlew
+
+# 의존성 다운로드 (캐시 레이어)
+RUN ./gradlew dependencies --no-daemon || true
+
+# 소스 코드 복사
+COPY src ./src
+
+# 프로덕션 빌드 (테스트 스킵, 최적화)
+RUN ./gradlew clean bootJar --no-daemon -x test \
+    --parallel \
+    --build-cache \
+    --info
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Stage 2: Runtime (실행 전용 - 최소화된 이미지)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FROM eclipse-temurin:17-jre
+
+# 비root 사용자 생성 (보안)
+RUN groupadd -r spring && useradd -r -g spring spring
+
+WORKDIR /app
+
+# 빌드 스테이지에서 JAR 파일만 복사
+COPY --from=builder /build/build/libs/*.jar app.jar
+
+# 필요한 디렉토리 생성 및 권한 설정
+RUN mkdir -p /app/public/og-images && \
+    mkdir -p /app/logs && \
+    chown -R spring:spring /app
+
+# 비root 사용자로 전환
+USER spring
+
+# JVM 메모리 설정 (RAM 4GB 환경 최적화)
+# - 총 RAM: 4GB
+# - Backend 할당: 896MB (docker-compose limits)
+# - JVM Heap: 최대 768MB
+ENV JAVA_OPTS="-Xms512m \
+    -Xmx768m \
+    -XX:MetaspaceSize=128m \
+    -XX:MaxMetaspaceSize=256m \
+    -XX:+UseG1GC \
+    -XX:MaxGCPauseMillis=200 \
+    -XX:ParallelGCThreads=2 \
+    -XX:ConcGCThreads=1 \
+    -XX:InitiatingHeapOccupancyPercent=70 \
+    -XX:+UseStringDeduplication \
+    -XX:+DisableExplicitGC \
+    -Djava.security.egd=file:/dev/./urandom \
+    -Dspring.backgroundpreinitializer.ignore=true \
+    -Dfile.encoding=UTF-8"
+
+# 포트 노출
+EXPOSE 8080
+
+# 애플리케이션 실행
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
