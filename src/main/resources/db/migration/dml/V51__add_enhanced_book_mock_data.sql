@@ -96,3 +96,78 @@ INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_
    'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400');
 
 COMMENT ON TABLE novels IS 'V39: Added 25 books from origin_txt with descriptions and cover images';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/11_Alice_s_Adventures_in_Wonderland_graph.png'
+WHERE title = 'Alice''s Adventures in Wonderland';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/15_Moby-Dick_or_The_Whale_graph.png'
+WHERE title = 'Moby-Dick';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/35_The_Time_Machine_graph.png'
+WHERE title = 'The Time Machine';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/36_The_War_of_the_Worlds_graph.png'
+WHERE title = 'The War of the Worlds';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/42_The_Strange_Case_of_Dr__Jekyll_and_Mr__Hyde_graph.png'
+WHERE title = 'The Strange Case of Dr Jekyll and Mr Hyde';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/74_The_Adventures_of_Tom_Sawyer_Complete_graph.png'
+WHERE title = 'The Adventures of Tom Sawyer';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/84_Frankenstein_Or_The_Modern_Prometheus_graph.png'
+WHERE title = 'Frankenstein';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/98_A_Tale_of_Two_Cities_graph.png'
+WHERE title = 'A Tale of Two Cities';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/120_Treasure_Island_graph.png'
+WHERE title = 'Treasure Island';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/155_The_Moonstone_graph.png'
+WHERE title = 'The Moonstone';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/158_Emma_graph.png'
+WHERE title = 'Emma';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/161_Sense_and_Sensibility_graph.png'
+WHERE title = 'Sense and Sensibility';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/164_Twenty_Thousand_Leagues_under_the_Sea_graph.png'
+WHERE title = 'Twenty Thousand Leagues Under the Sea';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/345_Dracula_graph.png'
+WHERE title = 'Dracula';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/521_The_Life_and_Adventures_of_Robinson_Crusoe_graph.png'
+WHERE title = 'Robinson Crusoe';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/768_Wuthering_Heights_graph.png'
+WHERE title = 'Wuthering Heights';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/1184_The_Count_of_Monte_Cristo__Illustrated_graph.png'
+WHERE title = 'The Count of Monte Cristo';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/1257_The_Three_Musketeers_graph.png'
+WHERE title = 'The Three Musketeers';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/1260_Jane_Eyre_An_Autobiography_graph.png'
+WHERE title = 'Jane Eyre';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/1342_Pride_and_Prejudice_graph.png'
+WHERE title = 'Pride and Prejudice';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/1400_Great_Expectations_graph.png'
+WHERE title = 'Great Expectations';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/1513_Romeo_and_Juliet_graph.png'
+WHERE title = 'Romeo and Juliet';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/1661_The_Adventures_of_Sherlock_Holmes_graph.png'
+WHERE title = 'The Adventures of Sherlock Holmes';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/2852_The_Hound_of_the_Baskervilles_graph.png'
+WHERE title = 'The Hound of the Baskervilles';
+
+UPDATE novels SET character_graph_url = 'https://gaji-bucket-namut.s3.ap-northeast-2.amazonaws.com/character_graphs/64317_The_Great_Gatsby_graph.png'
+WHERE title = 'The Great Gatsby';

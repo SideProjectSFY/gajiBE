@@ -1,4 +1,4 @@
--- V46: Add reference_conversation_id to root_user_scenarios
+-- V53: Add reference_conversation_id to root_user_scenarios
 -- 시나리오 생성자가 저장한 "기준 대화" ID
 -- 다른 사용자가 포크할 때 이 대화의 메시지를 복사하여 컨텍스트 유지
 
