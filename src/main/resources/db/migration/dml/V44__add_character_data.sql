@@ -222,4 +222,3 @@ DO $$
 BEGIN
     RAISE NOTICE 'Character data migration completed. Total characters: %', (SELECT COUNT(*) FROM characters);
 END $$;
-
