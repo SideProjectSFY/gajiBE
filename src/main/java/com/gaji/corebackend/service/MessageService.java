@@ -180,8 +180,16 @@ public class MessageService {
         String statusKey = TASK_PREFIX + conversationId + ":status";
         String contentKey = TASK_PREFIX + conversationId + ":content";
         String errorKey = TASK_PREFIX + conversationId + ":error";
+        String turnCountKey = TASK_PREFIX + conversationId + ":turn_count";
+        String maxTurnsKey = TASK_PREFIX + conversationId + ":max_turns";
 
         String status = redisTemplate.opsForValue().get(statusKey);
+        
+        // 턴 정보 가져오기
+        String turnCountStr = redisTemplate.opsForValue().get(turnCountKey);
+        String maxTurnsStr = redisTemplate.opsForValue().get(maxTurnsKey);
+        Integer turnCount = turnCountStr != null ? Integer.parseInt(turnCountStr) : null;
+        Integer maxTurns = maxTurnsStr != null ? Integer.parseInt(maxTurnsStr) : 5;
 
         if (status == null) {
             // No Redis key - check if AI message already in DB
@@ -213,16 +221,21 @@ public class MessageService {
                     // Save AI message to DB
                     UUID messageId = saveAIMessage(conversationId, content);
 
-                    // Clear Redis keys
+                    // Clear Redis keys (턴 정보 포함)
                     redisTemplate.delete(statusKey);
                     redisTemplate.delete(contentKey);
+                    redisTemplate.delete(turnCountKey);
+                    redisTemplate.delete(maxTurnsKey);
 
-                    log.info("AI message saved and Redis cleared: conversationId={}, messageId={}", conversationId, messageId);
+                    log.info("AI message saved and Redis cleared: conversationId={}, messageId={}, turnCount={}/{}", 
+                            conversationId, messageId, turnCount, maxTurns);
 
                     return PollResponse.builder()
                             .status(STATUS_COMPLETED)
                             .content(content)
                             .messageId(messageId)
+                            .turnCount(turnCount)
+                            .maxTurns(maxTurns)
                             .build();
                 }
                 break;
@@ -232,20 +245,26 @@ public class MessageService {
                 return PollResponse.builder()
                         .status(STATUS_FAILED)
                         .error(error != null ? error : "Unknown error")
+                        .turnCount(turnCount)
+                        .maxTurns(maxTurns)
                         .build();
 
             case STATUS_PROCESSING:
                 // Long polling: hold for up to 2s if still processing
-                return longPollForCompletion(conversationId, statusKey, contentKey);
+                return longPollForCompletionWithTurns(conversationId, statusKey, contentKey, turnCount, maxTurns);
 
             case STATUS_QUEUED:
                 return PollResponse.builder()
                         .status(STATUS_QUEUED)
+                        .turnCount(turnCount)
+                        .maxTurns(maxTurns)
                         .build();
                         
             default:
                 return PollResponse.builder()
                         .status(status)
+                        .turnCount(turnCount)
+                        .maxTurns(maxTurns)
                         .build();
         }
 
@@ -300,6 +319,67 @@ public class MessageService {
         // Timeout - still processing
         return PollResponse.builder()
                 .status(STATUS_PROCESSING)
+                .build();
+    }
+
+    /**
+     * Long polling with turn info: wait for completion or timeout
+     */
+    private PollResponse longPollForCompletionWithTurns(UUID conversationId, String statusKey, String contentKey, 
+                                                         Integer turnCount, Integer maxTurns) {
+        long startTime = System.currentTimeMillis();
+        long timeout = startTime + LONG_POLL_TIMEOUT_MS;
+        
+        String errorKey = TASK_PREFIX + conversationId + ":error";
+        String turnCountKey = TASK_PREFIX + conversationId + ":turn_count";
+        String maxTurnsKey = TASK_PREFIX + conversationId + ":max_turns";
+
+        while (System.currentTimeMillis() < timeout) {
+            String currentStatus = redisTemplate.opsForValue().get(statusKey);
+
+            if (STATUS_COMPLETED.equals(currentStatus)) {
+                String content = redisTemplate.opsForValue().get(contentKey);
+                if (content != null) {
+                    UUID messageId = this.saveAIMessageInternal(conversationId, content);
+
+                    // Clear Redis keys (턴 정보 포함)
+                    redisTemplate.delete(statusKey);
+                    redisTemplate.delete(contentKey);
+                    redisTemplate.delete(turnCountKey);
+                    redisTemplate.delete(maxTurnsKey);
+
+                    return PollResponse.builder()
+                            .status(STATUS_COMPLETED)
+                            .content(content)
+                            .messageId(messageId)
+                            .turnCount(turnCount)
+                            .maxTurns(maxTurns)
+                            .build();
+                }
+            } else if (STATUS_FAILED.equals(currentStatus)) {
+                String error = redisTemplate.opsForValue().get(errorKey);
+                return PollResponse.builder()
+                        .status(STATUS_FAILED)
+                        .error(error)
+                        .turnCount(turnCount)
+                        .maxTurns(maxTurns)
+                        .build();
+            }
+
+            // Sleep for 100ms before next check
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        // Timeout - still processing
+        return PollResponse.builder()
+                .status(STATUS_PROCESSING)
+                .turnCount(turnCount)
+                .maxTurns(maxTurns)
                 .build();
     }
 

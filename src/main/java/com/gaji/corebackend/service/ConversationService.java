@@ -31,6 +31,7 @@ public class ConversationService {
 
     /**
      * Create a new conversation
+     * Leaf 시나리오의 경우 기준 대화(reference conversation)가 있으면 메시지를 복사
      */
     @Transactional
     public ConversationResponse createConversation(UUID userId, CreateConversationRequest request) {
@@ -47,11 +48,28 @@ public class ConversationService {
 
         String characterVectordbId = request.getCharacterVectordbId();
         if (characterVectordbId == null || characterVectordbId.isEmpty()) {
-            characterVectordbId = "default-character"; // Default character
+            // 시나리오에서 캐릭터 정보가 제공되면 사용
+            if (scenario.getCharacterVectordbId() != null) {
+                characterVectordbId = scenario.getCharacterVectordbId();
+            } else {
+                characterVectordbId = "default-character"; // Default character
+            }
+        }
+
+        // 기준 대화가 있는지 확인 (Leaf 시나리오의 경우)
+        UUID referenceConversationId = scenario.getReferenceConversationId();
+        List<Message> referenceMessages = null;
+        if (referenceConversationId != null) {
+            referenceMessages = conversationMapper.findMessagesByConversationId(referenceConversationId);
+            log.info("Found reference conversation with {} messages", referenceMessages.size());
         }
 
         // Create conversation entity
         UUID conversationId = UUID.randomUUID();
+        int initialMessageCount = (referenceMessages != null && !referenceMessages.isEmpty()) 
+                ? referenceMessages.size() 
+                : 1;
+        
         Conversation conversation = Conversation.builder()
                 .id(conversationId)
                 .userId(userId)
@@ -60,22 +78,40 @@ public class ConversationService {
                 .characterVectordbId(characterVectordbId)
                 .title(request.getTitle())
                 .isRoot(true)
-                .messageCount(1) // Start with 1 for system message
+                .messageCount(initialMessageCount)
                 .likeCount(0)
                 .isPrivate(Boolean.TRUE.equals(request.getIsPrivate()))
                 .build();
 
         conversationMapper.insert(conversation);
 
-        // Create initial system message with scenario's whatIfQuestion
-        Message systemMessage = Message.builder()
-                .id(UUID.randomUUID())
-                .conversationId(conversation.getId())
-                .role("system")
-                .content(scenario.getWhatIfQuestion())
-                .build();
-        
-        conversationMapper.insertMessage(systemMessage);
+        // 기준 대화가 있으면 메시지 복사, 없으면 기본 시스템 메시지 생성
+        if (referenceMessages != null && !referenceMessages.isEmpty()) {
+            // 기준 대화의 모든 메시지 복사 (순서 유지를 위해 원본 createdAt 사용)
+            for (Message msg : referenceMessages) {
+                Message copied = Message.builder()
+                        .id(UUID.randomUUID())
+                        .conversationId(conversationId)
+                        .senderId(msg.getSenderId())
+                        .role(msg.getRole())
+                        .content(msg.getContent())
+                        .createdAt(msg.getCreatedAt()) // 원본 시간 유지하여 순서 보장
+                        .build();
+                conversationMapper.insertMessage(copied);
+            }
+            log.info("Copied {} messages from reference conversation to new conversation", 
+                    referenceMessages.size());
+        } else {
+            // Create initial system message with scenario's whatIfQuestion
+            Message systemMessage = Message.builder()
+                    .id(UUID.randomUUID())
+                    .conversationId(conversationId)
+                    .role("system")
+                    .content(scenario.getWhatIfQuestion())
+                    .build();
+            
+            conversationMapper.insertMessage(systemMessage);
+        }
 
         return ConversationResponse.from(conversation);
     }

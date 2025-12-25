@@ -59,4 +59,11 @@ public interface RootUserScenarioMapper {
     int update(RootUserScenario scenario);
     int deleteById(UUID id);
     boolean existsById(UUID id);
+    
+    /**
+     * 기준 대화 설정
+     * @param scenarioId 시나리오 ID
+     * @param conversationId 기준 대화 ID
+     */
+    int updateReferenceConversation(@Param("scenarioId") UUID scenarioId, @Param("conversationId") UUID conversationId);
 }

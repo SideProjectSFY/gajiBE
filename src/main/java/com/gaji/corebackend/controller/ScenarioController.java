@@ -195,6 +195,32 @@ public class ScenarioController {
     }
 
     /**
+     * 기준 대화 저장 - 이 대화를 시나리오의 기준 대화로 설정
+     * 다른 사용자가 포크할 때 이 대화의 메시지를 복사하여 컨텍스트 유지
+     */
+    @PostMapping("/{id}/reference-conversation")
+    @Operation(summary = "Set reference conversation", 
+               description = "Sets a conversation as the reference for this scenario. " +
+                           "When other users fork this scenario, the reference conversation's messages will be copied.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Reference conversation set successfully"),
+            @ApiResponse(responseCode = "403", description = "Not authorized (not the scenario owner)"),
+            @ApiResponse(responseCode = "404", description = "Scenario or conversation not found")
+    })
+    public ResponseEntity<ScenarioResponse> setReferenceConversation(
+            @PathVariable UUID id,
+            @RequestHeader("X-User-Id") UUID userId,
+            @RequestBody SetReferenceConversationRequest request) {
+
+        log.info("Setting reference conversation: scenarioId={}, conversationId={}, userId={}", 
+                id, request.getConversationId(), userId);
+
+        ScenarioResponse response = scenarioService.setReferenceConversation(id, userId, request.getConversationId());
+
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Fork a scenario
      * Only root scenarios can be forked (max depth = 1)
      */

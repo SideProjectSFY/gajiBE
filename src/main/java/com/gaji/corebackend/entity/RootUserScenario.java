@@ -37,6 +37,10 @@ public class RootUserScenario {
     private Integer forkCount = 0;
 
     private String contentHash;
+    
+    // 기준 대화 ID - 시나리오 생성자가 저장한 대화, 포크 시 이 대화의 메시지를 복사
+    private UUID referenceConversationId;
+    
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

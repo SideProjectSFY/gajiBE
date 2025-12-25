@@ -18,6 +18,7 @@
         <result property="isPrivate" column="is_private"/>
         <result property="forkCount" column="fork_count"/>
         <result property="contentHash" column="content_hash"/>
+        <result property="referenceConversationId" column="reference_conversation_id"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
@@ -179,8 +180,17 @@
             is_private = #{isPrivate},
             fork_count = #{forkCount},
             content_hash = #{contentHash},
+            reference_conversation_id = #{referenceConversationId},
             updated_at = NOW()
         WHERE id = #{id}
+    </update>
+    
+    <!-- 기준 대화 설정 -->
+    <update id="updateReferenceConversation">
+        UPDATE root_user_scenarios SET
+            reference_conversation_id = #{conversationId},
+            updated_at = NOW()
+        WHERE id = #{scenarioId}
     </update>
 
     <delete id="deleteById">
