@@ -24,6 +24,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -258,6 +260,78 @@ public class MessageService {
                 .tokenUsage(completion.hasNonNull("token_usage") ? completion.get("token_usage").asInt() : null)
                 .providerElapsedMs(providerElapsedMs)
                 .build();
+    }
+
+    public void submitMessageWithChatCompletionStream(
+            UUID conversationId,
+            UserPrincipal currentUser,
+            CreateMessageRequest request,
+            Consumer<ChatCompletionStreamEvent> eventConsumer
+    ) {
+        if (request == null || request.getContent() == null || request.getContent().isBlank()) {
+            throw new BadRequestException("Message content is required");
+        }
+
+        ChatCompletionPreparation preparation = java.util.Objects.requireNonNull(
+                transactionTemplate.execute(status -> prepareChatCompletion(conversationId, currentUser, request)),
+                "chat completion preparation must not be null"
+        );
+        eventConsumer.accept(new ChatCompletionStreamEvent("user_message", preparation.userMessage()));
+
+        long providerStartedAt = System.nanoTime();
+        boolean completed = false;
+        for (ServerSentEvent<JsonNode> event : aiChatProxyService.streamConversationChat(
+                currentUser,
+                preparation.request()
+        ).toIterable()) {
+            String eventName = firstNonBlank(event.event(), "message");
+            JsonNode data = event.data();
+            if ("delta".equals(eventName) || "context_ready".equals(eventName)) {
+                eventConsumer.accept(new ChatCompletionStreamEvent(eventName, data));
+                continue;
+            }
+            if ("error".equals(eventName)) {
+                eventConsumer.accept(new ChatCompletionStreamEvent("error", data));
+                return;
+            }
+            if (!"completed".equals(eventName) || data == null || data.isNull()) {
+                continue;
+            }
+
+            double providerElapsedMs = (System.nanoTime() - providerStartedAt) / 1_000_000.0;
+            String answer = data.path("answer").asText(null);
+            if (answer == null || answer.isBlank()) {
+                throw new BadRequestException("AI completion returned an empty answer");
+            }
+
+            AssistantTurnPersistence assistantTurn = java.util.Objects.requireNonNull(
+                    transactionTemplate.execute(status -> saveAssistantMessageAndMetadata(
+                            conversationId,
+                            preparation.userMessage().getId(),
+                            answer,
+                            data,
+                            providerElapsedMs
+                    )),
+                    "assistant turn persistence must not be null"
+            );
+
+            ConversationChatCompletionResponse response = ConversationChatCompletionResponse.builder()
+                    .userMessage(preparation.userMessage())
+                    .assistantMessage(assistantTurn.assistantMessage())
+                    .rag(data.get("rag"))
+                    .ragMetadataId(assistantTurn.ragMetadataId())
+                    .provider(data.path("provider").asText(null))
+                    .model(data.path("model").asText(null))
+                    .tokenUsage(data.hasNonNull("token_usage") ? data.get("token_usage").asInt() : null)
+                    .providerElapsedMs(providerElapsedMs)
+                    .build();
+            eventConsumer.accept(new ChatCompletionStreamEvent("completed", response));
+            completed = true;
+        }
+
+        if (!completed) {
+            throw new BadRequestException("AI streaming completion ended before a completed event");
+        }
     }
 
     public RagChatSourceResponse getRagSources(
@@ -943,6 +1017,12 @@ public class MessageService {
     private record AssistantTurnPersistence(
             MessageResponse assistantMessage,
             UUID ragMetadataId
+    ) {
+    }
+
+    public record ChatCompletionStreamEvent(
+            String eventName,
+            Object data
     ) {
     }
 }

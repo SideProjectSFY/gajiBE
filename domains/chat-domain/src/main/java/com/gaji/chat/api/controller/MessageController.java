@@ -131,12 +131,12 @@ public class MessageController {
 
         applicationTaskExecutor.execute(() -> {
             try {
-                ConversationChatCompletionResponse response = messageService.submitMessageWithChatCompletion(
+                messageService.submitMessageWithChatCompletionStream(
                         conversationId,
                         currentUser,
-                        request
+                        request,
+                        event -> sendSseEvent(emitter, event.eventName(), event.data())
                 );
-                sendSseEvent(emitter, "completed", response);
                 emitter.complete();
             } catch (Exception ex) {
                 log.warn("Streaming RAG chat completion failed: conversationId={}, userId={}",
