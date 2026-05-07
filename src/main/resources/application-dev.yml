@@ -3,7 +3,7 @@ spring:
   # Virtual Threads (Java 21+)
   threads:
     virtual:
-      enabled: true
+      enabled: ${SPRING_THREADS_VIRTUAL_ENABLED:true}
 
   # Database Configuration
   datasource:

@@ -10,12 +10,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,6 +36,7 @@ import java.util.UUID;
 public class MessageController {
 
     private final MessageService messageService;
+    private final AsyncTaskExecutor applicationTaskExecutor;
 
     /**
      * Get all messages in a conversation
@@ -99,6 +105,66 @@ public class MessageController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    /**
+     * Submit a user message and deliver chat completion result over SSE.
+     */
+    @PostMapping(value = "/chat-completion/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @Operation(summary = "Stream RAG chat completion status", description = "Returns immediately with an SSE stream and emits completion metadata when the assistant turn is saved")
+    @ApiResponse(responseCode = "200", description = "SSE stream opened")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    public SseEmitter streamMessageWithChatCompletion(
+            @PathVariable UUID conversationId,
+            @CurrentUser UserPrincipal currentUser,
+            @Valid @RequestBody CreateMessageRequest request) {
+
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new UnauthorizedException("Authentication required");
+        }
+
+        SseEmitter emitter = new SseEmitter(120_000L);
+        sendSseEvent(emitter, "accepted", Map.of(
+                "status", "accepted",
+                "conversationId", conversationId.toString()
+        ));
+
+        applicationTaskExecutor.execute(() -> {
+            try {
+                ConversationChatCompletionResponse response = messageService.submitMessageWithChatCompletion(
+                        conversationId,
+                        currentUser,
+                        request
+                );
+                sendSseEvent(emitter, "completed", response);
+                emitter.complete();
+            } catch (Exception ex) {
+                log.warn("Streaming RAG chat completion failed: conversationId={}, userId={}",
+                        conversationId, currentUser.getUserId(), ex);
+                sendSseEvent(emitter, "error", Map.of(
+                        "status", "error",
+                        "message", safeStreamingErrorMessage(ex)
+                ));
+                emitter.complete();
+            }
+        });
+
+        return emitter;
+    }
+
+    private void sendSseEvent(SseEmitter emitter, String eventName, Object data) {
+        try {
+            emitter.send(SseEmitter.event().name(eventName).data(data));
+        } catch (IOException ex) {
+            emitter.completeWithError(ex);
+        }
+    }
+
+    private String safeStreamingErrorMessage(Exception ex) {
+        String message = ex.getMessage();
+        return message == null || message.isBlank()
+                ? "AI chat completion failed. Please retry shortly."
+                : message;
     }
 
     @GetMapping("/{assistantMessageId}/rag-sources")
