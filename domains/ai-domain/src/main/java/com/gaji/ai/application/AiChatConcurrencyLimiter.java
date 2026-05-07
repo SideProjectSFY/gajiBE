@@ -5,6 +5,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -24,6 +25,7 @@ public class AiChatConcurrencyLimiter {
     private final AtomicInteger activeGenerations = new AtomicInteger();
     private final Counter saturationCounter;
 
+    @Autowired
     public AiChatConcurrencyLimiter(
             @Value("${gaji.ai.chat.max-concurrent-generations:10}") int maxConcurrentGenerations,
             @Value("${gaji.ai.chat.acquire-timeout-ms:500}") long acquireTimeoutMs,

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 메시지 컨트롤러
@@ -124,10 +125,18 @@ public class MessageController {
         }
 
         SseEmitter emitter = new SseEmitter(120_000L);
-        sendSseEvent(emitter, "accepted", Map.of(
+        AtomicBoolean streamOpen = new AtomicBoolean(true);
+        emitter.onCompletion(() -> streamOpen.set(false));
+        emitter.onTimeout(() -> streamOpen.set(false));
+        emitter.onError(_error -> streamOpen.set(false));
+
+        if (!sendSseEvent(emitter, "accepted", Map.of(
                 "status", "accepted",
                 "conversationId", conversationId.toString()
-        ));
+        ))) {
+            streamOpen.set(false);
+            return emitter;
+        }
 
         applicationTaskExecutor.execute(() -> {
             try {
@@ -135,28 +144,50 @@ public class MessageController {
                         conversationId,
                         currentUser,
                         request,
-                        event -> sendSseEvent(emitter, event.eventName(), event.data())
+                        event -> {
+                            if (!streamOpen.get()) {
+                                throw new SseClientDisconnectedException();
+                            }
+                            if (!sendSseEvent(emitter, event.eventName(), event.data())) {
+                                streamOpen.set(false);
+                                throw new SseClientDisconnectedException();
+                            }
+                        }
                 );
-                emitter.complete();
+                completeEmitter(emitter, streamOpen);
+            } catch (SseClientDisconnectedException ex) {
+                log.debug("Streaming RAG chat client disconnected: conversationId={}, userId={}",
+                        conversationId, currentUser.getUserId());
+                streamOpen.set(false);
             } catch (Exception ex) {
                 log.warn("Streaming RAG chat completion failed: conversationId={}, userId={}",
                         conversationId, currentUser.getUserId(), ex);
-                sendSseEvent(emitter, "error", Map.of(
-                        "status", "error",
-                        "message", safeStreamingErrorMessage(ex)
-                ));
-                emitter.complete();
+                if (streamOpen.get()) {
+                    sendSseEvent(emitter, "error", Map.of(
+                            "status", "error",
+                            "message", safeStreamingErrorMessage(ex)
+                    ));
+                }
+                completeEmitter(emitter, streamOpen);
             }
         });
 
         return emitter;
     }
 
-    private void sendSseEvent(SseEmitter emitter, String eventName, Object data) {
+    private boolean sendSseEvent(SseEmitter emitter, String eventName, Object data) {
         try {
             emitter.send(SseEmitter.event().name(eventName).data(data));
+            return true;
         } catch (IOException ex) {
             emitter.completeWithError(ex);
+            return false;
+        }
+    }
+
+    private void completeEmitter(SseEmitter emitter, AtomicBoolean streamOpen) {
+        if (streamOpen.getAndSet(false)) {
+            emitter.complete();
         }
     }
 
@@ -165,6 +196,9 @@ public class MessageController {
         return message == null || message.isBlank()
                 ? "AI chat completion failed. Please retry shortly."
                 : message;
+    }
+
+    private static class SseClientDisconnectedException extends RuntimeException {
     }
 
     @GetMapping("/{assistantMessageId}/rag-sources")
