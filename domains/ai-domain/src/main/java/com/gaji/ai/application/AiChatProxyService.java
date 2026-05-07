@@ -21,15 +21,18 @@ public class AiChatProxyService {
     private final WebClient fastApiClient;
     private final AiTokenBrokerService aiTokenBrokerService;
     private final ContentReadFacade contentReadFacade;
+    private final AiChatConcurrencyLimiter aiChatConcurrencyLimiter;
 
     public AiChatProxyService(
             @Qualifier("fastApiClient") WebClient fastApiClient,
             AiTokenBrokerService aiTokenBrokerService,
-            ContentReadFacade contentReadFacade
+            ContentReadFacade contentReadFacade,
+            AiChatConcurrencyLimiter aiChatConcurrencyLimiter
     ) {
         this.fastApiClient = fastApiClient;
         this.aiTokenBrokerService = aiTokenBrokerService;
         this.contentReadFacade = contentReadFacade;
+        this.aiChatConcurrencyLimiter = aiChatConcurrencyLimiter;
     }
 
     public JsonNode completeChat(UserPrincipal currentUser, AiChatCompletionRequest request) {
@@ -86,13 +89,13 @@ public class AiChatProxyService {
                 novelIds
         );
 
-        return fastApiClient.post()
+        return aiChatConcurrencyLimiter.execute(() -> fastApiClient.post()
                 .uri("/v1/chat/completions")
                 .headers(headers -> headers.setBearerAuth(brokeredToken.accessToken()))
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(JsonNode.class)
-                .block();
+                .block());
     }
 
     private List<String> resolveAuthorizedNovelIds(

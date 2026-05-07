@@ -12,11 +12,14 @@ spring:
     password: ${DB_PASSWORD:gaji_secure_password_2024}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
+      pool-name: ${DB_HIKARI_POOL_NAME:GajiApiHikariPool}
+      maximum-pool-size: ${DB_HIKARI_MAXIMUM_POOL_SIZE:10}
+      minimum-idle: ${DB_HIKARI_MINIMUM_IDLE:5}
+      connection-timeout: ${DB_HIKARI_CONNECTION_TIMEOUT_MS:30000}
+      validation-timeout: ${DB_HIKARI_VALIDATION_TIMEOUT_MS:5000}
+      idle-timeout: ${DB_HIKARI_IDLE_TIMEOUT_MS:600000}
+      max-lifetime: ${DB_HIKARI_MAX_LIFETIME_MS:1800000}
+      leak-detection-threshold: ${DB_HIKARI_LEAK_DETECTION_THRESHOLD_MS:60000}
 
   # Flyway Configuration
   flyway:

@@ -140,6 +140,24 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle temporary service saturation or downstream unavailability.
+     */
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ResponseEntity<Map<String, Object>> handleServiceUnavailableException(
+            ServiceUnavailableException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.SERVICE_UNAVAILABLE.value());
+        response.put("error", "Service Unavailable");
+        response.put("message", ex.getMessage());
+
+        log.warn("Service unavailable: {}", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
+
+    /**
      * Handle MethodArgumentTypeMismatchException
      * Occurs when a parameter type mismatch happens (e.g., invalid UUID format)
      */

@@ -12,12 +12,14 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10 # 리소스 제한 환경에서 축소
-      minimum-idle: 5 # 최소 유휴 연결 축소
-      connection-timeout: 20000 # 20초
-      idle-timeout: 300000 # 5분
-      max-lifetime: 900000 # 15분
-      leak-detection-threshold: 60000 # 1분
+      pool-name: ${DB_HIKARI_POOL_NAME:GajiApiHikariPool}
+      maximum-pool-size: ${DB_HIKARI_MAXIMUM_POOL_SIZE:10} # 리소스 제한 환경에서 축소
+      minimum-idle: ${DB_HIKARI_MINIMUM_IDLE:5} # 최소 유휴 연결 축소
+      connection-timeout: ${DB_HIKARI_CONNECTION_TIMEOUT_MS:20000} # 20초
+      validation-timeout: ${DB_HIKARI_VALIDATION_TIMEOUT_MS:5000}
+      idle-timeout: ${DB_HIKARI_IDLE_TIMEOUT_MS:300000} # 5분
+      max-lifetime: ${DB_HIKARI_MAX_LIFETIME_MS:900000} # 15분
+      leak-detection-threshold: ${DB_HIKARI_LEAK_DETECTION_THRESHOLD_MS:60000} # 1분
       connection-test-query: SELECT 1 # 연결 유효성 검사
 
   # Flyway Configuration

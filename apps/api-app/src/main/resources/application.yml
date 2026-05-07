@@ -2,6 +2,10 @@ spring:
   application:
     name: gaji-api-app
 
+  threads:
+    virtual:
+      enabled: ${SPRING_THREADS_VIRTUAL_ENABLED:true}
+
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
@@ -25,6 +29,9 @@ server:
     include-exception: false
 
 management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
   endpoints:
     web:
       base-path: /actuator
@@ -74,3 +81,6 @@ gaji:
       scope: ${AI_BROKER_SCOPE:ai:chat:complete}
       issuer: ${AI_BROKER_ISSUER:gaji-backend}
       ttl-seconds: ${AI_BROKER_TTL_SECONDS:180}
+    chat:
+      max-concurrent-generations: ${AI_CHAT_MAX_CONCURRENT_GENERATIONS:10}
+      acquire-timeout-ms: ${AI_CHAT_ACQUIRE_TIMEOUT_MS:500}
