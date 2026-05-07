@@ -1,5 +1,10 @@
 # Staging Environment Configuration
 spring:
+  # Virtual Threads (Java 21+)
+  threads:
+    virtual:
+      enabled: true
+
   # Database Configuration
   datasource:
     url: ${DB_URL}
@@ -24,13 +29,6 @@ spring:
     validate-on-migrate: true
     out-of-order: false
     clean-disabled: true # Prevent accidental clean
-
-  # MyBatis Configuration
-  mybatis:
-    mapper-locations: classpath:mapper/*.xml
-    type-aliases-package: com.gaji.corebackend.entity
-    configuration:
-      map-underscore-to-camel-case: true
 
   # Redis Configuration
   data:

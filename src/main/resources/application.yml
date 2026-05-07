@@ -77,3 +77,11 @@ fastapi:
 # CORS Configuration (default values)
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,https://gaji.app}
+
+gaji:
+  ai:
+    broker:
+      audience: ${AI_BROKER_AUDIENCE:gaji-ai-direct}
+      scope: ${AI_BROKER_SCOPE:ai:chat:complete}
+      issuer: ${AI_BROKER_ISSUER:gaji-backend}
+      ttl-seconds: ${AI_BROKER_TTL_SECONDS:180}

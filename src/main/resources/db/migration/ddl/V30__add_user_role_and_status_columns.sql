@@ -4,7 +4,7 @@
 -- Add role column with default USER
 ALTER TABLE users 
 ADD COLUMN role VARCHAR(20) DEFAULT 'USER' NOT NULL 
-CHECK (role IN ('USER', 'ADMIN', 'MODERATOR'));
+CHECK (role IN ('USER', 'ADMIN', 'MODERATOR', 'DEVELOPER'));
 
 -- Add is_active column with default true
 ALTER TABLE users 
@@ -21,6 +21,6 @@ CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_is_active ON users(is_active);
 
 -- Add comments for documentation
-COMMENT ON COLUMN users.role IS 'User role: USER (default), ADMIN, or MODERATOR';
+COMMENT ON COLUMN users.role IS 'User role: USER (default), ADMIN, MODERATOR, or DEVELOPER';
 COMMENT ON COLUMN users.is_active IS 'Whether the user account is active (not suspended/deleted)';
 COMMENT ON COLUMN users.last_login_at IS 'Timestamp of the user''s last login';

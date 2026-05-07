@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy Gradle wrapper and configuration files
@@ -23,4 +23,4 @@ RUN chmod +x /entrypoint.sh && \
 ENTRYPOINT ["/entrypoint.sh"]
 
 # Run Spring Boot with DevTools
-CMD ["bash", "./gradlew", "bootRun", "--no-daemon"]
+CMD ["bash", "./gradlew", ":apps:api-app:bootRun", "--no-daemon"]

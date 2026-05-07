@@ -1,0 +1,106 @@
+package com.gaji.shared.contract.dto;
+
+import com.gaji.scenario.domain.model.LeafUserScenario;
+import com.gaji.scenario.domain.model.RootUserScenario;
+import com.gaji.content.domain.model.ScenarioCategory;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+/**
+ * Response DTO for scenario data
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ScenarioResponse {
+
+    private UUID id;
+    private UUID userId;
+    private UUID baseScenarioId;
+    private UUID parentScenarioId;
+    private UUID novelId;
+    private String title;
+    private String description;
+    private String whatIfQuestion;
+    private Boolean isPrivate;
+    private Integer forkCount;
+    private ScenarioType scenarioType;
+    private ScenarioCategory scenarioCategory;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+    // Gemini 분석 결과 (JSON 문자열)
+    private String characterChanges;
+    private String eventAlterations;
+    private String settingModifications;
+    
+    // 시나리오 포크 시 원본 대화의 캐릭터 정보 전달용
+    private String characterVectordbId;
+    
+    // 기준 대화 ID - 시나리오 생성자가 저장한 대화, 포크 시 이 대화의 메시지를 복사
+    private UUID referenceConversationId;
+
+    /**
+     * Enum to distinguish between root and leaf scenarios
+     */
+    public enum ScenarioType {
+        ROOT,
+        LEAF
+    }
+
+    /**
+     * Create response from root user scenario entity
+     */
+    public static ScenarioResponse from(RootUserScenario entity) {
+        return ScenarioResponse.builder()
+                .id(entity.getId())
+                .userId(entity.getUserId())
+                .baseScenarioId(entity.getBaseScenarioId())
+                .parentScenarioId(null) // Root scenarios have no parent
+                .novelId(entity.getNovelId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .whatIfQuestion(entity.getWhatIfQuestion())
+                .isPrivate(entity.getIsPrivate())
+                .forkCount(entity.getForkCount())
+                .scenarioType(ScenarioType.ROOT)
+                .scenarioCategory(entity.getScenarioCategory())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .characterChanges(entity.getCharacterChanges())
+                .eventAlterations(entity.getEventAlterations())
+                .settingModifications(entity.getSettingModifications())
+                .referenceConversationId(entity.getReferenceConversationId())
+                .build();
+    }
+
+    /**
+     * Create response from leaf user scenario entity
+     */
+    public static ScenarioResponse from(LeafUserScenario entity) {
+        return ScenarioResponse.builder()
+                .id(entity.getId())
+                .userId(entity.getUserId())
+                .baseScenarioId(null) // Leaf scenarios don't have base scenario
+                .parentScenarioId(entity.getParentScenarioId())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .whatIfQuestion(entity.getWhatIfQuestion())
+                .isPrivate(entity.getIsPrivate())
+                .forkCount(null) // Leaf scenarios can't be forked
+                .scenarioType(ScenarioType.LEAF)
+                .scenarioCategory(entity.getScenarioCategory())
+                .createdAt(entity.getCreatedAt())
+                .updatedAt(entity.getUpdatedAt())
+                .characterChanges(null) // Leaf scenarios don't have these fields
+                .eventAlterations(null)
+                .settingModifications(null)
+                .build();
+    }
+}

@@ -1,5 +1,10 @@
 # Production Environment Configuration
 spring:
+  # Virtual Threads (Java 21+)
+  threads:
+    virtual:
+      enabled: true
+
   # Database Configuration (CPU 2 / RAM 4GB 최적화)
   datasource:
     url: ${DB_URL}
@@ -27,13 +32,6 @@ spring:
     out-of-order: false
     clean-disabled: true # Never allow clean in production!
     clean-on-validation-error: false # Prevent clean on validation error
-
-  # MyBatis Configuration
-  mybatis:
-    mapper-locations: classpath:mapper/*.xml
-    type-aliases-package: com.gaji.corebackend.entity
-    configuration:
-      map-underscore-to-camel-case: true
 
   # Redis Configuration
   data:

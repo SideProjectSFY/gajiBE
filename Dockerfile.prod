@@ -5,7 +5,7 @@
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Stage 1: Build (빌드 전용 - 빌드 후 삭제됨)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FROM eclipse-temurin:17-jdk AS builder
+FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /build
 
@@ -17,13 +17,13 @@ COPY gradle ./gradle
 RUN chmod +x ./gradlew
 
 # 의존성 다운로드 (캐시 레이어)
-RUN ./gradlew dependencies --no-daemon || true
+RUN ./gradlew dependencies --no-daemon
 
 # 소스 코드 복사
 COPY src ./src
 
 # 프로덕션 빌드 (테스트 스킵, 최적화)
-RUN ./gradlew clean bootJar --no-daemon -x test \
+RUN ./gradlew :apps:api-app:bootJar --no-daemon -x test \
     --parallel \
     --build-cache \
     --info
@@ -31,7 +31,7 @@ RUN ./gradlew clean bootJar --no-daemon -x test \
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Stage 2: Runtime (실행 전용 - 최소화된 이미지)
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 
 # 비root 사용자 생성 (보안)
 RUN groupadd -r spring && useradd -r -g spring spring
@@ -39,7 +39,7 @@ RUN groupadd -r spring && useradd -r -g spring spring
 WORKDIR /app
 
 # 빌드 스테이지에서 JAR 파일만 복사
-COPY --from=builder /build/build/libs/*.jar app.jar
+COPY --from=builder /build/apps/api-app/build/libs/*-SNAPSHOT.jar app.jar
 
 # 필요한 디렉토리 생성 및 권한 설정
 RUN mkdir -p /app/public/og-images && \

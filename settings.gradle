@@ -16,3 +16,18 @@ pluginManagement {
 }
 
 rootProject.name = 'gaji-backend'
+
+// Multi-module draft (DDD + modular monolith)
+include(
+    'apps:api-app',
+    'apps:batch-app',
+    'apps:admin-app',
+    'domains:auth-domain',
+    'domains:content-domain',
+    'domains:scenario-domain',
+    'domains:chat-domain',
+    'domains:social-domain',
+    'domains:search-domain',
+    'domains:ai-domain',
+    'shared-kernel'
+)

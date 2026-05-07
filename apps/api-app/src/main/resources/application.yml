@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: gaji-api-app
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  security:
+    jwt:
+      secret: ${JWT_SECRET:default-secret-key-minimum-32-chars-required-for-hs256}
+      expiration: ${JWT_EXPIRATION:86400000}
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    time-zone: UTC
+    default-property-inclusion: non_null
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.gaji: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{correlationId:-}] %-5level %logger{36} - %msg%n"
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
+  show-actuator: true
+
+fastapi:
+  base-url: ${FASTAPI_BASE_URL:http://localhost:8000}
+  timeout: ${FASTAPI_TIMEOUT:60}
+  retry:
+    max-attempts: ${FASTAPI_RETRY_MAX_ATTEMPTS:3}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,https://gaji.app}
+
+gaji:
+  ai:
+    broker:
+      audience: ${AI_BROKER_AUDIENCE:gaji-ai-direct}
+      scope: ${AI_BROKER_SCOPE:ai:chat:complete}
+      issuer: ${AI_BROKER_ISSUER:gaji-backend}
+      ttl-seconds: ${AI_BROKER_TTL_SECONDS:180}

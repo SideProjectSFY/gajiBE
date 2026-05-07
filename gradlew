@@ -116,6 +116,16 @@ esac
 
 CLASSPATH="\\\"\\\""
 
+# This project targets Java 21. Gradle 8.5 cannot run on Java 25, so on macOS
+# prefer an installed JDK 21 when JAVA_HOME is not already set.
+if [ -z "$JAVA_HOME" ] && "$darwin" && command -v /usr/libexec/java_home >/dev/null 2>&1 ; then
+    JAVA21_HOME=$(/usr/libexec/java_home -v 21 2>/dev/null || true)
+    if [ -n "$JAVA21_HOME" ] ; then
+        JAVA_HOME=$JAVA21_HOME
+        export JAVA_HOME
+    fi
+fi
+
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
