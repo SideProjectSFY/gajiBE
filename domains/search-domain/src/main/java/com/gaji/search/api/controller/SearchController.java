@@ -1,12 +1,16 @@
 package com.gaji.search.api.controller;
 
 import com.gaji.shared.contract.dto.BookResponse;
+import com.gaji.shared.contract.dto.ConversationMessageSearchResponse;
 import com.gaji.shared.contract.dto.ConversationResponse;
 import com.gaji.shared.contract.dto.SearchResponse;
 import com.gaji.shared.contract.dto.UserDTO;
 import com.gaji.auth.application.UserFacade;
+import com.gaji.chat.application.MessageService;
 import com.gaji.content.application.BookService;
 import com.gaji.chat.application.ConversationService;
+import com.gaji.common.security.CurrentUser;
+import com.gaji.common.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +32,13 @@ public class SearchController {
 
     private final BookService bookService;
     private final ConversationService conversationService;
+    private final MessageService messageService;
     private final UserFacade userFacade;
 
     @GetMapping
-    @Operation(summary = "Global search", description = "Search for books, conversations, and users")
+    @Operation(summary = "Global search", description = "Search for books, public conversations, users, and owned conversation message matches")
     public ResponseEntity<SearchResponse> search(
+            @CurrentUser(required = false) UserPrincipal currentUser,
             @RequestParam String query,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "6") int size
@@ -41,6 +47,7 @@ public class SearchController {
             return ResponseEntity.ok(SearchResponse.builder()
                     .books(Collections.emptyList())
                     .conversations(Collections.emptyList())
+                    .conversationMessageResults(Collections.emptyList())
                     .users(Collections.emptyList())
                     .build());
         }
@@ -55,9 +62,16 @@ public class SearchController {
         // Search Users with pagination
         List<UserDTO> userDTOs = userFacade.searchUsers(query, page, size);
 
+        // Search the authenticated user's own conversation messages.
+        List<ConversationMessageSearchResponse> conversationMessageResults =
+                currentUser == null || currentUser.getUserId() == null
+                        ? Collections.emptyList()
+                        : messageService.searchOwnedConversationMessageCards(currentUser, query, size);
+
         return ResponseEntity.ok(SearchResponse.builder()
                 .books(books)
                 .conversations(conversations)
+                .conversationMessageResults(conversationMessageResults)
                 .users(userDTOs)
                 .build());
     }

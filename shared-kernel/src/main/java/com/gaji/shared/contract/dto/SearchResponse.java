@@ -14,5 +14,6 @@ import java.util.List;
 public class SearchResponse {
     private List<BookResponse> books;
     private List<ConversationResponse> conversations;
+    private List<ConversationMessageSearchResponse> conversationMessageResults;
     private List<UserDTO> users;
 }

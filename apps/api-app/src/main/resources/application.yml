@@ -84,3 +84,12 @@ gaji:
     chat:
       max-concurrent-generations: ${AI_CHAT_MAX_CONCURRENT_GENERATIONS:10}
       acquire-timeout-ms: ${AI_CHAT_ACQUIRE_TIMEOUT_MS:500}
+      recent-history-message-limit: ${AI_CHAT_RECENT_HISTORY_MESSAGE_LIMIT:7}
+      max-output-tokens: ${AI_CHAT_MAX_OUTPUT_TOKENS:768}
+  search:
+    elasticsearch:
+      enabled: ${CONVERSATION_SEARCH_ELASTICSEARCH_ENABLED:false}
+      url: ${ELASTICSEARCH_URL:http://localhost:9200}
+      conversation-message-index: ${CONVERSATION_SEARCH_ELASTICSEARCH_INDEX:gaji_conversation_messages_v1}
+      timeout-ms: ${CONVERSATION_SEARCH_ELASTICSEARCH_TIMEOUT_MS:1500}
+      retry-queue-max-size: ${CONVERSATION_SEARCH_ELASTICSEARCH_RETRY_QUEUE_MAX_SIZE:1000}

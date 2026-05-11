@@ -6,6 +6,7 @@ import com.gaji.chat.domain.model.Message;
 import com.gaji.common.exception.BadRequestException;
 import com.gaji.common.exception.ResourceNotFoundException;
 import com.gaji.chat.domain.repository.ConversationRepository;
+import com.gaji.chat.domain.repository.ConversationMessageSearchIndex;
 import com.gaji.chat.domain.repository.MessageRepository;
 import com.gaji.scenario.application.ScenarioFacade;
 import com.gaji.content.application.ContentFacade;
@@ -31,6 +32,7 @@ public class ConversationService {
 
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
+    private final ConversationMessageSearchIndex conversationMessageSearchIndex;
     private final ScenarioFacade scenarioFacade;
     private final ContentFacade contentFacade;
     
@@ -114,9 +116,10 @@ public class ConversationService {
                 .collect(Collectors.toList());
 
             // [Performance Fix] Bulk insert
-            messageRepository.saveAll(messagesToSave);
+            List<Message> savedMessages = messageRepository.saveAll(messagesToSave);
+            indexMessagesForSearch(conversation, savedMessages);
             log.info("Copied {} messages from reference conversation to new conversation", 
-                    messagesToSave.size());
+                    savedMessages.size());
         } else {
             // Create initial system message with scenario's whatIfQuestion
             Message systemMessage = Message.builder()
@@ -126,6 +129,7 @@ public class ConversationService {
                     .build();
             
             messageRepository.save(systemMessage);
+            indexMessageForSearch(conversation, systemMessage);
         }
 
         return ConversationResponse.from(conversation);
@@ -262,7 +266,10 @@ public class ConversationService {
         Conversation conversation = conversationRepository.findById(conversationId)
                 .orElseThrow(() -> new ResourceNotFoundException(CONVERSATION_NOT_FOUND + conversationId));
 
-        if (request.getTitle() != null) {
+        boolean titleChanged = request.getTitle() != null;
+        boolean visibilityChanged = request.getIsPrivate() != null
+                && !request.getIsPrivate().equals(Boolean.TRUE.equals(conversation.getIsPrivate()));
+        if (titleChanged) {
             conversation.setTitle(request.getTitle());
         }
         if (request.getIsPrivate() != null) {
@@ -270,6 +277,15 @@ public class ConversationService {
         }
 
         conversationRepository.save(conversation);
+        if (titleChanged) {
+            conversationMessageSearchIndex.updateConversationTitle(conversationId, conversation.getTitle());
+        }
+        if (visibilityChanged) {
+            conversationMessageSearchIndex.updateConversationVisibility(
+                    conversationId,
+                    Boolean.TRUE.equals(conversation.getIsPrivate())
+            );
+        }
 
         return ConversationResponse.from(conversation);
     }
@@ -285,6 +301,7 @@ public class ConversationService {
                 .orElseThrow(() -> new ResourceNotFoundException(CONVERSATION_NOT_FOUND + conversationId));
 
         conversationRepository.deleteById(conversationId);
+        conversationMessageSearchIndex.deleteConversation(conversationId);
     }
 
     /**
@@ -348,24 +365,17 @@ public class ConversationService {
         conversationRepository.save(forked);
 
         // Copy messages with new IDs and timestamps
-        for (Message msg : messagesToCopy) {
-            Message copied = Message.builder()
-                    .id(UUID.randomUUID())
-                    .conversationId(forked.getId())
-                    .senderId(msg.getSenderId())
-                    .role(msg.getRole())
-                    .content(msg.getContent())
-                    .build();
-
-            messageRepository.save(copied);
-        }
-
-        // Update forked conversation's message count - Entity already has count, but let's persist if needed explicitly via update query
-        // Actually save() handles it. But maybe original code wanted explicit separate update?
-        // Let's use save() since we built the object. 
-        // conversationRepository.save(forked); // Already called above.
-        // If we want to ensure DB persistence of count:
-        // conversationRepository.updateMessageCount(forked.getId(), copyCount); // My new repo method takes count.
+        List<Message> copiedMessages = messagesToCopy.stream()
+                .map(msg -> Message.builder()
+                        .id(UUID.randomUUID())
+                        .conversationId(forked.getId())
+                        .senderId(msg.getSenderId())
+                        .role(msg.getRole())
+                        .content(msg.getContent())
+                        .build())
+                .collect(Collectors.toList());
+        List<Message> savedCopiedMessages = messageRepository.saveAll(copiedMessages);
+        indexMessagesForSearch(forked, savedCopiedMessages);
         
         // Update parent's has_been_forked flag (CRITICAL: atomic transaction)
         conversationRepository.updateHasBeenForked(conversationId, true);
@@ -481,5 +491,21 @@ public class ConversationService {
         }
 
         return responses;
+    }
+
+    private void indexMessageForSearch(Conversation conversation, Message message) {
+        try {
+            conversationMessageSearchIndex.indexMessage(conversation, message);
+        } catch (Exception exc) {
+            log.warn("conversation_message_search_index_enqueue_failed", exc);
+        }
+    }
+
+    private void indexMessagesForSearch(Conversation conversation, List<Message> messages) {
+        try {
+            conversationMessageSearchIndex.indexMessages(conversation, messages);
+        } catch (Exception exc) {
+            log.warn("conversation_message_search_bulk_index_enqueue_failed", exc);
+        }
     }
 }

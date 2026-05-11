@@ -56,6 +56,59 @@ public class MessageController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Search messages in a conversation", description = "Searches message text in one conversation owned by the authenticated user")
+    @ApiResponse(responseCode = "200", description = "Messages searched successfully")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    @ApiResponse(responseCode = "403", description = "Conversation access forbidden")
+    @ApiResponse(responseCode = "404", description = "Conversation not found")
+    public ResponseEntity<List<MessageSearchResponse>> searchConversationMessages(
+            @PathVariable UUID conversationId,
+            @CurrentUser UserPrincipal currentUser,
+            @RequestParam("query") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new UnauthorizedException("Authentication required");
+        }
+
+        log.debug("Searching conversation messages: conversationId={}, userId={}, query={}, page={}, size={}",
+                conversationId, currentUser.getUserId(), query, page, size);
+
+        List<MessageSearchResponse> responses = messageService.searchOwnedMessagesInConversation(
+                conversationId,
+                currentUser,
+                query,
+                page,
+                size
+        );
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping("/{messageId}")
+    @Operation(summary = "Delete a message", description = "Deletes one message from a conversation owned by the authenticated user")
+    @ApiResponse(responseCode = "204", description = "Message deleted successfully")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    @ApiResponse(responseCode = "403", description = "Conversation access forbidden")
+    @ApiResponse(responseCode = "404", description = "Conversation or message not found")
+    public ResponseEntity<Void> deleteMessage(
+            @PathVariable UUID conversationId,
+            @PathVariable UUID messageId,
+            @CurrentUser UserPrincipal currentUser) {
+
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new UnauthorizedException("Authentication required");
+        }
+
+        log.info("Deleting message: conversationId={}, messageId={}, userId={}",
+                conversationId, messageId, currentUser.getUserId());
+
+        messageService.deleteMessage(conversationId, messageId, currentUser);
+        return ResponseEntity.noContent().build();
+    }
+
     /**
      * Submit user message and trigger AI generation
      * @deprecated Use direct AI endpoint /api/ai/generate instead

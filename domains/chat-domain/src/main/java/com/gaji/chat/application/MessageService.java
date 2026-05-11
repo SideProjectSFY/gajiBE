@@ -13,13 +13,19 @@ import com.gaji.common.exception.ForbiddenException;
 import com.gaji.common.exception.ResourceNotFoundException;
 import com.gaji.common.security.UserPrincipal;
 import com.gaji.chat.domain.repository.ConversationRepository;
+import com.gaji.chat.domain.repository.ConversationMessageSearchIndex;
+import com.gaji.chat.domain.repository.ConversationMessageSearchIndexHit;
+import com.gaji.chat.domain.repository.ConversationMessageSearchResult;
 import com.gaji.chat.domain.repository.MessageRepository;
+import com.gaji.chat.domain.repository.MessageSearchResult;
 import com.gaji.chat.domain.repository.RagChatTurnMetadataRepository;
 import com.gaji.content.application.ContentReadFacade;
 import com.gaji.scenario.application.ScenarioFacade;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +36,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -55,9 +62,16 @@ public class MessageService {
     private final AiChatProxyService aiChatProxyService;
     private final TransactionTemplate transactionTemplate;
     private final RagChatTurnMetadataRepository ragChatTurnMetadataRepository;
+    private final ConversationMessageSearchIndex conversationMessageSearchIndex;
 
     @Value("${fastapi.base-url:http://localhost:8000}")
     private String fastApiUrl;
+
+    @Value("${gaji.ai.chat.recent-history-message-limit:7}")
+    private int recentHistoryMessageLimit;
+
+    @Value("${gaji.ai.chat.max-output-tokens:768}")
+    private int chatMaxOutputTokens;
 
     private static final String CONVERSATION_NOT_FOUND = "Conversation not found: ";
     private static final String TASK_PREFIX = "task:";
@@ -90,6 +104,102 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<MessageSearchResponse> searchOwnedMessages(
+            UserPrincipal currentUser,
+            String query,
+            int page,
+            int size
+    ) {
+        requireAuthenticated(currentUser);
+        String normalizedQuery = normalizeMessageSearchQuery(query);
+        List<MessageSearchResult> results = messageRepository.searchOwnedMessages(
+                currentUser.getUserId(),
+                normalizedQuery,
+                messageSearchPageRequest(page, size)
+        );
+        return toMessageSearchResponses(results, normalizedQuery);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ConversationMessageSearchResponse> searchOwnedConversationMessageCards(
+            UserPrincipal currentUser,
+            String query,
+            int size
+    ) {
+        requireAuthenticated(currentUser);
+        String normalizedQuery = normalizeMessageSearchQuery(query);
+        int limit = Math.max(1, Math.min(size, 20));
+        List<ConversationMessageSearchResult> results = null;
+        if (conversationMessageSearchIndex.isEnabled()) {
+            try {
+                results = toConversationMessageSearchResults(
+                        conversationMessageSearchIndex.searchOwnedConversationMessageCards(
+                                currentUser.getUserId(),
+                                normalizedQuery,
+                                limit
+                        )
+                );
+            } catch (Exception exc) {
+                log.warn("conversation_message_elasticsearch_search_failed_fallback_to_postgres", exc);
+            }
+        }
+        if (results == null) {
+            results = messageRepository.searchOwnedConversationMessageCards(
+                    currentUser.getUserId(),
+                    normalizedQuery,
+                    limit
+            );
+        }
+        return toConversationMessageSearchResponses(results, normalizedQuery);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MessageSearchResponse> searchOwnedMessagesInConversation(
+            UUID conversationId,
+            UserPrincipal currentUser,
+            String query,
+            int page,
+            int size
+    ) {
+        requireAuthenticated(currentUser);
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new ResourceNotFoundException(CONVERSATION_NOT_FOUND + conversationId));
+        if (!conversation.getUserId().equals(currentUser.getUserId()) && !isOperator(currentUser)) {
+            throw new ForbiddenException("Only the conversation owner can search messages");
+        }
+
+        String normalizedQuery = normalizeMessageSearchQuery(query);
+        List<MessageSearchResult> results = messageRepository.searchOwnedMessagesInConversation(
+                conversation.getUserId(),
+                conversationId,
+                normalizedQuery,
+                messageSearchPageRequest(page, size)
+        );
+        return toMessageSearchResponses(results, normalizedQuery);
+    }
+
+    @Transactional
+    public void deleteMessage(UUID conversationId, UUID messageId, UserPrincipal currentUser) {
+        requireAuthenticated(currentUser);
+        Conversation conversation = conversationRepository.findById(conversationId)
+                .orElseThrow(() -> new ResourceNotFoundException(CONVERSATION_NOT_FOUND + conversationId));
+        if (!conversation.getUserId().equals(currentUser.getUserId()) && !isOperator(currentUser)) {
+            throw new ForbiddenException("Only the conversation owner can delete messages");
+        }
+
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new ResourceNotFoundException("Message not found: " + messageId));
+        if (!conversationId.equals(message.getConversationId())) {
+            throw new BadRequestException("Message does not belong to the conversation");
+        }
+
+        messageRepository.deleteById(messageId);
+        int currentCount = conversation.getMessageCount() == null ? 0 : conversation.getMessageCount();
+        conversationRepository.updateMessageCount(conversationId, Math.max(0, currentCount - 1));
+        conversationMessageSearchIndex.deleteMessage(messageId);
+    }
+
     /**
      * Submit user message and trigger AI generation
      */
@@ -107,6 +217,7 @@ public class MessageService {
 
         messageRepository.save(userMessage);
         conversationRepository.incrementMessageCount(conversationId);
+        indexMessageForSearch(conversation, userMessage);
 
         log.info("User message saved: conversationId={}, messageId={}", conversationId, userMessage.getId());
 
@@ -441,6 +552,7 @@ public class MessageService {
         userMessage.setContent(request.getContent().trim());
         messageRepository.save(userMessage);
         conversationRepository.incrementMessageCount(conversationId);
+        indexMessageForSearch(conversation, userMessage);
 
         ChatCompletionContext context = loadChatCompletionContext(conversation);
         AiChatCompletionRequest completionRequest = buildAiChatCompletionRequest(
@@ -464,6 +576,7 @@ public class MessageService {
         assistantMessage.setContent(answer.trim());
         messageRepository.save(assistantMessage);
         conversationRepository.incrementMessageCount(conversationId);
+        indexMessageForSearch(conversationId, assistantMessage);
 
         UUID metadataId = persistRagMetadata(
                 conversationId,
@@ -853,7 +966,7 @@ public class MessageService {
                 prompt,
                 "gemini-2.5-flash",
                 0.7,
-                1024,
+                boundedChatMaxOutputTokens(),
                 0,
                 ragOptions
         );
@@ -896,12 +1009,26 @@ public class MessageService {
             ));
         }
 
-        List<Message> messages = messageRepository.findByConversationId(conversation.getId());
-        int fromIndex = Math.max(0, messages.size() - 7);
-        List<Message> recentMessages = messages.subList(fromIndex, messages.size()).stream()
+        List<Message> recentMessagesDescending = messageRepository.findRecentByConversationId(
+                conversation.getId(),
+                PageRequest.of(
+                        0,
+                        Math.max(1, boundedRecentHistoryMessageLimit() + 1),
+                        Sort.by(Sort.Direction.DESC, "createdAt")
+                )
+        );
+        List<Message> recentMessages = new ArrayList<>(recentMessagesDescending);
+        java.util.Collections.reverse(recentMessages);
+        recentMessages = recentMessages.stream()
                 .filter(message -> !"system".equals(message.getRole()))
                 .filter(message -> !java.util.Objects.equals(message.getId(), userMessage.getId()))
                 .toList();
+        if (recentMessages.size() > boundedRecentHistoryMessageLimit()) {
+            recentMessages = recentMessages.subList(
+                    recentMessages.size() - boundedRecentHistoryMessageLimit(),
+                    recentMessages.size()
+            );
+        }
         if (!recentMessages.isEmpty()) {
             prompt.append("\nRecent conversation\n");
             for (Message message : recentMessages) {
@@ -914,6 +1041,14 @@ public class MessageService {
 
         prompt.append("\nUser message\n").append(userMessage.getContent().trim());
         return truncateForChatRequest(prompt.toString(), userMessage.getContent());
+    }
+
+    private int boundedRecentHistoryMessageLimit() {
+        return Math.max(1, Math.min(recentHistoryMessageLimit, 20));
+    }
+
+    private int boundedChatMaxOutputTokens() {
+        return Math.max(256, Math.min(chatMaxOutputTokens, 2048));
     }
 
     private String resolveRagNovelId(Conversation conversation, ChatCompletionContext context) {
@@ -980,6 +1115,150 @@ public class MessageService {
 
     private String nullToEmpty(String value) {
         return value == null ? "" : value;
+    }
+
+    private void requireAuthenticated(UserPrincipal currentUser) {
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new com.gaji.common.exception.UnauthorizedException("Authentication required");
+        }
+    }
+
+    private String normalizeMessageSearchQuery(String query) {
+        if (query == null || query.isBlank()) {
+            throw new BadRequestException("Search query is required");
+        }
+        String normalized = query.trim().replaceAll("\\s+", " ");
+        normalized = normalized.replace("%", "").replace("_", "");
+        if (normalized.length() < 2) {
+            throw new BadRequestException("Search query must be at least 2 characters");
+        }
+        if (normalized.length() > 100) {
+            return normalized.substring(0, 100);
+        }
+        return normalized;
+    }
+
+    private void indexMessageForSearch(Conversation conversation, Message message) {
+        try {
+            conversationMessageSearchIndex.indexMessage(conversation, message);
+        } catch (Exception exc) {
+            log.warn("conversation_message_search_index_enqueue_failed", exc);
+        }
+    }
+
+    private void indexMessageForSearch(UUID conversationId, Message message) {
+        conversationRepository.findById(conversationId)
+                .ifPresent(conversation -> indexMessageForSearch(conversation, message));
+    }
+
+    private PageRequest messageSearchPageRequest(int page, int size) {
+        return PageRequest.of(Math.max(0, page), Math.max(1, Math.min(size, 50)));
+    }
+
+    private List<MessageSearchResponse> toMessageSearchResponses(
+            List<MessageSearchResult> results,
+            String query
+    ) {
+        return results.stream()
+                .map(result -> MessageSearchResponse.builder()
+                        .messageId(result.messageId())
+                        .conversationId(result.conversationId())
+                        .conversationTitle(result.conversationTitle())
+                        .role(result.role())
+                        .snippet(buildMessageSearchSnippet(result.content(), query, 180))
+                        .createdAt(result.createdAt())
+                        .build())
+                .toList();
+    }
+
+    private List<ConversationMessageSearchResult> toConversationMessageSearchResults(
+            List<ConversationMessageSearchIndexHit> hits
+    ) {
+        return hits.stream()
+                .map(hit -> new ConversationMessageSearchResult(
+                        hit.conversationId(),
+                        hit.conversationTitle(),
+                        hit.messageHitCount(),
+                        hit.lastHitAt(),
+                        hit.matchedContent(),
+                        loadRecentMessagesForSearchCard(hit.conversationId())
+                ))
+                .toList();
+    }
+
+    private List<ConversationMessageSearchResult.RecentMessage> loadRecentMessagesForSearchCard(UUID conversationId) {
+        return messageRepository.findRecentByConversationId(
+                        conversationId,
+                        PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createdAt"))
+                )
+                .stream()
+                .map(message -> new ConversationMessageSearchResult.RecentMessage(
+                        message.getId(),
+                        message.getRole(),
+                        message.getContent(),
+                        message.getCreatedAt()
+                ))
+                .toList();
+    }
+
+    private List<ConversationMessageSearchResponse> toConversationMessageSearchResponses(
+            List<ConversationMessageSearchResult> results,
+            String query
+    ) {
+        return results.stream()
+                .map(result -> {
+                    List<ConversationMessageSearchResponse.RecentMessagePreview> recentMessages =
+                            result.recentMessages().stream()
+                                    .map(recentMessage -> ConversationMessageSearchResponse.RecentMessagePreview.builder()
+                                            .messageId(recentMessage.messageId())
+                                            .role(recentMessage.role())
+                                            .snippet(truncateInline(recentMessage.snippet(), 80))
+                                            .createdAt(recentMessage.createdAt())
+                                            .build())
+                                    .toList();
+                    String snippet = result.matchedContent() == null
+                            ? recentMessages.stream()
+                                    .findFirst()
+                                    .map(ConversationMessageSearchResponse.RecentMessagePreview::getSnippet)
+                                    .orElse("")
+                            : buildMessageSearchSnippet(result.matchedContent(), query, 180);
+
+                    return ConversationMessageSearchResponse.builder()
+                            .conversationId(result.conversationId())
+                            .conversationTitle(result.conversationTitle())
+                            .messageHitCount(result.messageHitCount())
+                            .lastHitAt(result.lastHitAt())
+                            .snippet(snippet)
+                            .recentMessages(recentMessages)
+                            .build();
+                })
+                .toList();
+    }
+
+    private String buildMessageSearchSnippet(String content, String query, int maxLength) {
+        if (content == null || content.isBlank()) {
+            return "";
+        }
+        String normalizedContent = content.replaceAll("\\s+", " ").trim();
+        if (normalizedContent.length() <= maxLength) {
+            return normalizedContent;
+        }
+
+        String lowerContent = normalizedContent.toLowerCase(Locale.ROOT);
+        String lowerQuery = query.toLowerCase(Locale.ROOT);
+        int matchIndex = lowerContent.indexOf(lowerQuery);
+        if (matchIndex < 0) {
+            return truncateInline(normalizedContent, maxLength);
+        }
+
+        int halfWindow = maxLength / 2;
+        int start = Math.max(0, matchIndex - halfWindow);
+        int end = Math.min(normalizedContent.length(), start + maxLength);
+        start = Math.max(0, end - maxLength);
+
+        String prefix = start > 0 ? "..." : "";
+        String suffix = end < normalizedContent.length() ? "..." : "";
+        return prefix + normalizedContent.substring(start, end) + suffix;
     }
 
     private MessageResponse toMessageResponse(Message message) {

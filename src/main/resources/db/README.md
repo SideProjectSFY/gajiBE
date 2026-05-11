@@ -2,20 +2,23 @@
 
 ## Overview
 
-This directory contains Flyway migration scripts for the Gaji PostgreSQL database. The database follows a **hybrid architecture**:
+This directory contains Flyway migration scripts for the Gaji PostgreSQL database. The current RAG storage direction is:
 
-- **PostgreSQL**: Stores metadata only (13 tables, ~100MB for 1000 novels)
-- **VectorDB**: Stores content and embeddings (managed by FastAPI)
+- **PostgreSQL**: Domain metadata, conversation data, RAG passage text, and `pgvector` embeddings
+- **Elasticsearch**: BM25 passage index, citation/source lookup index, and conversation-message search index
+- **Redis**: Cache and short-lived async task state
+
+ChromaDB/Pinecone references in older migrations or comments are legacy compatibility artifacts. New RAG data should use PostgreSQL `pgvector` and Elasticsearch.
 
 ## Architecture
 
-### Database Tables (13 total)
+### Database Tables
 
-#### Core Tables (3)
+#### Core Domain Tables
 
 1. `users` - User authentication and profiles
-2. `novels` - Novel metadata (NO full_text, references VectorDB)
-3. `base_scenarios` - Base scenario metadata (references VectorDB passages)
+2. `novels` - Novel metadata
+3. `base_scenarios` - Base scenario metadata and legacy passage references
 
 #### Scenario Tables (5)
 
@@ -37,7 +40,7 @@ This directory contains Flyway migration scripts for the Gaji PostgreSQL databas
 13. `conversation_likes` - Conversation likes
 14. `conversation_memos` - Personal user memos
 
-### Hybrid Database Design
+### RAG Storage Design
 
 **PostgreSQL Stores:**
 
@@ -45,35 +48,40 @@ This directory contains Flyway migration scripts for the Gaji PostgreSQL databas
 - Scenario metadata and relationships
 - Conversation metadata and structure
 - Social features (follows, likes, memos)
+- RAG passage manifests in `rag_passage_manifests`
+- RAG passage text and embeddings in `rag_passages`
 
-**VectorDB Stores (via FastAPI):**
+**pgvector Stores:**
 
-- Novel passages with embeddings (768 dimensions)
-- Character data with personality embeddings
-- Location/setting data
-- Event/plot data
-- Theme analysis
+- `rag_passages.embedding vector(768)`
+- HNSW cosine index when the installed pgvector version supports it
+- Passage metadata used for filtering by novel, manifest, chapter, and source
 
-**Cross-References:**
+**Elasticsearch Stores:**
 
-- `novels.vectordb_collection_id` → VectorDB collection name
-- `base_scenarios.vectordb_passage_ids[]` → VectorDB passage UUIDs
-- `scenario_character_changes.character_vectordb_id` → VectorDB character UUID
-- `conversations.character_vectordb_id` → VectorDB character UUID
+- Passage documents for BM25 retrieval
+- Exact source lookup documents keyed by canonical passage ID
+- Conversation-message documents for faster message search
+
+**Legacy References:**
+
+- Columns such as `vectordb_collection_id`, `vectordb_passage_ids`, and `character_vectordb_id` still exist in older migrations.
+- Treat those names as compatibility fields unless a new migration explicitly replaces them.
+- Do not add new ChromaDB/Pinecone dependencies for RAG storage.
 
 ## Quick Start
 
-### 1. Start PostgreSQL with Docker
+### 1. Start Local Data Services
 
 ```bash
 # From project root
-docker-compose up -d postgres
+docker compose -f docker-compose.dev.yml up -d postgres elasticsearch redis
 
 # Verify database is running
-docker-compose ps
+docker compose -f docker-compose.dev.yml ps
 
 # Check logs
-docker-compose logs -f postgres
+docker compose -f docker-compose.dev.yml logs -f postgres
 ```
 
 ### 2. Verify Database Connection
@@ -82,10 +90,10 @@ docker-compose logs -f postgres
 # Connect to database
 docker exec -it gaji-postgres psql -U gaji_user -d gaji_db
 
-# Inside psql, verify extensions
+# Inside psql, verify extensions. `vector` should be present for pgvector.
 \dx
 
-# List tables (should be empty before Spring Boot starts)
+# List tables
 \dt
 
 # Exit
@@ -97,8 +105,8 @@ docker exec -it gaji-postgres psql -U gaji_user -d gaji_db
 Flyway migrations will automatically run on startup:
 
 ```bash
-cd backend
-./gradlew bootRun --args='--spring.profiles.active=dev'
+cd gajiBE
+./gradlew :apps:api-app:bootRun --args='--spring.profiles.active=dev'
 ```
 
 ### 4. Verify Migrations
@@ -118,7 +126,7 @@ docker exec -it gaji-postgres psql -U gaji_user -d gaji_db -c "SELECT COUNT(*) F
 
 ### Migration Files
 
-All migrations are in: `backend/src/main/resources/db/migration/`
+All migrations are in: `gajiBE/src/main/resources/db/migration/ddl/`
 
 Naming convention: `V{version}__{description}.sql`
 
@@ -137,6 +145,7 @@ Example:
 6. V9-11: Conversation tables
 7. V12-14: Social features
 8. V15: Development seed data (dev profile only)
+9. V56+: RAG passage manifests, RAG observability, and `rag_passages` pgvector storage
 
 ### Adding New Migrations
 
@@ -302,6 +311,8 @@ Search columns also indexed:
 - novels.title, novels.author
 - users.email, users.username
 - base_scenarios.title
+- rag_passages.embedding through HNSW cosine index when pgvector supports it
+- rag_passages.novel_id/source_novel_id for retrieval filters
 
 ### Query Optimization Tips
 

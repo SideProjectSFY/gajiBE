@@ -2,6 +2,10 @@ package com.gaji.chat.api.controller;
 
 import com.gaji.shared.contract.dto.*;
 import com.gaji.chat.application.ConversationService;
+import com.gaji.chat.application.MessageService;
+import com.gaji.common.exception.UnauthorizedException;
+import com.gaji.common.security.CurrentUser;
+import com.gaji.common.security.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +38,7 @@ import java.util.UUID;
 public class ConversationController {
 
     private final ConversationService conversationService;
+    private final MessageService messageService;
 
     /**
      * Create a new conversation
@@ -53,6 +57,33 @@ public class ConversationController {
         ConversationResponse response = conversationService.createConversation(userId, request);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/messages/search")
+    @Operation(summary = "Search my conversation messages", description = "Searches message text across conversations owned by the authenticated user")
+    @ApiResponse(responseCode = "200", description = "Messages searched successfully")
+    @ApiResponse(responseCode = "401", description = "User not authenticated")
+    public ResponseEntity<List<MessageSearchResponse>> searchMyConversationMessages(
+            @CurrentUser UserPrincipal currentUser,
+            @RequestParam("query") String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        if (currentUser == null || currentUser.getUserId() == null) {
+            throw new UnauthorizedException("Authentication required");
+        }
+
+        log.debug("Searching my conversation messages: userId={}, query={}, page={}, size={}",
+                currentUser.getUserId(), query, page, size);
+
+        List<MessageSearchResponse> responses = messageService.searchOwnedMessages(
+                currentUser,
+                query,
+                page,
+                size
+        );
+
+        return ResponseEntity.ok(responses);
     }
 
     /**

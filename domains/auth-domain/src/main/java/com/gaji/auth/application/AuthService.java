@@ -49,7 +49,6 @@ public class AuthService {
 
         // Create new user
         User user = User.builder()
-                .id(UUID.randomUUID())
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
