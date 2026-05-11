@@ -40,8 +40,8 @@ public class Novel {
     @Column(name = "genre", length = 100)
     private String genre;
 
-    @Column(name = "vectordb_collection_id", length = 255)
-    private String vectordbCollectionId;
+    @Column(name = "pgvector_collection_id", length = 255)
+    private String pgvectorCollectionId;
 
     @Column(name = "gutenberg_id")
     private Integer gutenbergId;

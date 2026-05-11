@@ -25,5 +25,5 @@ COMMENT ON COLUMN novels.status IS 'Novel publication status: DRAFT, PUBLISHED, 
 COMMENT ON COLUMN novels.copyright_note IS 'Detailed copyright information and restrictions';
 COMMENT ON COLUMN novels.metadata IS 'Additional flexible metadata stored as JSONB';
 
--- Note: This keeps existing columns (vectordb_collection_id, ingestion_status, etc.)
+-- Note: This keeps existing columns (pgvector_collection_id, ingestion_status, etc.)
 -- for operational purposes while adding ERD-specified columns for business logic

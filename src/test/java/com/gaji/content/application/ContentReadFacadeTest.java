@@ -38,13 +38,13 @@ class ContentReadFacadeTest {
     }
 
     @Test
-    void getCharacterByVectordbId_delegatesToNovelCharacterService() {
+    void getCharacterByPgvectorId_delegatesToNovelCharacterService() {
         NovelCharacterResponse expected = Mockito.mock(NovelCharacterResponse.class);
-        when(novelCharacterService.getCharacterByVectordbId("char-001")).thenReturn(expected);
+        when(novelCharacterService.getCharacterByPgvectorId("char-001")).thenReturn(expected);
 
-        NovelCharacterResponse actual = contentReadFacade.getCharacterByVectordbId("char-001");
+        NovelCharacterResponse actual = contentReadFacade.getCharacterByPgvectorId("char-001");
 
         assertSame(expected, actual);
-        verify(novelCharacterService).getCharacterByVectordbId("char-001");
+        verify(novelCharacterService).getCharacterByPgvectorId("char-001");
     }
 }

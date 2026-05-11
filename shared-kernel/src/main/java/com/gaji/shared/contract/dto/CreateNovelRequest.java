@@ -32,7 +32,7 @@ public class CreateNovelRequest {
     private String language;
 
     @NotBlank(message = "pgvector collection ID is required")
-    private String vectordbCollectionId;
+    private String pgvectorCollectionId;
 
     private Integer totalPassagesCount;
 

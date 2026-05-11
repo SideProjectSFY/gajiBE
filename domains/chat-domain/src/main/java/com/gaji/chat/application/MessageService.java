@@ -816,7 +816,7 @@ public class MessageService {
                 "Respond naturally and stay in character.",
                 conversation.getScenarioId(),
                 conversation.getScenarioType(),
-                conversation.getCharacterVectordbId()
+                conversation.getCharacterPgvectorId()
         );
     }
 
@@ -827,8 +827,8 @@ public class MessageService {
 
         try {
             scenario = scenarioFacade.getScenario(conversation.getScenarioId());
-            if (conversation.getCharacterVectordbId() != null) {
-                character = contentReadFacade.getCharacterByVectordbId(conversation.getCharacterVectordbId());
+            if (conversation.getCharacterPgvectorId() != null) {
+                character = contentReadFacade.getCharacterByPgvectorId(conversation.getCharacterPgvectorId());
             }
             if (scenario != null && scenario.getNovelId() != null) {
                 novel = contentReadFacade.getNovel(scenario.getNovelId());
@@ -956,8 +956,8 @@ public class MessageService {
     }
 
     private String resolveRagNovelId(Conversation conversation, ChatCompletionContext context) {
-        String characterVectordbId = conversation.getCharacterVectordbId();
-        if (characterVectordbId != null && characterVectordbId.endsWith("_1342")) {
+        String characterPgvectorId = conversation.getCharacterPgvectorId();
+        if (characterPgvectorId != null && characterPgvectorId.endsWith("_1342")) {
             return PRIDE_AND_PREJUDICE_CANONICAL_NOVEL_ID;
         }
         if (context.novel() != null && Integer.valueOf(1342).equals(context.novel().getGutenbergId())) {

@@ -23,7 +23,7 @@ public class ConversationResponse {
     private UUID userId;
     private UUID scenarioId;
     private String scenarioType;
-    private String characterVectordbId;
+    private String characterPgvectorId;
     private UUID parentConversationId;
     private String title;
     private Boolean isRoot;
@@ -53,7 +53,7 @@ public class ConversationResponse {
                 .userId(entity.getUserId())
                 .scenarioId(entity.getScenarioId())
                 .scenarioType(entity.getScenarioType())
-                .characterVectordbId(entity.getCharacterVectordbId())
+                .characterPgvectorId(entity.getCharacterPgvectorId())
                 .parentConversationId(entity.getParentConversationId())
                 .title(entity.getTitle())
                 .isRoot(entity.getIsRoot())

@@ -65,7 +65,7 @@ New RAG data should use PostgreSQL `pgvector` and Elasticsearch.
 
 **Legacy References:**
 
-- Columns such as `vectordb_collection_id`, `vectordb_passage_ids`, and `character_vectordb_id` still exist in older migrations.
+- Columns such as `pgvector_collection_id`, `pgvector_passage_ids`, and `character_pgvector_id` still exist in older migrations.
 - Treat those names as compatibility fields unless a new migration explicitly replaces them.
 
 ## Quick Start

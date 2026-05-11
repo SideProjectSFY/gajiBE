@@ -31,8 +31,8 @@ public class NovelCharacterRepositoryImpl implements NovelCharacterRepository {
     }
 
     @Override
-    public Optional<NovelCharacter> findByVectordbCharacterId(String vectordbCharacterId) {
-        return jpaRepository.findByVectordbCharacterId(vectordbCharacterId);
+    public Optional<NovelCharacter> findByPgvectorCharacterId(String pgvectorCharacterId) {
+        return jpaRepository.findByPgvectorCharacterId(pgvectorCharacterId);
     }
 
     @Override

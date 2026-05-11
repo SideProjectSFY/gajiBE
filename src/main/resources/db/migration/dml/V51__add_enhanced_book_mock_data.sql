@@ -3,7 +3,7 @@
 -- Adding Pride and Prejudice style book data with proper covers, descriptions, and genres
 
 -- Insert realistic classic books with descriptions
-INSERT INTO novels (title, author, publication_year, genre, vectordb_collection_id, ingestion_status, total_passages_count, total_characters_count, description, cover_image_url) VALUES
+INSERT INTO novels (title, author, publication_year, genre, pgvector_collection_id, ingestion_status, total_passages_count, total_characters_count, description, cover_image_url) VALUES
   -- Jane Austen Collection
   ('Pride and Prejudice', 'Jane Austen', 1813, 'Romance', 'novel_pride_prejudice', 'completed', 623, 45, 
    'A romantic novel of manners set in Georgian England. The story follows Elizabeth Bennet as she deals with issues of upbringing, morality, and marriage in the society of the landed gentry.',

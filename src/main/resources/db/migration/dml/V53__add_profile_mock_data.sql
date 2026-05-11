@@ -4,12 +4,12 @@
 -- 1. Create Scenarios for Test Users
 -- Jane Austen (User 1) creates a scenario for Pride and Prejudice
 INSERT INTO root_user_scenarios (
-    id, user_id, novel_id, title, description, 
-    what_if_question, scenario_type, is_private, fork_count, 
+    id, user_id, novel_id, title, description,
+    what_if_question, scenario_type, is_private, fork_count,
     character_changes, event_alterations, setting_modifications,
     created_at, updated_at
 )
-SELECT 
+SELECT
     '660e8400-e29b-41d4-a716-446655440001', -- Specific ID
     '550e8400-e29b-41d4-a716-446655440001', -- Jane Austen
     id,
@@ -28,12 +28,12 @@ FROM novels WHERE title = 'Pride and Prejudice' LIMIT 1;
 
 -- Sherlock Holmes (User 2) creates a scenario for Sherlock Holmes
 INSERT INTO root_user_scenarios (
-    id, user_id, novel_id, title, description, 
+    id, user_id, novel_id, title, description,
     what_if_question, scenario_type, is_private, fork_count,
     character_changes, event_alterations, setting_modifications,
     created_at, updated_at
 )
-SELECT 
+SELECT
     '660e8400-e29b-41d4-a716-446655440002', -- Specific ID
     '550e8400-e29b-41d4-a716-446655440002', -- Sherlock Holmes
     id,
@@ -99,7 +99,7 @@ VALUES (
 -- 4. Create Book Likes
 -- Jane likes Pride and Prejudice
 INSERT INTO book_likes (user_id, book_id, created_at)
-SELECT 
+SELECT
     '550e8400-e29b-41d4-a716-446655440001', -- Jane
     id,
     NOW() - INTERVAL '20 days'
@@ -107,7 +107,7 @@ FROM novels WHERE title = 'Pride and Prejudice';
 
 -- Jane likes Sense and Sensibility
 INSERT INTO book_likes (user_id, book_id, created_at)
-SELECT 
+SELECT
     '550e8400-e29b-41d4-a716-446655440001', -- Jane
     id,
     NOW() - INTERVAL '19 days'
@@ -115,7 +115,7 @@ FROM novels WHERE title = 'Sense and Sensibility';
 
 -- Sherlock likes Sherlock Holmes
 INSERT INTO book_likes (user_id, book_id, created_at)
-SELECT 
+SELECT
     '550e8400-e29b-41d4-a716-446655440002', -- Sherlock
     id,
     NOW() - INTERVAL '15 days'
@@ -124,7 +124,7 @@ FROM novels WHERE title = 'The Adventures of Sherlock Holmes';
 
 -- 5. Create Conversations (for Jane)
 INSERT INTO conversations (
-    id, user_id, scenario_id, scenario_type, character_vectordb_id, 
+    id, user_id, scenario_id, scenario_type, character_pgvector_id,
     title, is_root, message_count, created_at, updated_at
 )
 VALUES (
@@ -142,7 +142,7 @@ VALUES (
 
 -- Messages for the conversation
 INSERT INTO messages (id, conversation_id, sender_id, role, content, created_at)
-VALUES 
+VALUES
 (
     uuid_generate_v4(),
     '770e8400-e29b-41d4-a716-446655440001',

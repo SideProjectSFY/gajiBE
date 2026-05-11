@@ -57,8 +57,8 @@ public class NovelRepositoryImpl implements NovelRepository {
     }
 
     @Override
-    public boolean existsByVectordbCollectionId(String vectordbCollectionId) {
-        return jpaRepository.existsByVectordbCollectionId(vectordbCollectionId);
+    public boolean existsByPgvectorCollectionId(String pgvectorCollectionId) {
+        return jpaRepository.existsByPgvectorCollectionId(pgvectorCollectionId);
     }
 
     @Override
@@ -69,9 +69,9 @@ public class NovelRepositoryImpl implements NovelRepository {
     }
 
     @Override
-    public Optional<Novel> findByVectordbCollectionId(String vectordbCollectionId) {
+    public Optional<Novel> findByPgvectorCollectionId(String pgvectorCollectionId) {
         Novel result = queryFactory.selectFrom(novel)
-                .where(novel.vectordbCollectionId.eq(vectordbCollectionId))
+                .where(novel.pgvectorCollectionId.eq(pgvectorCollectionId))
                 .fetchOne();
         return Optional.ofNullable(result);
     }

@@ -31,7 +31,7 @@ class AiChatProxyControllerTest {
     }
 
     @Test
-    void completeChat_returnsFastApiPayload() throws Exception {
+    void completeChat_returnsProviderPayload() throws Exception {
         AiChatProxyService service = mock(AiChatProxyService.class);
         AiChatProxyController controller = new AiChatProxyController(service);
         UserPrincipal principal = UserPrincipal.builder()

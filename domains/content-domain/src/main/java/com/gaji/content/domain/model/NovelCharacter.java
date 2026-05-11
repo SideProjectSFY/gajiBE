@@ -77,8 +77,8 @@ public class NovelCharacter {
     private String speakingStyleKo;
     
     // pgvector reference
-    @Column(name = "vectordb_character_id")
-    private String vectordbCharacterId;
+    @Column(name = "pgvector_character_id")
+    private String pgvectorCharacterId;
     
     // Character graph metadata
     @Column(name = "char_graph_id")

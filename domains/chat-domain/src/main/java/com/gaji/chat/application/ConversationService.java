@@ -55,13 +55,13 @@ public class ConversationService {
             scenarioType = "root_user"; // Default to root_user
         }
 
-        String characterVectordbId = request.getCharacterVectordbId();
-        if (characterVectordbId == null || characterVectordbId.isEmpty()) {
+        String characterPgvectorId = request.getCharacterPgvectorId();
+        if (characterPgvectorId == null || characterPgvectorId.isEmpty()) {
             // 시나리오에서 캐릭터 정보가 제공되면 사용
-            if (scenario.getCharacterVectordbId() != null) {
-                characterVectordbId = scenario.getCharacterVectordbId();
+            if (scenario.getCharacterPgvectorId() != null) {
+                characterPgvectorId = scenario.getCharacterPgvectorId();
             } else {
-                characterVectordbId = "default-character"; // Default character
+                characterPgvectorId = "default-character"; // Default character
             }
         }
 
@@ -89,7 +89,7 @@ public class ConversationService {
                 .userId(userId)
                 .scenarioId(request.getScenarioId())
                 .scenarioType(scenarioType)
-                .characterVectordbId(characterVectordbId)
+                .characterPgvectorId(characterPgvectorId)
                 .title(request.getTitle())
                 .isRoot(true)
                 .messageCount(initialMessageCount)
@@ -352,7 +352,7 @@ public class ConversationService {
                 .userId(userId)
                 .scenarioId(original.getScenarioId())
                 .scenarioType(original.getScenarioType())
-                .characterVectordbId(original.getCharacterVectordbId())
+                .characterPgvectorId(original.getCharacterPgvectorId())
                 .parentConversationId(original.getId())
                 .title(original.getTitle() != null ? original.getTitle() + " (Fork)" : "Forked Conversation")
                 .isRoot(false)

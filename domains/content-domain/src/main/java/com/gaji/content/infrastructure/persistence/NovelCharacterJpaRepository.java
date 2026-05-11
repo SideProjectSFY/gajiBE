@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface NovelCharacterJpaRepository extends JpaRepository<NovelCharacter, UUID>, QuerydslPredicateExecutor<NovelCharacter> {
-    Optional<NovelCharacter> findByVectordbCharacterId(String vectordbCharacterId);
+    Optional<NovelCharacter> findByPgvectorCharacterId(String pgvectorCharacterId);
     List<NovelCharacter> findByNovelId(UUID novelId);
     List<NovelCharacter> findByNovelIdAndIsMainCharacterTrue(UUID novelId);
 }

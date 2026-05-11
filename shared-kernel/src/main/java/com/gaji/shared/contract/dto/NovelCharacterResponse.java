@@ -32,7 +32,7 @@ public class NovelCharacterResponse {
     private String speakingStyle;
     private String speakingStyleEn;
     private String speakingStyleKo;
-    private String vectordbCharacterId;
+    private String pgvectorCharacterId;
     private Integer charGraphId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -57,7 +57,7 @@ public class NovelCharacterResponse {
                 .speakingStyle(character.getSpeakingStyle())
                 .speakingStyleEn(character.getSpeakingStyleEn())
                 .speakingStyleKo(character.getSpeakingStyleKo())
-                .vectordbCharacterId(character.getVectordbCharacterId())
+                .pgvectorCharacterId(character.getPgvectorCharacterId())
                 .charGraphId(character.getCharGraphId())
                 .createdAt(character.getCreatedAt())
                 .updatedAt(character.getUpdatedAt())

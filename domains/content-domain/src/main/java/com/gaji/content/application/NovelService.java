@@ -28,15 +28,15 @@ public class NovelService {
      */
     @Transactional
     public NovelResponse createNovel(CreateNovelRequest request) {
-        log.info("Creating novel metadata: title={}, vectordbId={}",
-                request.getTitle(), request.getVectordbCollectionId());
+        log.info("Creating novel metadata: title={}, pgvectorId={}",
+                request.getTitle(), request.getPgvectorCollectionId());
 
         // Check if already exists
-        if (novelRepository.existsByVectordbCollectionId(request.getVectordbCollectionId())) {
-            log.warn("Novel already exists with vectordb_collection_id: {}",
-                    request.getVectordbCollectionId());
+        if (novelRepository.existsByPgvectorCollectionId(request.getPgvectorCollectionId())) {
+            log.warn("Novel already exists with pgvector_collection_id: {}",
+                    request.getPgvectorCollectionId());
             throw new IllegalArgumentException(
-                    "Novel already exists with vectordb_collection_id: " + request.getVectordbCollectionId());
+                    "Novel already exists with pgvector_collection_id: " + request.getPgvectorCollectionId());
         }
 
         Novel novel = Novel.builder()
@@ -44,7 +44,7 @@ public class NovelService {
                 .author(request.getAuthor())
                 .publicationYear(request.getPublicationYear())
                 .genre(request.getGenre())
-                .vectordbCollectionId(request.getVectordbCollectionId())
+                .pgvectorCollectionId(request.getPgvectorCollectionId())
                 .totalPassagesCount(request.getTotalPassagesCount())
                 .totalCharactersCount(request.getTotalCharactersCount())
                 .ingestionStatus(request.getIngestionStatus() != null ?
@@ -87,10 +87,10 @@ public class NovelService {
      * Get novel by pgvector collection ID
      */
     @Transactional(readOnly = true)
-    public NovelResponse getNovelByVectordbId(String vectordbCollectionId) {
-        Novel novel = novelRepository.findByVectordbCollectionId(vectordbCollectionId)
+    public NovelResponse getNovelByPgvectorId(String pgvectorCollectionId) {
+        Novel novel = novelRepository.findByPgvectorCollectionId(pgvectorCollectionId)
                 .orElseThrow(() -> new IllegalArgumentException(
-                        "Novel not found with vectordb_collection_id: " + vectordbCollectionId));
+                        "Novel not found with pgvector_collection_id: " + pgvectorCollectionId));
         return NovelResponse.from(novel);
     }
 

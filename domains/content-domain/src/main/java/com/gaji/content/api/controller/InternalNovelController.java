@@ -43,13 +43,13 @@ public class InternalNovelController {
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Novel created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request or novel already exists"),
-            @ApiResponse(responseCode = "409", description = "Novel with vectordb_collection_id already exists")
+            @ApiResponse(responseCode = "409", description = "Novel with pgvector_collection_id already exists")
     })
     public ResponseEntity<NovelResponse> createNovel(
             @Valid @RequestBody CreateNovelRequest request
     ) {
-        log.info("[Internal] Creating novel: title={}, vectordbId={}",
-                request.getTitle(), request.getVectordbCollectionId());
+        log.info("[Internal] Creating novel: title={}, pgvectorId={}",
+                request.getTitle(), request.getPgvectorCollectionId());
 
         try {
             NovelResponse response = novelService.createNovel(request);
@@ -110,17 +110,17 @@ public class InternalNovelController {
     /**
      * Get novel by pgvector collection ID
      */
-    @GetMapping("/by-vectordb/{vectordbCollectionId}")
+    @GetMapping("/by-pgvector/{pgvectorCollectionId}")
     @Operation(summary = "Get novel by pgvector collection ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Novel found"),
             @ApiResponse(responseCode = "404", description = "Novel not found")
     })
-    public ResponseEntity<NovelResponse> getNovelByVectordbId(
-            @Parameter(description = "pgvector collection ID") @PathVariable String vectordbCollectionId
+    public ResponseEntity<NovelResponse> getNovelByPgvectorId(
+            @Parameter(description = "pgvector collection ID") @PathVariable String pgvectorCollectionId
     ) {
         try {
-            NovelResponse response = novelService.getNovelByVectordbId(vectordbCollectionId);
+            NovelResponse response = novelService.getNovelByPgvectorId(pgvectorCollectionId);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();

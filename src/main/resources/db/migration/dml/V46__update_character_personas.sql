@@ -10,7 +10,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -74,7 +74,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -127,7 +127,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -181,7 +181,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -246,7 +246,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -314,7 +314,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -374,7 +374,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -432,7 +432,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -493,7 +493,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -553,7 +553,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -624,7 +624,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -690,7 +690,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -753,7 +753,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -817,7 +817,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -870,7 +870,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -918,7 +918,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -973,7 +973,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1031,7 +1031,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1094,7 +1094,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1150,7 +1150,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1223,7 +1223,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1287,7 +1287,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1350,7 +1350,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1407,7 +1407,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1470,7 +1470,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1520,7 +1520,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1605,7 +1605,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1663,7 +1663,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1736,7 +1736,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1790,7 +1790,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1847,7 +1847,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1907,7 +1907,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -1962,7 +1962,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2021,7 +2021,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2080,7 +2080,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2142,7 +2142,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2217,7 +2217,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2300,7 +2300,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2373,7 +2373,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2428,7 +2428,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2485,7 +2485,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2539,7 +2539,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2609,7 +2609,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2671,7 +2671,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2739,7 +2739,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2840,7 +2840,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -2961,7 +2961,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -3017,7 +3017,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -3081,7 +3081,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -3141,7 +3141,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -3211,7 +3211,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,
@@ -3267,7 +3267,7 @@ INSERT INTO characters (
     novel_id, common_name, is_main_character,
     persona, persona_en, persona_ko,
     speaking_style, speaking_style_en, speaking_style_ko,
-    vectordb_character_id
+    pgvector_character_id
 )
 SELECT
     n.id,

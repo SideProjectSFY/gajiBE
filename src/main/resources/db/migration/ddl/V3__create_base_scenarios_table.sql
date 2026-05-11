@@ -7,7 +7,7 @@ CREATE TABLE base_scenarios (
     base_story VARCHAR(100) NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    vectordb_passage_ids TEXT[],
+    pgvector_passage_ids TEXT[],
     chapter_number INTEGER,
     page_range VARCHAR(50),
     character_summary TEXT,
@@ -17,7 +17,7 @@ CREATE TABLE base_scenarios (
     tags TEXT[],
     is_verified BOOLEAN DEFAULT false,
     creator_id UUID REFERENCES users(id),
-    character_vectordb_ids TEXT[],
+    character_pgvector_ids TEXT[],
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -28,5 +28,5 @@ CREATE INDEX idx_base_scenarios_title ON base_scenarios(title);
 
 -- Add comments for documentation
 COMMENT ON TABLE base_scenarios IS 'Base scenarios extracted from novels, references pgvector for content';
-COMMENT ON COLUMN base_scenarios.vectordb_passage_ids IS 'Array of pgvector passage IDs that define this scenario';
-COMMENT ON COLUMN base_scenarios.character_vectordb_ids IS 'Array of pgvector character IDs involved in scenario';
+COMMENT ON COLUMN base_scenarios.pgvector_passage_ids IS 'Array of pgvector passage IDs that define this scenario';
+COMMENT ON COLUMN base_scenarios.character_pgvector_ids IS 'Array of pgvector character IDs involved in scenario';

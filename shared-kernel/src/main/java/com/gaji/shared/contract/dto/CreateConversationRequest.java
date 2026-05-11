@@ -24,7 +24,7 @@ public class CreateConversationRequest {
     private String scenarioType; // 'root_user' or 'leaf_user'
 
     // Optional: Will use default character if not provided
-    private String characterVectordbId;
+    private String characterPgvectorId;
 
     private String title;
 

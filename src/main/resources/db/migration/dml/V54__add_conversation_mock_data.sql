@@ -11,19 +11,19 @@
 -- (We'll just use subqueries in the INSERTs)
 
 -- Base Scenario: Pride and Prejudice (Elizabeth)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
+INSERT INTO base_scenarios (novel_id, base_story, title, description, pgvector_passage_ids, character_pgvector_ids)
 SELECT id, 'pride_and_prejudice_liz', 'Elizabeth Bennet Character Study', 'Focus on Elizabeth Bennet', ARRAY['uuid1'], ARRAY['elizabeth_bennet_1342']
 FROM novels WHERE title = 'Pride and Prejudice'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Elizabeth Bennet Character Study');
 
 -- Base Scenario: The Great Gatsby (Gatsby)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
+INSERT INTO base_scenarios (novel_id, base_story, title, description, pgvector_passage_ids, character_pgvector_ids)
 SELECT id, 'gatsby_main', 'Jay Gatsby Character Study', 'Focus on Jay Gatsby', ARRAY['uuid2'], ARRAY['gatsby_64317']
 FROM novels WHERE title = 'The Great Gatsby'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Jay Gatsby Character Study');
 
 -- Base Scenario: Pride and Prejudice (Darcy)
-INSERT INTO base_scenarios (novel_id, base_story, title, description, vectordb_passage_ids, character_vectordb_ids)
+INSERT INTO base_scenarios (novel_id, base_story, title, description, pgvector_passage_ids, character_pgvector_ids)
 SELECT id, 'pride_and_prejudice_darcy', 'Mr. Darcy Character Study', 'Focus on Mr. Darcy', ARRAY['uuid3'], ARRAY['darcy_1342']
 FROM novels WHERE title = 'Pride and Prejudice'
 AND NOT EXISTS (SELECT 1 FROM base_scenarios WHERE title = 'Mr. Darcy Character Study');
@@ -46,7 +46,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'alice_wonder' LIMIT 
          FROM target_user u, target_base b
          RETURNING id
      )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
+INSERT INTO conversations (user_id, scenario_id, scenario_type, character_pgvector_id, title, message_count, like_count, is_private)
 SELECT 
     u.id, s.id, 'root_user', 'elizabeth_bennet_1342', 'Elizabeth Bennet', 1546, 342, false
 FROM target_user u, inserted_scenario s;
@@ -63,7 +63,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'bob_reader' LIMIT 1)
         FROM target_user u, target_base b
         RETURNING id
     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
+INSERT INTO conversations (user_id, scenario_id, scenario_type, character_pgvector_id, title, message_count, like_count, is_private)
 SELECT 
     u.id, s.id, 'root_user', 'gatsby_64317', 'Jay Gatsby', 1734, 892, false
 FROM target_user u, inserted_scenario s;
@@ -80,7 +80,7 @@ WITH target_user AS (SELECT id FROM users WHERE username = 'grace_novelist' LIMI
         FROM target_user u, target_base b
         RETURNING id
     )
-INSERT INTO conversations (user_id, scenario_id, scenario_type, character_vectordb_id, title, message_count, like_count, is_private)
+INSERT INTO conversations (user_id, scenario_id, scenario_type, character_pgvector_id, title, message_count, like_count, is_private)
 SELECT 
     u.id, s.id, 'root_user', 'darcy_1342', 'Mr. Fitzwilliam Darcy', 1523, 765, false
 FROM target_user u, inserted_scenario s;

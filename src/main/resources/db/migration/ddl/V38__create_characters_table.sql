@@ -23,7 +23,7 @@ CREATE TABLE characters (
     speaking_style_ko TEXT,
     
     -- pgvector reference (for character embeddings)
-    vectordb_character_id VARCHAR(100),
+    pgvector_character_id VARCHAR(100),
     
     -- Character graph metadata
     char_graph_id INTEGER, -- Original ID from char_graph JSON
@@ -39,7 +39,7 @@ CREATE TABLE characters (
 -- Indexes
 CREATE INDEX idx_characters_novel ON characters(novel_id);
 CREATE INDEX idx_characters_main ON characters(is_main_character);
-CREATE INDEX idx_characters_vectordb ON characters(vectordb_character_id);
+CREATE INDEX idx_characters_pgvector ON characters(pgvector_character_id);
 
 -- Comments
 COMMENT ON TABLE characters IS 'Novel character information for AI conversations';

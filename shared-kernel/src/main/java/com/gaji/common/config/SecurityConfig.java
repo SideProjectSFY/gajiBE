@@ -63,14 +63,16 @@ public class SecurityConfig {
                     "/api/v1/auth/**",       // Authentication endpoints (v1)
                     "/api/v1/system/**",     // System health endpoints
                     "/api/v1/novels/**",     // Novel endpoints (public browsing)
-                    "/api/v1/internal/**",   // Internal API
-                    "/api/v1/ai/**",         // AI endpoints
                     "/actuator/health",      // Health check
                     "/swagger-ui.html",      // Swagger UI (legacy path)
                     "/swagger-ui/**",        // Swagger UI
                     "/v3/api-docs/**",       // OpenAPI docs
                     "/error"                 // Error handling
                 ).permitAll()
+
+                // Internal and AI endpoints require an authenticated Spring principal.
+                .requestMatchers("/api/v1/internal/**").authenticated()
+                .requestMatchers("/api/v1/ai/**").authenticated()
                 
                 // Protected Book endpoints
                 .requestMatchers("/api/v1/books/*/liked").authenticated()

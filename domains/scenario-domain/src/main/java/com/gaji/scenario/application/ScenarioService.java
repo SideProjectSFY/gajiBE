@@ -216,7 +216,7 @@ public class ScenarioService {
                     // Root 시나리오의 첫 대화에서 캐릭터 정보 가져오기
                     conversationFacade.findFirstByScenarioId(root.getId())
                             .ifPresent(conv -> {
-                                response.setCharacterVectordbId(conv.getCharacterVectordbId());
+                                response.setCharacterPgvectorId(conv.getCharacterPgvectorId());
                             });
                     return response;
                 })
@@ -247,13 +247,13 @@ public class ScenarioService {
                                     // 기준 대화가 있으면 그 대화의 캐릭터 정보 사용
                                     conversationFacade.findById(refConvId)
                                             .ifPresent(conv -> {
-                                                response.setCharacterVectordbId(conv.getCharacterVectordbId());
+                                                response.setCharacterPgvectorId(conv.getCharacterPgvectorId());
                                             });
                                 } else {
                                     // 없으면 첫 대화의 캐릭터 정보 사용
                                     conversationFacade.findFirstByScenarioId(parent.getId())
                                             .ifPresent(conv -> {
-                                                response.setCharacterVectordbId(conv.getCharacterVectordbId());
+                                                response.setCharacterPgvectorId(conv.getCharacterPgvectorId());
                                             });
                                 }
                             });
@@ -524,15 +524,15 @@ public class ScenarioService {
         if (referenceConvId != null) {
             conversationFacade.findById(referenceConvId)
                     .ifPresent(refConversation -> {
-                        response.setCharacterVectordbId(refConversation.getCharacterVectordbId());
-                        log.info("Using reference conversation character: {}", refConversation.getCharacterVectordbId());
+                        response.setCharacterPgvectorId(refConversation.getCharacterPgvectorId());
+                        log.info("Using reference conversation character: {}", refConversation.getCharacterPgvectorId());
                     });
             response.setReferenceConversationId(referenceConvId);
         } else {
             conversationFacade.findFirstByScenarioId(parentId)
                     .ifPresent(originalConversation -> {
-                        response.setCharacterVectordbId(originalConversation.getCharacterVectordbId());
-                        log.info("Found original conversation character: {}", originalConversation.getCharacterVectordbId());
+                        response.setCharacterPgvectorId(originalConversation.getCharacterPgvectorId());
+                        log.info("Found original conversation character: {}", originalConversation.getCharacterPgvectorId());
                     });
         }
         

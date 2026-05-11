@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface NovelRepositoryCustom {
     List<Novel> findByIngestionStatus(String ingestionStatus);
-    Optional<Novel> findByVectordbCollectionId(String vectordbCollectionId);
+    Optional<Novel> findByPgvectorCollectionId(String pgvectorCollectionId);
     // Add new methods as needed for complex queries involving dynamic parameters
 }

@@ -4,7 +4,7 @@
 -- ============================================
 -- The Adventures of Sherlock Holmes (gutenberg_id: 1661)
 -- ============================================
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Sherlock Holmes',
@@ -24,7 +24,7 @@ FROM novels n
 WHERE n.title = 'The Adventures of Sherlock Holmes'
 ON CONFLICT (novel_id, common_name) DO NOTHING;
 
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Dr. Watson',
@@ -45,7 +45,7 @@ ON CONFLICT (novel_id, common_name) DO NOTHING;
 -- ============================================
 -- Pride and Prejudice (gutenberg_id: 1342)
 -- ============================================
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Elizabeth Bennet',
@@ -61,7 +61,7 @@ FROM novels n
 WHERE n.title = 'Pride and Prejudice'
 ON CONFLICT (novel_id, common_name) DO NOTHING;
 
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Fitzwilliam Darcy',
@@ -80,7 +80,7 @@ ON CONFLICT (novel_id, common_name) DO NOTHING;
 -- ============================================
 -- Frankenstein (gutenberg_id: 84)
 -- ============================================
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Victor Frankenstein',
@@ -96,7 +96,7 @@ FROM novels n
 WHERE n.title = 'Frankenstein'
 ON CONFLICT (novel_id, common_name) DO NOTHING;
 
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'The Creature',
@@ -115,7 +115,7 @@ ON CONFLICT (novel_id, common_name) DO NOTHING;
 -- ============================================
 -- The Great Gatsby (gutenberg_id: 64317)
 -- ============================================
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Nick Carraway',
@@ -131,7 +131,7 @@ FROM novels n
 WHERE n.title = 'The Great Gatsby'
 ON CONFLICT (novel_id, common_name) DO NOTHING;
 
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Jay Gatsby',
@@ -150,7 +150,7 @@ ON CONFLICT (novel_id, common_name) DO NOTHING;
 -- ============================================
 -- The Adventures of Tom Sawyer (gutenberg_id: 74)
 -- ============================================
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Tom Sawyer',
@@ -166,7 +166,7 @@ FROM novels n
 WHERE n.title = 'The Adventures of Tom Sawyer'
 ON CONFLICT (novel_id, common_name) DO NOTHING;
 
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Huckleberry Finn',
@@ -185,7 +185,7 @@ ON CONFLICT (novel_id, common_name) DO NOTHING;
 -- ============================================
 -- Romeo and Juliet (gutenberg_id: 1513)
 -- ============================================
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Romeo',
@@ -201,7 +201,7 @@ FROM novels n
 WHERE n.gutenberg_id = 1513
 ON CONFLICT (novel_id, common_name) DO NOTHING;
 
-INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, vectordb_character_id)
+INSERT INTO characters (novel_id, common_name, is_main_character, persona, persona_en, persona_ko, speaking_style, speaking_style_en, speaking_style_ko, pgvector_character_id)
 SELECT 
     n.id,
     'Juliet',

@@ -54,12 +54,12 @@ public class NovelCharacterService {
     }
 
     /**
-     * Get character by vectordb character ID
+     * Get character by pgvector character ID
      */
     @Transactional(readOnly = true)
-    public NovelCharacterResponse getCharacterByVectordbId(String vectordbCharacterId) {
-        log.debug("Fetching character by vectordb ID: {}", vectordbCharacterId);
-        return characterRepository.findByVectordbCharacterId(vectordbCharacterId)
+    public NovelCharacterResponse getCharacterByPgvectorId(String pgvectorCharacterId) {
+        log.debug("Fetching character by pgvector ID: {}", pgvectorCharacterId);
+        return characterRepository.findByPgvectorCharacterId(pgvectorCharacterId)
                 .map(NovelCharacterResponse::from)
                 .orElse(null); // Return null if not found (for optional data)
     }

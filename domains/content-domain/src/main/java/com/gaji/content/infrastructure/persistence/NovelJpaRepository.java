@@ -10,10 +10,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface NovelJpaRepository extends JpaRepository<Novel, UUID>, QuerydslPredicateExecutor<Novel> {
-    
+
     @Query("SELECT n FROM Novel n WHERE n.gutenbergId = :gutenbergId")
     Optional<Novel> findByGutenbergId(@Param("gutenbergId") Integer gutenbergId);
 
-    @Query("SELECT CASE WHEN COUNT(n) > 0 THEN true ELSE false END FROM Novel n WHERE n.vectordbCollectionId = :vectordbCollectionId")
-    boolean existsByVectordbCollectionId(@Param("vectordbCollectionId") String vectordbCollectionId);
+    @Query("SELECT CASE WHEN COUNT(n) > 0 THEN true ELSE false END FROM Novel n WHERE n.pgvectorCollectionId = :pgvectorCollectionId")
+    boolean existsByPgvectorCollectionId(@Param("pgvectorCollectionId") String pgvectorCollectionId);
 }

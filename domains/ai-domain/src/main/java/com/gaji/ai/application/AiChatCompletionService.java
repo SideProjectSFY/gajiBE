@@ -454,9 +454,8 @@ public class AiChatCompletionService {
 
     private String fallbackAnswer(RagSearchResult ragResult) {
         if (ragResult.enabled() && !ragResult.contextPassages().isEmpty()) {
-            PassageHit first = ragResult.contextPassages().get(0);
             return "I found relevant story context, but the AI provider is not available right now. "
-                    + "The strongest retrieved passage begins: \"" + truncate(first.text(), 240) + "\"";
+                    + "Please use the available citation metadata to inspect source passages.";
         }
         return "AI generation is currently unavailable, and no grounded passage context was found for this turn.";
     }

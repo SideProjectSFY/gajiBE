@@ -33,8 +33,8 @@ public class Conversation {
     @Column(name = "scenario_type", length = 50)
     private String scenarioType;
 
-    @Column(name = "character_vectordb_id", length = 100)
-    private String characterVectordbId;
+    @Column(name = "character_pgvector_id", length = 100)
+    private String characterPgvectorId;
 
     @Column(name = "parent_conversation_id")
     private UUID parentConversationId;

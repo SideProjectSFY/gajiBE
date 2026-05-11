@@ -21,7 +21,7 @@ public class ContentReadFacade {
     }
 
     @Transactional(readOnly = true)
-    public NovelCharacterResponse getCharacterByVectordbId(String vectordbId) {
-        return novelCharacterService.getCharacterByVectordbId(vectordbId);
+    public NovelCharacterResponse getCharacterByPgvectorId(String pgvectorId) {
+        return novelCharacterService.getCharacterByPgvectorId(pgvectorId);
     }
 }

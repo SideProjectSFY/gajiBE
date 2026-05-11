@@ -6,7 +6,7 @@ CREATE TABLE conversations (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     scenario_id UUID NOT NULL,
     scenario_type VARCHAR(20) NOT NULL CHECK (scenario_type IN ('root_user', 'leaf_user')),
-    character_vectordb_id VARCHAR(100) NOT NULL,
+    character_pgvector_id VARCHAR(100) NOT NULL,
     parent_conversation_id UUID REFERENCES conversations(id) ON DELETE SET NULL,
     title VARCHAR(255),
     is_root BOOLEAN DEFAULT true,
@@ -24,13 +24,13 @@ CREATE TABLE conversations (
 -- Indexes for query performance
 CREATE INDEX idx_conversations_user ON conversations(user_id);
 CREATE INDEX idx_conversations_scenario ON conversations(scenario_id);
-CREATE INDEX idx_conversations_character ON conversations(character_vectordb_id);
+CREATE INDEX idx_conversations_character ON conversations(character_pgvector_id);
 CREATE INDEX idx_conversations_parent ON conversations(parent_conversation_id);
 CREATE INDEX idx_conversations_created ON conversations(created_at DESC);
 
 -- Add comments for documentation
 COMMENT ON TABLE conversations IS 'AI character conversations with ROOT-only forking (max depth 1)';
-COMMENT ON COLUMN conversations.character_vectordb_id IS 'pgvector character ID being conversed with';
+COMMENT ON COLUMN conversations.character_pgvector_id IS 'pgvector character ID being conversed with';
 COMMENT ON COLUMN conversations.parent_conversation_id IS 'Parent conversation if forked (ROOT only, max depth 1)';
 COMMENT ON COLUMN conversations.is_root IS 'TRUE for root conversations, FALSE for forked (child) conversations';
 
