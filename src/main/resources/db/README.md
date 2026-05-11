@@ -8,7 +8,7 @@ This directory contains Flyway migration scripts for the Gaji PostgreSQL databas
 - **Elasticsearch**: BM25 passage index, citation/source lookup index, and conversation-message search index
 - **Redis**: Cache and short-lived async task state
 
-ChromaDB/Pinecone references in older migrations or comments are legacy compatibility artifacts. New RAG data should use PostgreSQL `pgvector` and Elasticsearch.
+New RAG data should use PostgreSQL `pgvector` and Elasticsearch.
 
 ## Architecture
 
@@ -67,7 +67,6 @@ ChromaDB/Pinecone references in older migrations or comments are legacy compatib
 
 - Columns such as `vectordb_collection_id`, `vectordb_passage_ids`, and `character_vectordb_id` still exist in older migrations.
 - Treat those names as compatibility fields unless a new migration explicitly replaces them.
-- Do not add new ChromaDB/Pinecone dependencies for RAG storage.
 
 ## Quick Start
 
