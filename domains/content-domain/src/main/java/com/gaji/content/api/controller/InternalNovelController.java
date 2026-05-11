@@ -20,7 +20,6 @@ import java.util.UUID;
 
 /**
  * Internal API controller for novel metadata operations.
- * Called by FastAPI import script (Pattern B architecture).
  *
  * These endpoints are for internal service-to-service communication only.
  */
@@ -28,18 +27,18 @@ import java.util.UUID;
 @RequestMapping("/api/v1/internal/novels")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Internal - Novels", description = "Internal API for novel metadata (FastAPI → Spring Boot)")
+@Tag(name = "Internal - Novels", description = "Internal API for novel metadata")
 public class InternalNovelController {
 
     private final NovelService novelService;
 
     /**
-     * Create novel metadata from VectorDB import script
+     * Create novel metadata from an ingestion script.
      */
     @PostMapping
     @Operation(
             summary = "Create novel metadata",
-            description = "Creates novel metadata in PostgreSQL. Called by FastAPI import script after VectorDB import."
+            description = "Creates novel metadata in PostgreSQL after passage ingestion."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Novel created successfully"),
@@ -109,16 +108,16 @@ public class InternalNovelController {
     }
 
     /**
-     * Get novel by VectorDB collection ID
+     * Get novel by pgvector collection ID
      */
     @GetMapping("/by-vectordb/{vectordbCollectionId}")
-    @Operation(summary = "Get novel by VectorDB collection ID")
+    @Operation(summary = "Get novel by pgvector collection ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Novel found"),
             @ApiResponse(responseCode = "404", description = "Novel not found")
     })
     public ResponseEntity<NovelResponse> getNovelByVectordbId(
-            @Parameter(description = "VectorDB collection ID") @PathVariable String vectordbCollectionId
+            @Parameter(description = "pgvector collection ID") @PathVariable String vectordbCollectionId
     ) {
         try {
             NovelResponse response = novelService.getNovelByVectordbId(vectordbCollectionId);

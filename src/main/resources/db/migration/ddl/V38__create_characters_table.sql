@@ -22,7 +22,7 @@ CREATE TABLE characters (
     speaking_style_en TEXT,
     speaking_style_ko TEXT,
     
-    -- VectorDB reference (for character embeddings)
+    -- pgvector reference (for character embeddings)
     vectordb_character_id VARCHAR(100),
     
     -- Character graph metadata

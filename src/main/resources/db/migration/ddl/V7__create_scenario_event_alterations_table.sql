@@ -25,6 +25,6 @@ CREATE INDEX idx_scenario_event_alt_type ON scenario_event_alterations(alteratio
 
 -- Add comments for documentation
 COMMENT ON TABLE scenario_event_alterations IS 'Event/plot modifications in user scenarios';
-COMMENT ON COLUMN scenario_event_alterations.event_vectordb_id IS 'VectorDB event ID being altered';
+COMMENT ON COLUMN scenario_event_alterations.event_vectordb_id IS 'pgvector event ID being altered';
 COMMENT ON COLUMN scenario_event_alterations.alteration_type IS 'Type of change: prevented, modified, added';
 COMMENT ON COLUMN scenario_event_alterations.reasoning IS 'User explanation for why this event was altered';

@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handle FastAPI proxy errors
+     * Handle outbound HTTP client errors.
      */
     @ExceptionHandler(WebClientResponseException.class)
     public ResponseEntity<Map<String, Object>> handleWebClientResponseException(
@@ -58,11 +58,11 @@ public class GlobalExceptionHandler {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", LocalDateTime.now());
         response.put("status", ex.getStatusCode().value());
-        response.put("error", "FastAPI Service Error");
+        response.put("error", "External Service Error");
         response.put("message", ex.getMessage());
-        response.put("service", "FastAPI");
+        response.put("service", "webclient");
         
-        log.error("FastAPI error: {} - {}", ex.getStatusCode(), ex.getMessage());
+        log.error("Outbound HTTP error: {} - {}", ex.getStatusCode(), ex.getMessage());
         
         return ResponseEntity.status(ex.getStatusCode()).body(response);
     }

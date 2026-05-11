@@ -63,8 +63,8 @@ public class SecurityConfig {
                     "/api/v1/auth/**",       // Authentication endpoints (v1)
                     "/api/v1/system/**",     // System health endpoints
                     "/api/v1/novels/**",     // Novel endpoints (public browsing)
-                    "/api/v1/internal/**",   // Internal API (FastAPI → Spring Boot, no auth required)
-                    "/api/v1/ai/**",         // AI Proxy endpoints (FastAPI proxy, public access)
+                    "/api/v1/internal/**",   // Internal API
+                    "/api/v1/ai/**",         // AI endpoints
                     "/actuator/health",      // Health check
                     "/swagger-ui.html",      // Swagger UI (legacy path)
                     "/swagger-ui/**",        // Swagger UI

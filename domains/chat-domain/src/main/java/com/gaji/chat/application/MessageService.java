@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -55,7 +54,6 @@ public class MessageService {
     private final ConversationRepository conversationRepository;
     private final MessageRepository messageRepository;
     private final ConversationFacade conversationFacade;
-    private final WebClient.Builder webClientBuilder;
     private final RedisTemplate<String, String> redisTemplate;
     private final ScenarioFacade scenarioFacade;
     private final ContentReadFacade contentReadFacade;
@@ -63,9 +61,6 @@ public class MessageService {
     private final TransactionTemplate transactionTemplate;
     private final RagChatTurnMetadataRepository ragChatTurnMetadataRepository;
     private final ConversationMessageSearchIndex conversationMessageSearchIndex;
-
-    @Value("${fastapi.base-url:http://localhost:8000}")
-    private String fastApiUrl;
 
     @Value("${gaji.ai.chat.recent-history-message-limit:7}")
     private int recentHistoryMessageLimit;
@@ -220,101 +215,10 @@ public class MessageService {
         indexMessageForSearch(conversation, userMessage);
 
         log.info("User message saved: conversationId={}, messageId={}", conversationId, userMessage.getId());
-
-        // Get conversation history for AI context
-        List<Message> messages = messageRepository.findByConversationId(conversationId);
-        List<FastAPIGenerationRequest.MessageHistory> history = messages.stream()
-                .filter(msg -> !msg.getId().equals(userMessage.getId())) // Exclude the just-saved message
-                .map(msg -> FastAPIGenerationRequest.MessageHistory.builder()
-                        .role(msg.getRole())
-                        .content(msg.getContent())
-                        .build())
-                .collect(Collectors.toList());
-
-        // Build scenario context (system prompt)
-        String scenarioContext = buildScenarioContext(conversation);
-
-        // Fetch scenario, character, and book data to send to FastAPI
-        UUID scenarioId = conversation.getScenarioId();
-        String characterVectordbId = conversation.getCharacterVectordbId();
-        
-        ScenarioResponse scenario = null;
-        NovelCharacterResponse character = null;
-        NovelResponse novel = null;
-        
-        try {
-            // Get scenario data
-            scenario = scenarioFacade.getScenario(scenarioId);
-            
-            // Get character data from vectordbId (직접 DB 조회)
-            if (characterVectordbId != null) {
-                character = contentReadFacade.getCharacterByVectordbId(characterVectordbId);
-                
-                if (character == null) {
-                    log.warn("Character not found for vectordbId: {}", characterVectordbId);
-                }
-            }
-            
-            // Get book data if available
-            if (scenario.getNovelId() != null) {
-                novel = contentReadFacade.getNovel(scenario.getNovelId());
-            }
-        } catch (Exception e) {
-            log.warn("Failed to fetch scenario/character/novel data: {}", e.getMessage());
-            // Continue with null values - FastAPI will use fallback
-        }
-
-        // Call FastAPI to trigger AI generation
-        FastAPIGenerationRequest.FastAPIGenerationRequestBuilder requestBuilder = FastAPIGenerationRequest.builder()
-                .conversationId(conversationId.toString())
-                .scenarioId(scenarioId.toString())
-                .scenarioContext(scenarioContext)
-                .userMessage(request.getContent())
-                .history(history);
-        
-        // Add scenario details if available
-        if (scenario != null) {
-            requestBuilder
-                    .whatIfQuestion(scenario.getWhatIfQuestion())
-                    .characterChanges(scenario.getCharacterChanges())
-                    .eventAlterations(scenario.getEventAlterations())
-                    .settingModifications(scenario.getSettingModifications());
-        }
-        
-        // Add character details if available
-        if (character != null) {
-            requestBuilder
-                    .characterName(character.getCommonName())
-                    .characterPersona(character.getPersona())
-                    .characterSpeakingStyle(character.getSpeakingStyle());
-        }
-        
-        // Add book details if available
-        if (novel != null) {
-            requestBuilder
-                    .bookTitle(novel.getTitle())
-                    .bookAuthor(novel.getAuthor());
-        }
-        
-        FastAPIGenerationRequest fastApiRequest = requestBuilder.build();
-
-        log.info("Triggering AI generation: conversationId={}, scenarioId={}", conversationId, scenarioId);
-
-        try {
-            webClientBuilder.build()
-                    .post()
-                    .uri(fastApiUrl + "/api/ai/generate")
-                    .bodyValue(fastApiRequest)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .block();
-            
-            log.info("AI generation triggered successfully: conversationId={}", conversationId);
-
-        } catch (Exception e) {
-            log.error("Failed to trigger AI generation: conversationId={}", conversationId, e);
-            // Continue - polling will handle timeout/fallback
-        }
+        log.info(
+                "Legacy async AI generation is retired; use /chat-completion for Spring pgvector/Elasticsearch RAG. conversationId={}",
+                conversationId
+        );
 
         return MessageResponse.builder()
                 .id(userMessage.getId())

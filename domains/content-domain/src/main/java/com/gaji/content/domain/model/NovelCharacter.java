@@ -76,7 +76,7 @@ public class NovelCharacter {
     @Column(name = "speaking_style_ko", columnDefinition = "TEXT")
     private String speakingStyleKo;
     
-    // VectorDB reference
+    // pgvector reference
     @Column(name = "vectordb_character_id")
     private String vectordbCharacterId;
     

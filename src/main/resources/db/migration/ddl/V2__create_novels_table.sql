@@ -1,5 +1,5 @@
 -- V2: Create novels table (METADATA ONLY - NO full_text column)
--- References VectorDB for content storage via vectordb_collection_id
+-- References pgvector for content storage via vectordb_collection_id
 
 CREATE TABLE novels (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -33,7 +33,7 @@ CREATE INDEX idx_novels_vectordb ON novels(vectordb_collection_id);
 CREATE INDEX idx_novels_status ON novels(ingestion_status);
 
 -- Add comments for documentation
-COMMENT ON TABLE novels IS 'Novel metadata only - content stored in VectorDB';
-COMMENT ON COLUMN novels.vectordb_collection_id IS 'VectorDB collection identifier for novel passages';
+COMMENT ON TABLE novels IS 'Novel metadata only - content stored in pgvector';
+COMMENT ON COLUMN novels.vectordb_collection_id IS 'pgvector collection identifier for novel passages';
 COMMENT ON COLUMN novels.ingestion_status IS 'Novel processing status: pending, processing, completed, failed';
-COMMENT ON COLUMN novels.total_passages_count IS 'Total number of passages stored in VectorDB';
+COMMENT ON COLUMN novels.total_passages_count IS 'Total number of passages stored in pgvector';

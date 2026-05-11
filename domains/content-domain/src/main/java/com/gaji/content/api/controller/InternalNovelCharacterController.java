@@ -17,7 +17,6 @@ import java.util.UUID;
 
 /**
  * Internal API controller for character operations.
- * Called by FastAPI for character information.
  *
  * These endpoints are for internal service-to-service communication only.
  */
@@ -25,7 +24,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/internal/novels/{novelId}/characters")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Internal Novel Character API", description = "Internal API for character operations (FastAPI only)")
+@Tag(name = "Internal Novel Character API", description = "Internal API for character operations")
 public class InternalNovelCharacterController {
 
     private final NovelCharacterService characterService;
@@ -36,7 +35,7 @@ public class InternalNovelCharacterController {
     @GetMapping
     @Operation(
             summary = "Get characters by novel ID",
-            description = "Returns all characters for a specific novel. Used by FastAPI for AI conversation generation."
+            description = "Returns all characters for a specific novel."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Characters found"),
@@ -70,4 +69,3 @@ public class InternalNovelCharacterController {
         return ResponseEntity.ok(characters);
     }
 }
-

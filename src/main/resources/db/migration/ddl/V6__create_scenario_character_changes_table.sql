@@ -25,6 +25,6 @@ CREATE INDEX idx_scenario_char_changes_attr ON scenario_character_changes(attrib
 
 -- Add comments for documentation
 COMMENT ON TABLE scenario_character_changes IS 'Character attribute modifications in user scenarios';
-COMMENT ON COLUMN scenario_character_changes.character_vectordb_id IS 'VectorDB character ID being modified';
+COMMENT ON COLUMN scenario_character_changes.character_vectordb_id IS 'pgvector character ID being modified';
 COMMENT ON COLUMN scenario_character_changes.attribute IS 'Which character attribute is changed (house, personality, etc.)';
 COMMENT ON COLUMN scenario_character_changes.reasoning IS 'User explanation for why this change was made';

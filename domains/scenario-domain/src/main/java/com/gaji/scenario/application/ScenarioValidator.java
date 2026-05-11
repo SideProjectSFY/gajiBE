@@ -2,25 +2,18 @@ package com.gaji.scenario.application;
 
 import com.gaji.shared.contract.dto.CreateScenarioRequest;
 import com.gaji.content.application.ContentFacade;
-import com.gaji.shared.contract.dto.NovelResponse;
-import com.gaji.common.exception.BadRequestException;
 import com.gaji.scenario.domain.repository.RootUserScenarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.util.retry.Retry;
 
-import java.time.Duration;
 import java.util.*;
 
 /**
  * Scenario validation service
  * Validates scenarios before creation:
- * - Basic validation (fast, no AI)
- * - AI validation via FastAPI (Gemini 2.5 Flash)
+ * - Basic validation only
  */
 @Service
 @RequiredArgsConstructor
@@ -29,17 +22,12 @@ public class ScenarioValidator {
 
     private final ContentFacade contentFacade;
     private final RootUserScenarioRepository rootScenarioRepository;
-    private final WebClient fastApiClient;
-
-    @Value("${fastapi.base-url:http://localhost:8000}")
-    private String fastApiUrl;
 
     private static final Set<String> PROFANITY_LIST = Set.of(
             // Basic profanity filter (expand as needed)
             "damn", "hell", "shit", "fuck", "ass", "bitch", "bastard"
     );
 
-    private static final int MIN_SCENARIO_LENGTH = 1;
     private static final int MAX_TITLE_LENGTH = 255;
 
     /**
@@ -63,22 +51,7 @@ public class ScenarioValidator {
             return ValidationResult.invalid(errors);
         }
 
-        // 2. AI validation via FastAPI (Gemini 2.5 Flash)
-        try {
-            AIValidationResponse aiValidation = callFastApiValidation(request);
-
-            if (!aiValidation.isValid()) {
-                errors.addAll(aiValidation.getErrors());
-            }
-
-            return errors.isEmpty()
-                    ? ValidationResult.valid(aiValidation)
-                    : ValidationResult.invalid(errors);
-        } catch (Exception e) {
-            // AI validation failure - log but don't block (fallback to basic validation)
-            log.error("AI validation failed: {}", e.getMessage());
-            return ValidationResult.valid(); // Graceful degradation
-        }
+        return ValidationResult.valid();
     }
 
     /**
@@ -169,44 +142,6 @@ public class ScenarioValidator {
     }
 
     /**
-     * Call FastAPI for AI validation (Gemini 2.5 Flash)
-     */
-    private AIValidationResponse callFastApiValidation(CreateScenarioRequest request) {
-        // Get novel title for validation prompt
-        NovelResponse novel = contentFacade.findNovelResponseById(request.getNovelId())
-                .orElseThrow(() -> new BadRequestException("Novel not found"));
-
-        // Build filled types map (only include filled fields)
-        Map<String, String> filledTypes = new HashMap<>();
-
-        if (request.getCharacterChanges() != null && request.getCharacterChanges().trim().length() >= MIN_SCENARIO_LENGTH) {
-            filledTypes.put("character_changes", request.getCharacterChanges());
-        }
-
-        if (request.getEventAlterations() != null && request.getEventAlterations().trim().length() >= MIN_SCENARIO_LENGTH) {
-            filledTypes.put("event_alterations", request.getEventAlterations());
-        }
-
-        if (request.getSettingModifications() != null && request.getSettingModifications().trim().length() >= MIN_SCENARIO_LENGTH) {
-            filledTypes.put("setting_modifications", request.getSettingModifications());
-        }
-
-        // Call FastAPI endpoint
-        return fastApiClient.post()
-                .uri("/api/validate-scenario")
-                .bodyValue(Map.of(
-                        "book_title", novel.getTitle(),
-                        "scenario_title", request.getScenarioTitle(),
-                        "filled_types", filledTypes
-                ))
-                .retrieve()
-                .bodyToMono(AIValidationResponse.class)
-                .timeout(Duration.ofSeconds(10))  // Gemini API can be slow
-                .retryWhen(Retry.backoff(3, Duration.ofSeconds(1)))  // 3 retries: 1s, 2s, 4s
-                .block();
-    }
-
-    /**
      * Validation result
      */
     public static class ValidationResult {
@@ -246,7 +181,7 @@ public class ScenarioValidator {
     }
 
     /**
-     * AI validation response from FastAPI
+     * Legacy AI validation response shape kept for API compatibility.
      */
     public static class AIValidationResponse {
         private boolean isValid;

@@ -45,13 +45,6 @@ spring:
       secret: ${JWT_SECRET:gaji-secret-key-change-in-production}
       expiration: ${JWT_EXPIRATION:86400000} # 24 hours
 
-# FastAPI Proxy Configuration
-fastapi:
-  base-url: ${FASTAPI_BASE_URL:http://localhost:8200}
-  timeout: 60
-  retry:
-    max-attempts: 3
-
 # CORS Configuration
 cors:
   allowed-origins: http://localhost:3000,http://localhost:5173,http://localhost:3001

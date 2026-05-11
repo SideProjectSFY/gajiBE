@@ -30,7 +30,7 @@ CREATE INDEX idx_conversations_created ON conversations(created_at DESC);
 
 -- Add comments for documentation
 COMMENT ON TABLE conversations IS 'AI character conversations with ROOT-only forking (max depth 1)';
-COMMENT ON COLUMN conversations.character_vectordb_id IS 'VectorDB character ID being conversed with';
+COMMENT ON COLUMN conversations.character_vectordb_id IS 'pgvector character ID being conversed with';
 COMMENT ON COLUMN conversations.parent_conversation_id IS 'Parent conversation if forked (ROOT only, max depth 1)';
 COMMENT ON COLUMN conversations.is_root IS 'TRUE for root conversations, FALSE for forked (child) conversations';
 

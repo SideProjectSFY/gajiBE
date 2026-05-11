@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 /**
- * Novel entity - Metadata only (content stored in VectorDB)
+ * Novel entity - Metadata only (content stored in pgvector)
  */
 @Entity
 @Table(name = "novels")

@@ -24,7 +24,7 @@ public class NovelService {
     private final NovelRepository novelRepository;
 
     /**
-     * Create novel metadata from FastAPI import script
+     * Create novel metadata from an ingestion script.
      */
     @Transactional
     public NovelResponse createNovel(CreateNovelRequest request) {
@@ -84,7 +84,7 @@ public class NovelService {
     }
 
     /**
-     * Get novel by VectorDB collection ID
+     * Get novel by pgvector collection ID
      */
     @Transactional(readOnly = true)
     public NovelResponse getNovelByVectordbId(String vectordbCollectionId) {

@@ -110,12 +110,12 @@ public class MessageController {
     }
 
     /**
-     * Submit user message and trigger AI generation
-     * @deprecated Use direct AI endpoint /api/ai/generate instead
+     * Submit user message without generating an assistant response.
+     * @deprecated Use /chat-completion for Spring pgvector/Elasticsearch RAG generation.
      */
     @Deprecated
     @PostMapping
-    @Operation(summary = "Submit user message", description = "Saves user message and triggers AI generation via FastAPI")
+    @Operation(summary = "Submit user message", description = "Saves a user message without triggering legacy async AI generation")
     @ApiResponse(responseCode = "202", description = "Message accepted for processing")
     @ApiResponse(responseCode = "404", description = "Conversation not found")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
@@ -135,7 +135,7 @@ public class MessageController {
      * Submit a user message and synchronously generate a grounded RAG chat completion.
      */
     @PostMapping("/chat-completion")
-    @Operation(summary = "Submit user message with RAG chat completion", description = "Saves the user message, generates a grounded assistant response through the canonical AI service, and saves the assistant message")
+    @Operation(summary = "Submit user message with RAG chat completion", description = "Saves the user message, generates a grounded assistant response through Spring RAG, and saves the assistant message")
     @ApiResponse(responseCode = "200", description = "Message and grounded assistant response created")
     @ApiResponse(responseCode = "401", description = "User not authenticated")
     @ApiResponse(responseCode = "403", description = "Conversation access forbidden")

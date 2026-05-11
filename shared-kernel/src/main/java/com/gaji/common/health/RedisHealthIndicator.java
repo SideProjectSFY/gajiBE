@@ -15,11 +15,7 @@ import java.net.Socket;
  * Redis Health Indicator
  *
  * Checks connectivity to Redis server used for:
- * - Celery broker (task queue)
  * - Long Polling task storage (600s TTL)
- *
- * Uses simple socket connection to avoid adding redis dependency to Spring Boot
- * (Redis is primarily used by FastAPI/Celery)
  */
 @Slf4j
 @Component("redis")

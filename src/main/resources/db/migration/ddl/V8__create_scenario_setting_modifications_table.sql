@@ -25,6 +25,6 @@ CREATE INDEX idx_scenario_setting_mod_type ON scenario_setting_modifications(mod
 
 -- Add comments for documentation
 COMMENT ON TABLE scenario_setting_modifications IS 'Location/setting modifications in user scenarios';
-COMMENT ON COLUMN scenario_setting_modifications.location_vectordb_id IS 'VectorDB location ID being modified';
+COMMENT ON COLUMN scenario_setting_modifications.location_vectordb_id IS 'pgvector location ID being modified';
 COMMENT ON COLUMN scenario_setting_modifications.modification_type IS 'Type of change: time_period, location, atmosphere';
 COMMENT ON COLUMN scenario_setting_modifications.reasoning IS 'User explanation for why this setting was changed';

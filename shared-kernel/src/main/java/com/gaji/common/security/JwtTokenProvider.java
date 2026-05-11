@@ -10,10 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -79,78 +76,6 @@ public class JwtTokenProvider {
     }
 
     /**
-     * Generate short-lived AI broker token for direct AI gateway calls.
-     */
-    public String generateAiBrokerToken(
-            UUID userId,
-            String email,
-            String username,
-            String audience,
-            String scope,
-            String issuer,
-            String requestId,
-            String model,
-            String role,
-            int ttlSeconds
-    ) {
-        return generateAiBrokerToken(
-                userId,
-                email,
-                username,
-                audience,
-                scope,
-                issuer,
-                requestId,
-                model,
-                role,
-                ttlSeconds,
-                Collections.emptyList()
-        );
-    }
-
-    public String generateAiBrokerToken(
-            UUID userId,
-            String email,
-            String username,
-            String audience,
-            String scope,
-            String issuer,
-            String requestId,
-            String model,
-            String role,
-            int ttlSeconds,
-            List<String> novelIds
-    ) {
-        Instant now = Instant.now();
-        Instant expiration = now.plus(Math.max(30, ttlSeconds), ChronoUnit.SECONDS);
-
-        JwtBuilder builder = Jwts.builder()
-                .subject(userId.toString())
-                .issuer(issuer)
-                .audience().add(audience).and()
-                .claim("email", email)
-                .claim("username", username)
-                .claim("scope", scope)
-                .claim("owner_user_id", userId.toString())
-                .claim("type", "ai_broker")
-                .claim("request_id", requestId)
-                .claim("model", model)
-                .id(UUID.randomUUID().toString())
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expiration))
-                .signWith(secretKey);
-
-        if (role != null && !role.isBlank()) {
-            builder.claim("role", role);
-        }
-        if (novelIds != null && !novelIds.isEmpty()) {
-            builder.claim("novel_ids", novelIds);
-        }
-
-        return builder.compact();
-    }
-
-    /**
      * Extract user ID from token
      */
     public UUID getUserIdFromToken(String token) {
@@ -177,18 +102,6 @@ public class JwtTokenProvider {
     public String getRoleFromToken(String token) {
         Claims claims = extractClaims(token);
         return claims.get("role", String.class);
-    }
-
-    public List<String> getNovelIdsFromToken(String token) {
-        Claims claims = extractClaims(token);
-        Object value = claims.get("novel_ids");
-        if (!(value instanceof List<?> rawList)) {
-            return Collections.emptyList();
-        }
-        return rawList.stream()
-                .filter(item -> item != null)
-                .map(String::valueOf)
-                .toList();
     }
 
     /**

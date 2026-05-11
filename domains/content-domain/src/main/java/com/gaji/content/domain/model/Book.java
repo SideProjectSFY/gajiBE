@@ -5,7 +5,7 @@ import java.util.UUID;
 
 /**
  * Book Entity (maps to novels table in PostgreSQL)
- * Stores metadata only - novel content is in VectorDB
+ * Stores metadata only - novel content is in pgvector
  */
 public class Book {
     private UUID id;

@@ -1,5 +1,5 @@
 -- V3: Create base_scenarios table
--- Stores references to VectorDB passages that define scenario context
+-- Stores references to pgvector passages that define scenario context
 
 CREATE TABLE base_scenarios (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -27,6 +27,6 @@ CREATE INDEX idx_base_scenarios_novel ON base_scenarios(novel_id);
 CREATE INDEX idx_base_scenarios_title ON base_scenarios(title);
 
 -- Add comments for documentation
-COMMENT ON TABLE base_scenarios IS 'Base scenarios extracted from novels, references VectorDB for content';
-COMMENT ON COLUMN base_scenarios.vectordb_passage_ids IS 'Array of VectorDB passage IDs that define this scenario';
-COMMENT ON COLUMN base_scenarios.character_vectordb_ids IS 'Array of VectorDB character IDs involved in scenario';
+COMMENT ON TABLE base_scenarios IS 'Base scenarios extracted from novels, references pgvector for content';
+COMMENT ON COLUMN base_scenarios.vectordb_passage_ids IS 'Array of pgvector passage IDs that define this scenario';
+COMMENT ON COLUMN base_scenarios.character_vectordb_ids IS 'Array of pgvector character IDs involved in scenario';

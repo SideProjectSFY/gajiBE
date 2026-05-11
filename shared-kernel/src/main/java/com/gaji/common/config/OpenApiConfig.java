@@ -36,9 +36,9 @@ public class OpenApiConfig {
                                 4. 이제 보호된 API를 테스트할 수 있습니다.
                                 
                                 ## 아키텍처
-                                - Frontend ↔ Spring Boot (port 8080) ↔ FastAPI (port 8200)
-                                - PostgreSQL: 메타데이터 저장
-                                - FastAPI: AI/RAG 기능 + VectorDB 관리
+                                - Frontend ↔ Spring Boot (port 8080)
+                                - PostgreSQL: 메타데이터 + pgvector 임베딩 저장
+                                - Elasticsearch: BM25 기반 RAG 검색
                                 """)
                         .version("1.0.0")
                         .contact(new Contact()
@@ -63,4 +63,3 @@ public class OpenApiConfig {
                                         .description("JWT 토큰을 입력하세요 (Bearer 접두사 없이)")));
     }
 }
-

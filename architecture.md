@@ -36,7 +36,7 @@ These modules encapsulate specific business capabilities. Each domain is an inde
 - **`chat-domain`**: Conversation history, message persistence.
 - **`social-domain`**: Community features (likes, follows, comments).
 - **`search-domain`**: Search functionality abstraction.
-- **`ai-domain`**: Integration with AI services (LLM, Vector DB).
+- **`ai-domain`**: Integration with LLM generation, pgvector retrieval, and Elasticsearch retrieval.
 
 **Dependency Rule**: `domains` -> `shared-kernel`.
 *(Note: Domains should minimize direct dependencies on other domains. Communication is preferred via Domain Events or explicit Service Interfaces.)*

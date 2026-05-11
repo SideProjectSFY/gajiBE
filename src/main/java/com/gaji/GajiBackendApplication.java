@@ -9,11 +9,10 @@ import java.util.TimeZone;
 /**
  * Gaji Core Backend - API Gateway Application
  *
- * Pattern B Architecture:
  * - Frontend communicates ONLY with this Spring Boot service (port 8080)
- * - Spring Boot proxies AI requests to FastAPI (internal, port 8000)
- * - PostgreSQL access via JPA (Fully Refactored)
- * - No direct VectorDB access (delegated to FastAPI)
+ * - Spring Boot handles AI/RAG orchestration directly
+ * - PostgreSQL access via JPA plus pgvector for passage embeddings
+ * - Elasticsearch provides BM25 retrieval for hybrid RAG
  */
 @SpringBootApplication
 @EnableJpaAuditing

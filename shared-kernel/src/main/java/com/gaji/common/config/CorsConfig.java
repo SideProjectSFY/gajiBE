@@ -13,13 +13,13 @@ import java.util.List;
 /**
  * CORS Configuration
  * 
- * Pattern B Security:
- * - Frontend (Vue.js) communicates ONLY with Spring Boot
- * - FastAPI is internal and NOT exposed to frontend
+ * Security:
+ * - Frontend communicates ONLY with Spring Boot
+ * - AI provider keys are held server-side
  * - Gemini API keys never exposed to browser
  * 
  * Allowed Origins:
- * - Dev: http://localhost:3000, http://localhost:5173 (Vite)
+ * - Dev: http://localhost:3000, http://localhost:5173
  * - Prod: https://gaji.me
  */
 @Configuration

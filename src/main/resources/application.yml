@@ -74,24 +74,28 @@ springdoc:
     tags-sorter: alpha
   show-actuator: true
 
-# FastAPI Proxy Configuration (default values)
-fastapi:
-  base-url: ${FASTAPI_BASE_URL:http://localhost:8000}
-  timeout: ${FASTAPI_TIMEOUT:60}
-  retry:
-    max-attempts: ${FASTAPI_RETRY_MAX_ATTEMPTS:3}
-
 # CORS Configuration (default values)
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,https://gaji.app}
 
 gaji:
   ai:
-    broker:
-      audience: ${AI_BROKER_AUDIENCE:gaji-ai-direct}
-      scope: ${AI_BROKER_SCOPE:ai:chat:complete}
-      issuer: ${AI_BROKER_ISSUER:gaji-backend}
-      ttl-seconds: ${AI_BROKER_TTL_SECONDS:180}
+    provider:
+      timeout-ms: ${AI_PROVIDER_TIMEOUT_MS:30000}
+      gemini:
+        api-key: ${GEMINI_API_KEY:}
+        api-keys: ${GEMINI_API_KEYS:}
+        base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com}
+        embedding-model: ${GEMINI_EMBEDDING_MODEL:gemini-embedding-001}
+    rag:
+      timeout-ms: ${RAG_TIMEOUT_MS:5000}
+      pgvector:
+        enabled: ${RAG_PGVECTOR_ENABLED:true}
+        table-name: ${RAG_PGVECTOR_TABLE_NAME:rag_passages}
+      elasticsearch:
+        enabled: ${RAG_ELASTICSEARCH_ENABLED:true}
+        url: ${ELASTICSEARCH_URL:http://localhost:9200}
+        index: ${RAG_ELASTICSEARCH_INDEX:gaji_novel_passages_v1}
     chat:
       max-concurrent-generations: ${AI_CHAT_MAX_CONCURRENT_GENERATIONS:10}
       acquire-timeout-ms: ${AI_CHAT_ACQUIRE_TIMEOUT_MS:500}

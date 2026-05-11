@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/ai")
-@Tag(name = "AI Chat Proxy", description = "Proxy learner chat requests to the internal FastAPI AI service")
+@Tag(name = "AI Chat", description = "Generate learner chat responses with Spring-managed pgvector/Elasticsearch RAG")
 public class AiChatProxyController {
 
     private static final Logger log = LoggerFactory.getLogger(AiChatProxyController.class);
@@ -42,7 +42,7 @@ public class AiChatProxyController {
 
         JsonNode response = aiChatProxyService.completeChat(currentUser, request);
         log.info(
-                "ai_chat_completion_proxied user_id={} model={} rag_enabled={}",
+                "ai_chat_completion_generated user_id={} model={} rag_enabled={}",
                 currentUser.getUserId(),
                 request.resolvedModel(),
                 request.rag() != null && request.rag().isEnabled()

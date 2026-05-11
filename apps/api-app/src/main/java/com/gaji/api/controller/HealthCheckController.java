@@ -23,11 +23,9 @@ import java.util.Map;
 /**
  * Health Check Controller
  *
- * Story 0.6: Inter-Service Health Check & API Contract (Pattern B)
- *
  * Provides unified health status aggregating:
  * - Spring Boot Actuator (db, diskSpace)
- * - Custom Health Indicators (fastapi, redis)
+ * - Custom Health Indicators (redis)
  *
  * Primary endpoint is Spring Boot Actuator's /actuator/health
  * This controller provides additional API-friendly endpoints
@@ -44,7 +42,7 @@ public class HealthCheckController {
     @GetMapping("/health")
     @Operation(
         summary = "System health check",
-        description = "Returns aggregated health status of all system components including PostgreSQL, FastAPI, Redis, and disk space"
+        description = "Returns aggregated health status of all system components including PostgreSQL, Redis, and disk space"
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "All services healthy"),

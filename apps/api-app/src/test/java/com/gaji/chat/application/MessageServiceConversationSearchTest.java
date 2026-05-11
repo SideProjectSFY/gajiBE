@@ -20,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -155,7 +154,6 @@ class MessageServiceConversationSearchTest {
                 conversationRepository,
                 messageRepository,
                 conversationFacade,
-                WebClient.builder(),
                 redisTemplate,
                 scenarioFacade,
                 contentReadFacade,

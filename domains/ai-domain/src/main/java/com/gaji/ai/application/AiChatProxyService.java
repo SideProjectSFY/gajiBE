@@ -1,44 +1,37 @@
 package com.gaji.ai.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gaji.ai.api.dto.AiChatCompletionRequest;
 import com.gaji.common.exception.BadRequestException;
 import com.gaji.common.exception.ForbiddenException;
 import com.gaji.common.exception.ResourceNotFoundException;
 import com.gaji.common.security.UserPrincipal;
 import com.gaji.content.application.ContentReadFacade;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class AiChatProxyService {
 
-    private static final ParameterizedTypeReference<ServerSentEvent<JsonNode>> JSON_SSE_TYPE =
-            new ParameterizedTypeReference<>() {
-            };
-
-    private final WebClient fastApiClient;
-    private final AiTokenBrokerService aiTokenBrokerService;
+    private final ObjectMapper objectMapper;
+    private final AiChatCompletionService aiChatCompletionService;
     private final ContentReadFacade contentReadFacade;
     private final AiChatConcurrencyLimiter aiChatConcurrencyLimiter;
 
     public AiChatProxyService(
-            @Qualifier("fastApiClient") WebClient fastApiClient,
-            AiTokenBrokerService aiTokenBrokerService,
+            ObjectMapper objectMapper,
+            AiChatCompletionService aiChatCompletionService,
             ContentReadFacade contentReadFacade,
             AiChatConcurrencyLimiter aiChatConcurrencyLimiter
     ) {
-        this.fastApiClient = fastApiClient;
-        this.aiTokenBrokerService = aiTokenBrokerService;
+        this.objectMapper = objectMapper;
+        this.aiChatCompletionService = aiChatCompletionService;
         this.contentReadFacade = contentReadFacade;
         this.aiChatConcurrencyLimiter = aiChatConcurrencyLimiter;
     }
@@ -58,20 +51,14 @@ public class AiChatProxyService {
             AiChatCompletionRequest request
     ) {
         List<String> novelIds = resolveAuthorizedNovelIds(currentUser, request, true);
-        AiTokenBrokerService.BrokeredToken brokeredToken = aiTokenBrokerService.issue(
-                currentUser,
-                request.resolvedModel(),
-                List.of("ai:chat:complete"),
-                novelIds
-        );
-
-        return aiChatConcurrencyLimiter.executeFlux(() -> fastApiClient.post()
-                .uri("/v1/chat/completions/stream")
-                .accept(MediaType.TEXT_EVENT_STREAM)
-                .headers(headers -> headers.setBearerAuth(brokeredToken.accessToken()))
-                .bodyValue(request)
-                .retrieve()
-                .bodyToFlux(JSON_SSE_TYPE));
+        return aiChatConcurrencyLimiter.executeFlux(() -> {
+            JsonNode completion = aiChatCompletionService.complete(request, novelIds);
+            String answer = completion.path("answer").asText("");
+            return Flux.just(
+                    ServerSentEvent.<JsonNode>builder(deltaEvent(answer)).event("delta").build(),
+                    ServerSentEvent.<JsonNode>builder(completion).event("completed").build()
+            );
+        });
     }
 
     public JsonNode lookupPassageSources(UserPrincipal currentUser, UUID novelId, List<String> passageIds) {
@@ -88,22 +75,7 @@ public class AiChatProxyService {
             throw new ResourceNotFoundException("Novel not found: " + novelId, ex);
         }
 
-        AiTokenBrokerService.BrokeredToken brokeredToken = aiTokenBrokerService.issueBoundedRagRead(
-                currentUser,
-                "gemini-2.5-flash",
-                List.of(novelId.toString())
-        );
-
-        return fastApiClient.post()
-                .uri("/v1/rag/sources/passages")
-                .headers(headers -> headers.setBearerAuth(brokeredToken.accessToken()))
-                .bodyValue(Map.of(
-                        "novel_id", novelId.toString(),
-                        "passage_ids", passageIds
-                ))
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .block();
+        return aiChatCompletionService.lookupPassageSources(novelId, passageIds);
     }
 
     private JsonNode forwardCompletion(
@@ -111,20 +83,13 @@ public class AiChatProxyService {
             AiChatCompletionRequest request,
             List<String> novelIds
     ) {
-        AiTokenBrokerService.BrokeredToken brokeredToken = aiTokenBrokerService.issue(
-                currentUser,
-                request.resolvedModel(),
-                List.of("ai:chat:complete"),
-                novelIds
-        );
+        return aiChatConcurrencyLimiter.execute(() -> aiChatCompletionService.complete(request, novelIds));
+    }
 
-        return aiChatConcurrencyLimiter.execute(() -> fastApiClient.post()
-                .uri("/v1/chat/completions")
-                .headers(headers -> headers.setBearerAuth(brokeredToken.accessToken()))
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(JsonNode.class)
-                .block());
+    private JsonNode deltaEvent(String answer) {
+        ObjectNode node = objectMapper.createObjectNode();
+        node.put("delta", answer);
+        return node;
     }
 
     private List<String> resolveAuthorizedNovelIds(
